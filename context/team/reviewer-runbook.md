@@ -41,7 +41,12 @@ Po merge infrastruktury reviewera do `main`:
 4. W ruleset/branch protection dla `main` włącz wymagany status check **AI Code Review Gate** dopiero po pierwszym poprawnym runie, gdy GitHub zna nazwę checka.
 5. Pozostaw wymagane także deterministyczne CI (lint/typecheck/test/build). AI reviewer nie zastępuje tych checków.
 
-Minimalne uprawnienia workflow są jawne: `contents: read`, `issues: write` dla sticky comment/labels; `pull-requests: write` nie jest potrzebne. Top-level pozostaje `permissions: {}`.
+Top-level workflow pozostaje `permissions: {}`. Job dostaje wyłącznie
+`contents: read`, `issues: write` i `pull-requests: write`; ostatnie uprawnienie
+jest wymagane przez GitHub dla komentarza/etykiety na PR. W ustawieniach repo
+domyślne uprawnienia Actions mogą być `write`, ale każdy job musi nadal jawnie
+zawężać je do tej trójki. Workflow nie ma `contents: write` ani prawa do
+zatwierdzania PR-ów.
 
 ## 4. Dowodowy PR odrzucony
 

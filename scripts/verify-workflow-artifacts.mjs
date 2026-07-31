@@ -259,6 +259,7 @@ const reviewerWorkflow = await load(reviewerWorkflowPath);
 for (const marker of [
   "branches: [main]",
   "permissions: {}",
+  "pull-requests: write",
   "github-actions[bot]",
   "AI Code Review Gate",
   "OPENROUTER_API_KEY",

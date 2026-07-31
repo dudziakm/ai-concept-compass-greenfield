@@ -17,7 +17,7 @@
 - [ ] Każdy wcześniej ujawniony klucz OpenRouter unieważniony; nowy klucz utworzony.
 - [ ] Nowy `OPENROUTER_API_KEY` ustawiony jako Actions repository secret.
 - [x] Workflow reviewera obecny na zaufanym `main`.
-- [ ] Pierwszy run zarejestrował check `AI Code Review Gate`.
+- [x] Pierwszy run zarejestrował check `AI Code Review Gate` — [run 30663070207](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30663070207) potwierdził też sticky comment i `ai-cr:failed` dla kontrolowanego błędu bez sekretu.
 - [ ] Ruleset/branch protection wymaga `AI Code Review Gate` oraz deterministycznego CI.
 - [ ] Sprawdzono, że fork PR nie otrzymuje sekretu i nie wykonuje kodu head.
 
