@@ -111,50 +111,60 @@ npm run test:e2e
 
 ## Progress
 
-### Phase 1: Automated
+### Phase 1: Planning and verified starter baseline
+
+#### Automated
 
 - [x] 1.1 Planning-only repository state committed
 - [x] 1.2 Official starter imported after planning — 3397461
 - [x] 1.3 Starter provenance and final local quality baseline recorded
 
-### Phase 1: Manual
+#### Manual
 
 - [ ] 1.4 Product owner accepts scope and open questions
 
-### Phase 2: Automated
+### Phase 2: Identity, schema and ownership
+
+#### Automated
 
 - [x] 2.1 Auth and protected route implemented
 - [x] 2.2 Schema, RLS, templates and migration contract tests implemented
 - [ ] 2.3 Hosted two-user RLS matrix passes
 
-### Phase 2: Manual
+#### Manual
 
 - [ ] 2.4 Migration and auth settings reviewed in hosted Supabase
 
-### Phase 3: Automated
+### Phase 3: Starter pack and private CRUD
+
+#### Automated
 
 - [x] 3.1 API contracts, starter idempotency and private CRUD implemented
 - [x] 3.2 Route-contract tests pass
 
-### Phase 3: Manual
+#### Manual
 
 - [ ] 3.3 Desktop/mobile CRUD and busy/error states pass
 
-### Phase 4: Automated
+### Phase 4: Review engine and recommendation
+
+#### Automated
 
 - [x] 4.1 Scoring and ranking suite passes
 - [ ] 4.2 Hosted critical Playwright scenario passes
 
-### Phase 4: Manual
+#### Manual
 
 - [ ] 4.3 Learner understands review and recommendation sequence
 
-### Phase 5: Automated
+### Phase 5: Shared gates, deploy and evidence
+
+#### Automated
 
 - [x] 5.1 Local and CI quality gates pass — [run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616)
 - [ ] 5.2 Hosted RLS and E2E gates pass
 
-### Phase 5: Manual
+#### Manual
 
 - [ ] 5.3 Public deploy smoke and screenshots complete
 - [ ] 5.4 Mission Log evidence package submitted
