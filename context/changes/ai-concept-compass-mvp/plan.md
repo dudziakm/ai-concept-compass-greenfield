@@ -161,10 +161,23 @@ npm run test:e2e
 
 #### Automated
 
-- [x] 5.1 Local and CI quality gates pass — [run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616)
+- [x] 5.1 Local and CI quality gates pass — [quality job for PR #1](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662797133/job/91262708283); hosted jobs remain deliberately separate.
 - [ ] 5.2 Hosted RLS and E2E gates pass
 
 #### Manual
 
 - [ ] 5.3 Public deploy smoke and screenshots complete
 - [ ] 5.4 Mission Log evidence package submitted
+
+## Pause checkpoint — 2026-07-31
+
+- Publiczny draft PR z utwardzeniem dowodów i workflow reviewera:
+  <https://github.com/dudziakm/ai-concept-compass-greenfield/pull/1>
+  (`agent/harden-workflow-evidence`, `c0e803c`).
+- Lokalnie przechodzą workflow check, lint, typecheck, 50 testów/100% coverage
+  chronionej logiki, build, reviewer 18/18 i promptfoo offline 6/6.
+- Retry reviewera bez sekretu potwierdził sticky comment i `ai-cr:failed`; nie
+  zastępuje to wymaganego później PR-a z rzeczywistym findingiem oraz PR-a pass.
+- Nie oznaczać 2.3, 2.4, 4.2, 5.2–5.4 jako gotowych: Supabase MCP wymaga
+  restartu sesji, nie ma sekretów/kont hosted, a Cloudflare CLI nie jest
+  zalogowane. Pełny handoff workspace: `../HANDOFF-2026-07-31.md`.
