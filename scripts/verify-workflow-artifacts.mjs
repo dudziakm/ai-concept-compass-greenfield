@@ -26,6 +26,14 @@ const requiredFiles = [
   "context/evidence/builder-mvp-check.md",
   "context/evidence/mission-log-fields.md",
   "context/evidence/security-audit.md",
+  "context/team/opportunity-map.md",
+  "context/team/mom-test-validation.md",
+  "context/team/reviewer-runbook.md",
+  "context/team/champion-evidence-checklist.md",
+  ".github/actions/ai-code-review/action.yml",
+  ".github/workflows/ai-code-review.yml",
+  "packages/code-reviewer/package.json",
+  "packages/code-reviewer/promptfooconfig.yaml",
 ];
 
 const errors = [];
@@ -197,6 +205,31 @@ requireOrderedHeadings(testPlanPath, testPlan, [
 
 const verification = await load("context/changes/ai-concept-compass-mvp/verification.md");
 requireText("context/changes/ai-concept-compass-mvp/verification.md", verification, "delivery is **not yet complete**");
+
+const reviewerWorkflowPath = ".github/workflows/ai-code-review.yml";
+const reviewerWorkflow = await load(reviewerWorkflowPath);
+for (const marker of [
+  "branches: [main]",
+  "permissions: {}",
+  "github-actions[bot]",
+  "AI Code Review Gate",
+  "OPENROUTER_API_KEY",
+]) {
+  requireText(reviewerWorkflowPath, reviewerWorkflow, marker);
+}
+
+const reviewerPackagePath = "packages/code-reviewer/package.json";
+const reviewerPackage = await load(reviewerPackagePath);
+for (const marker of ['"node": ">=22.14.0"', '"promptfoo": "0.120.14"', '"build:eval"']) {
+  requireText(reviewerPackagePath, reviewerPackage, marker);
+}
+
+const promptfooPath = "packages/code-reviewer/promptfooconfig.yaml";
+const promptfoo = await load(promptfooPath);
+const evalCases = [...promptfoo.matchAll(/^ {2}- description:/gm)].length;
+if (evalCases !== 6) {
+  errors.push(`${promptfooPath}: expected exactly 6 fixed eval cases, found ${evalCases}`);
+}
 
 if (errors.length > 0) {
   console.error("10xWorkflow artifact check failed:");

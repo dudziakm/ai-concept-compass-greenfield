@@ -167,6 +167,7 @@ Dodaj publiczny URL do listy dozwolonych redirect URL w Supabase Auth.
 - [Specyfikacja UI](context/changes/ai-concept-compass-mvp/specs/ui.md)
 - [Plan deployu](context/deployment/deploy-plan.md)
 - [Audyt MVP](context/evidence/builder-mvp-check.md)
+- [Agent code review — runbook](context/team/reviewer-runbook.md)
 
 ## Jak AI wspierało proces
 

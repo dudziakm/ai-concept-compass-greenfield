@@ -1,0 +1,33 @@
+{
+  "name": "@ai-concept-compass/code-reviewer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "review": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "build:eval": "tsc --outDir dist --declaration false --sourceMap false",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "eval:offline": "vitest run src/evals/offline-evals.test.ts",
+    "eval:promptfoo": "npm run build:eval && PROMPTFOO_DISABLE_TELEMETRY=1 promptfoo eval --no-cache --config promptfooconfig.yaml"
+  },
+  "dependencies": {
+    "@openrouter/ai-sdk-provider": "3.0.0",
+    "ai": "7.0.45",
+    "tsx": "4.23.1",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.15",
+    "promptfoo": "0.120.14",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
+  },
+  "overrides": {
+    "posthog-node": "5.20.0"
+  }
+}

@@ -1,0 +1,130 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled]
+
+permissions: {}
+
+concurrency:
+  group: ai-code-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: AI Code Review Gate
+    if: github.event.action != 'labeled' || github.event.label.name == 'ai-cr:review'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Reject fork PR without exposing secrets
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "Fork PR review is blocked: OPENROUTER_API_KEY is never exposed to fork code."
+          exit 2
+
+      # Checkout the trusted base commit. The PR head is read only through git diff;
+      # no code or package scripts from the candidate branch are executed with a secret.
+      - name: Checkout trusted reviewer from PR base
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fetch candidate commit as data
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: git fetch --no-tags origin "${HEAD_SHA}"
+
+      - name: Set up Node 22
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.14.0
+          cache: npm
+          cache-dependency-path: packages/code-reviewer/package-lock.json
+
+      - id: review
+        name: Review untrusted PR input
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: ./.github/actions/ai-code-review
+        with:
+          pr-title: ${{ github.event.pull_request.title }}
+          pr-body: ${{ github.event.pull_request.body || '' }}
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          head-sha: ${{ github.event.pull_request.head.sha }}
+          openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
+
+      - name: Update sticky comment and labels
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository && steps.review.outputs.comment-path != ''
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        env:
+          COMMENT_PATH: ${{ steps.review.outputs.comment-path }}
+          REVIEW_EXIT_CODE: ${{ steps.review.outputs.exit-code }}
+        with:
+          script: |
+            const fs = require('node:fs');
+            const marker = '<!-- AI-CODE-REVIEW -->';
+            const body = fs.readFileSync(process.env.COMMENT_PATH, 'utf8');
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+            const previous = comments.find(
+              (comment) =>
+                comment.user?.type === 'Bot' &&
+                comment.user?.login === 'github-actions[bot]' &&
+                comment.body?.includes(marker),
+            );
+            if (previous) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: previous.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+            const definitions = [
+              { name: 'ai-cr:passed', color: '2da44e', description: 'AI code review passed' },
+              { name: 'ai-cr:failed', color: 'cf222e', description: 'AI code review failed or errored' },
+              { name: 'ai-cr:review', color: '8250df', description: 'Request a fresh AI code review' },
+            ];
+            for (const label of definitions) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name: label.name });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                await github.rest.issues.createLabel({ owner, repo, ...label });
+              }
+            }
+
+            const current = context.payload.pull_request.labels.map((label) => label.name);
+            for (const label of ['ai-cr:passed', 'ai-cr:failed', 'ai-cr:review']) {
+              if (current.includes(label)) {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number, name: label });
+              }
+            }
+            const desired = process.env.REVIEW_EXIT_CODE === '0' ? 'ai-cr:passed' : 'ai-cr:failed';
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [desired] });
+
+      - name: Enforce review verdict as merge gate
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          REVIEW_EXIT_CODE: ${{ steps.review.outputs.exit-code }}
+        run: |
+          if [[ -z "${REVIEW_EXIT_CODE}" ]]; then
+            echo "Reviewer did not produce an exit code."
+            exit 2
+          fi
+          exit "${REVIEW_EXIT_CODE}"

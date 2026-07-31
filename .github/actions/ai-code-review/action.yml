@@ -1,0 +1,100 @@
+name: AI Code Review
+description: Runs the schema-validated OpenRouter reviewer on a PR diff.
+
+inputs:
+  pr-title:
+    description: Pull Request title
+    required: true
+  pr-body:
+    description: Pull Request body
+    required: false
+    default: ""
+  base-sha:
+    description: Trusted PR base commit
+    required: true
+  head-sha:
+    description: PR head commit reviewed as data only
+    required: true
+  openrouter-api-key:
+    description: OpenRouter API key supplied only from a GitHub Actions secret
+    required: true
+  model:
+    description: OpenRouter model identifier
+    required: false
+    default: openai/gpt-4o-mini
+
+outputs:
+  exit-code:
+    description: "0 pass, 1 review fail, 2 infrastructure/schema error"
+    value: ${{ steps.review.outputs.exit-code }}
+  verdict:
+    description: pass, fail, or error
+    value: ${{ steps.review.outputs.verdict }}
+  result-path:
+    description: Path to the validated JSON result
+    value: ${{ steps.review.outputs.result-path }}
+  comment-path:
+    description: Path to the sticky PR comment body
+    value: ${{ steps.review.outputs.comment-path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install trusted reviewer dependencies
+      shell: bash
+      working-directory: packages/code-reviewer
+      run: npm ci --omit=dev --ignore-scripts
+
+    - name: Build PR diff from merge base
+      shell: bash
+      env:
+        BASE_SHA: ${{ inputs.base-sha }}
+        HEAD_SHA: ${{ inputs.head-sha }}
+      run: |
+        set -euo pipefail
+        git cat-file -e "${BASE_SHA}^{commit}"
+        git cat-file -e "${HEAD_SHA}^{commit}"
+        # 200001 bytes is a safe UTF-8 upper guard for a 50000-character input.
+        # The CLI still enforces the exact JavaScript character limit with Zod.
+        set +o pipefail
+        git diff --no-ext-diff --unified=80 "${BASE_SHA}...${HEAD_SHA}" \
+          | head -c 200001 > "${RUNNER_TEMP}/ai-review.diff"
+        diff_exit="${PIPESTATUS[0]}"
+        set -o pipefail
+        if [[ "${diff_exit}" -ne 0 && "${diff_exit}" -ne 141 ]]; then
+          echo "git diff failed with exit ${diff_exit}"
+          exit 2
+        fi
+        if [[ "$(wc -c < "${RUNNER_TEMP}/ai-review.diff")" -ge 200001 ]]; then
+          dd if=/dev/zero bs=50001 count=1 status=none \
+            | tr '\0' 'X' > "${RUNNER_TEMP}/ai-review.diff"
+        fi
+
+    - id: review
+      name: Run one-call reviewer
+      shell: bash
+      working-directory: packages/code-reviewer
+      env:
+        PR_TITLE: ${{ inputs.pr-title }}
+        PR_BODY: ${{ inputs.pr-body }}
+        AI_REVIEW_MODEL: ${{ inputs.model }}
+        OPENROUTER_API_KEY: ${{ inputs.openrouter-api-key }}
+      run: |
+        set +e
+        npm run review -- \
+          --diff-file "${RUNNER_TEMP}/ai-review.diff" \
+          --output "${RUNNER_TEMP}/ai-review.json" \
+          --markdown-output "${RUNNER_TEMP}/ai-review-comment.md"
+        review_exit_code=$?
+        set -e
+
+        case "${review_exit_code}" in
+          0) verdict="pass" ;;
+          1) verdict="fail" ;;
+          *) review_exit_code=2; verdict="error" ;;
+        esac
+
+        echo "exit-code=${review_exit_code}" >> "${GITHUB_OUTPUT}"
+        echo "verdict=${verdict}" >> "${GITHUB_OUTPUT}"
+        echo "result-path=${RUNNER_TEMP}/ai-review.json" >> "${GITHUB_OUTPUT}"
+        echo "comment-path=${RUNNER_TEMP}/ai-review-comment.md" >> "${GITHUB_OUTPUT}"

@@ -1,0 +1,57 @@
+description: AI Concept Compass — stały baseline code review
+
+prompts:
+  - "{{caseId}}"
+
+providers:
+  - id: file://dist/src/evals/promptfoo-provider.js
+    label: code-reviewer-contract
+
+tests:
+  - description: clean diff passes
+    vars:
+      caseId: clean
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).verdict === "pass" && JSON.parse(output).findings.length === 0
+
+  - description: missing risk test fails
+    vars:
+      caseId: missing-tests
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "test-risk-coverage")
+
+  - description: security gap fails
+    vars:
+      caseId: security-gap
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "security-safety")
+
+  - description: excessive complexity fails
+    vars:
+      caseId: excessive-complexity
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "complexity")
+
+  - description: missing public-contract documentation fails
+    vars:
+      caseId: missing-documentation
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "documentation")
+
+  - description: malformed input is rejected before a model call
+    vars:
+      caseId: malformed-input
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).error.code === "INVALID_INPUT"
