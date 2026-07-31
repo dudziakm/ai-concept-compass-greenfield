@@ -1,8 +1,117 @@
 ---
-import Welcome from "@/components/Welcome.astro";
 import Layout from "@/layouts/Layout.astro";
+
+const { user } = Astro.locals;
 ---
 
-<Layout>
-  <Welcome />
+<Layout title="AI Concept Compass — ucz się świadomie">
+  <main class="min-h-screen overflow-hidden bg-slate-950 text-white">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(34,211,238,0.16),transparent_34%),radial-gradient(circle_at_80%_30%,rgba(168,85,247,0.17),transparent_30%)]"
+    >
+    </div>
+    <nav class="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-6" aria-label="Główna nawigacja">
+      <a href="/" class="flex items-center gap-3 font-semibold">
+        <span class="grid size-10 place-items-center rounded-2xl bg-cyan-300 font-black text-slate-950">C</span>
+        <span>AI Concept Compass</span>
+      </a>
+      <a
+        href={user ? "/dashboard" : "/auth/signin"}
+        class="rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold transition hover:border-cyan-300/60 hover:bg-cyan-300/10"
+      >
+        {user ? "Przejdź do nauki" : "Zaloguj się"}
+      </a>
+    </nav>
+
+    <section
+      class="relative mx-auto grid max-w-6xl gap-14 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:py-28"
+    >
+      <div>
+        <p
+          class="mb-6 inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm font-medium text-cyan-200"
+        >
+          AWS Certified AI Practitioner · AIF-C01
+        </p>
+        <h1 class="max-w-4xl text-5xl leading-[1.04] font-black tracking-tight sm:text-7xl">
+          Nie zgaduj, co umiesz.
+          <span class="block bg-gradient-to-r from-cyan-300 via-blue-300 to-fuchsia-300 bg-clip-text text-transparent">
+            Zmierz swoją kalibrację.
+          </span>
+        </h1>
+        <p class="mt-8 max-w-2xl text-lg leading-8 text-slate-300">
+          Deklarujesz pewność, odpowiadasz i oceniasz wynik. Compass wykrywa luki, nadmierną pewność i wskazuje
+          dokładnie ten temat, który warto powtórzyć teraz.
+        </p>
+        <div class="mt-10 flex flex-col gap-4 sm:flex-row">
+          <a
+            href={user ? "/dashboard" : "/auth/signup"}
+            class="rounded-2xl bg-cyan-300 px-7 py-4 text-center font-bold text-slate-950 transition hover:bg-cyan-200"
+          >
+            {user ? "Kontynuuj naukę" : "Załóż konto i zacznij"}
+          </a>
+          <a
+            href="#jak-to-dziala"
+            class="rounded-2xl border border-white/15 px-7 py-4 text-center font-semibold text-slate-200 transition hover:bg-white/5"
+          >
+            Zobacz, jak to działa
+          </a>
+        </div>
+      </div>
+
+      <div
+        class="relative rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 shadow-2xl shadow-cyan-950/40 backdrop-blur"
+      >
+        <div class="mb-6 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold tracking-[0.2em] text-cyan-300 uppercase">Następny temat</p>
+            <h2 class="mt-2 text-2xl font-bold">Embeddings i RAG</h2>
+          </div>
+          <span class="rounded-full bg-amber-300/15 px-3 py-1 text-sm font-semibold text-amber-200">Priorytet 87</span>
+        </div>
+        <div class="space-y-5 rounded-2xl bg-slate-950/60 p-5">
+          <div>
+            <div class="mb-2 flex justify-between text-sm text-slate-300"><span>Mastery</span><span>42%</span></div>
+            <div class="h-2 overflow-hidden rounded-full bg-white/10">
+              <div class="h-full w-[42%] rounded-full bg-cyan-300"></div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-xl bg-white/5 p-4">
+              <p class="text-xs text-slate-400">Pewność</p><p class="mt-1 text-2xl font-bold">4/5</p>
+            </div>
+            <div class="rounded-xl bg-white/5 p-4">
+              <p class="text-xs text-slate-400">Luka kalibracji</p><p class="mt-1 text-2xl font-bold text-amber-300">
+                50
+              </p>
+            </div>
+          </div>
+        </div>
+        <p class="mt-5 text-sm leading-6 text-slate-400">
+          Bez generowania odpowiedzi przez AI. Twoja wiedza, przejrzysty algorytm, powtarzalny wynik.
+        </p>
+      </div>
+    </section>
+
+    <section id="jak-to-dziala" class="relative mx-auto max-w-6xl px-6 pb-24">
+      <div class="grid gap-5 md:grid-cols-3">
+        {
+          [
+            ["01", "Oceń pewność", "Zanim zobaczysz wzorzec, zaznacz jak pewnie czujesz się z danym pojęciem."],
+            [
+              "02",
+              "Porównaj odpowiedź",
+              "Odpowiedz własnymi słowami i uczciwie wybierz: błędnie, częściowo lub poprawnie.",
+            ],
+            ["03", "Idź za rekomendacją", "Mastery, kalibracja i termin powtórki tworzą priorytet następnego tematu."],
+          ].map(([number, title, description]) => (
+            <article class="rounded-3xl border border-white/10 bg-white/[0.04] p-7">
+              <p class="text-sm font-black text-cyan-300">{number}</p>
+              <h2 class="mt-5 text-xl font-bold">{title}</h2>
+              <p class="mt-3 leading-7 text-slate-400">{description}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+  </main>
 </Layout>

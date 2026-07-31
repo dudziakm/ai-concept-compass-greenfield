@@ -56,12 +56,12 @@ history, so impact and boundary count carry more weight than commit frequency.
 The certification sprint uses one MVP change folder. Future rollouts should use
 one distinct change folder per roadmap row.
 
-| #   | Phase name                    | Goal (one line)                                                              | Risks covered | Test types              | Status  | Change folder                             |
-| --- | ----------------------------- | ---------------------------------------------------------------------------- | ------------- | ----------------------- | ------- | ----------------------------------------- |
-| 1   | Domain and boundary contracts | Make incorrect scoring and invalid writes fail cheaply.                      | #1, #5        | unit + contract         | planned | `context/changes/ai-concept-compass-mvp/` |
-| 2   | Persistence and ownership     | Prove lifecycle and cross-account isolation at the database boundary.        | #2, #4        | integration + RLS       | planned | `context/changes/ai-concept-compass-mvp/` |
-| 3   | Hosted critical path          | Exercise the full learner flow with real auth, API and persistence.          | #3            | e2e                     | planned | `context/changes/ai-concept-compass-mvp/` |
-| 4   | Shared release gates          | Bind quality, hosted E2E and immutable deployment evidence to merge/release. | #3, #6        | CI gates + manual smoke | planned | `context/changes/ai-concept-compass-mvp/` |
+| #   | Phase name                    | Goal (one line)                                                              | Risks covered | Test types              | Status       | Change folder                             |
+| --- | ----------------------------- | ---------------------------------------------------------------------------- | ------------- | ----------------------- | ------------ | ----------------------------------------- |
+| 1   | Domain and boundary contracts | Make incorrect scoring and invalid writes fail cheaply.                      | #1, #5        | unit + contract         | implemented  | `context/changes/ai-concept-compass-mvp/` |
+| 2   | Persistence and ownership     | Prove lifecycle and cross-account isolation at the database boundary.        | #2, #4        | integration + RLS       | implementing | `context/changes/ai-concept-compass-mvp/` |
+| 3   | Hosted critical path          | Exercise the full learner flow with real auth, API and persistence.          | #3            | e2e                     | planned      | `context/changes/ai-concept-compass-mvp/` |
+| 4   | Shared release gates          | Bind quality, hosted E2E and immutable deployment evidence to merge/release. | #3, #6        | CI gates + manual smoke | implementing | `context/changes/ai-concept-compass-mvp/` |
 
 ## 4. Stack
 
@@ -69,7 +69,7 @@ one distinct change folder per roadmap row.
 | ------------------------ | ---------------------------------------------------- | ------- | ---------------------------------------------------------------------- |
 | unit + contract          | Vitest                                               | 4.1.10  | Co-located domain/schema tests and migration contract test.            |
 | API integration          | Vitest route-contract suite                          | 4.1.10  | Auth, validation and 401/404/409/500 mappings without a real database. |
-| database/RLS integration | Supabase JS against two ordinary hosted accounts     | 2.99.1  | Planned harness; hosted execution will require credentials.            |
+| database/RLS integration | Supabase JS against two ordinary hosted accounts     | 2.99.1  | Harness present; hosted execution remains pending credentials.         |
 | e2e                      | Playwright                                           | 1.62.1  | Auth setup project plus one independently cleaned critical flow.       |
 | accessibility            | semantic Playwright locators + manual keyboard smoke | —       | No axe-core dependency; add only through a scoped rollout.             |
 | coverage                 | V8 provider                                          | 4.1.10  | 90% lines/functions/statements, 85% branches for scoring and schemas.  |

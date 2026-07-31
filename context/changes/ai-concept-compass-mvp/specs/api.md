@@ -53,11 +53,11 @@ accepted from clients.
 
 ## Verification
 
-- Planned unit boundary: `src/lib/schemas.test.ts`.
-- Planned route integration: `tests/api-contract.test.ts` covers the shared auth and
+- Unit boundary: `src/lib/schemas.test.ts`.
+- Route integration: `tests/api-contract.test.ts` covers the shared auth and
   error envelopes, invalid JSON/fields, hidden non-owner lookup, duplicate
   conflict, infrastructure failure and success statuses.
-- Planned static contract: `tests/migration-contract.test.ts`.
-- Planned cross-layer happy path: `e2e/concept-review.spec.ts`.
+- Static contract: `tests/migration-contract.test.ts`.
+- Hosted cross-layer scenario: `e2e/concept-review.spec.ts` (execution pending credentials).
 - Gap: concurrent review remains outside MVP; hosted E2E execution remains
   pending account and environment configuration.

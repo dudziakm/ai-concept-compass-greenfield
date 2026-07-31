@@ -114,8 +114,8 @@ npm run test:e2e
 ### Phase 1: Automated
 
 - [x] 1.1 Planning-only repository state committed
-- [ ] 1.2 Official starter imported after planning
-- [ ] 1.3 Starter lint/typecheck/build baseline recorded
+- [x] 1.2 Official starter imported after planning — 3397461
+- [x] 1.3 Starter provenance and final local quality baseline recorded
 
 ### Phase 1: Manual
 
@@ -123,8 +123,8 @@ npm run test:e2e
 
 ### Phase 2: Automated
 
-- [ ] 2.1 Auth and protected route implemented
-- [ ] 2.2 Schema, RLS, templates and migration contract tests implemented
+- [x] 2.1 Auth and protected route implemented
+- [x] 2.2 Schema, RLS, templates and migration contract tests implemented
 - [ ] 2.3 Hosted two-user RLS matrix passes
 
 ### Phase 2: Manual
@@ -133,8 +133,8 @@ npm run test:e2e
 
 ### Phase 3: Automated
 
-- [ ] 3.1 API contracts, starter idempotency and private CRUD implemented
-- [ ] 3.2 Route-contract tests pass
+- [x] 3.1 API contracts, starter idempotency and private CRUD implemented
+- [x] 3.2 Route-contract tests pass
 
 ### Phase 3: Manual
 
@@ -142,7 +142,7 @@ npm run test:e2e
 
 ### Phase 4: Automated
 
-- [ ] 4.1 Scoring and ranking suite passes
+- [x] 4.1 Scoring and ranking suite passes
 - [ ] 4.2 Hosted critical Playwright scenario passes
 
 ### Phase 4: Manual

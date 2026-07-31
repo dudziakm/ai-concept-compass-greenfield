@@ -33,18 +33,18 @@ support that learning outcome.
 | ID   | Change ID                         | Outcome (user can …)                                                            | Prerequisites         | PRD refs                                                     | Status  |
 | ---- | --------------------------------- | ------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------ | ------- |
 | F-01 | hosted-mvp-evidence               | (foundation) run the product against hosted services and retain public evidence | Human account access  | NFR-002, NFR-003, NFR-005; Open Question 3                   | blocked |
-| S-01 | private-learning-shell            | register, sign in and reach a private empty learning area                       | F-01 for hosted proof | US-01, FR-001, FR-002, FR-003, NFR-003                       | planned |
-| S-02 | starter-pack-concept-crud         | load ten concepts and manage a private collection without duplicates            | S-01                  | US-02, US-03, US-06, FR-004, FR-005, FR-006, FR-012, NFR-004 | planned |
-| S-03 | calibrated-concept-review         | declare confidence and persist a scored review                                  | S-02                  | US-04, FR-007, FR-008, FR-009, NFR-006                       | planned |
-| S-04 | learning-recommendation-dashboard | see the next concept and five-domain progress                                   | S-03                  | US-05, FR-010, FR-011, NFR-001, NFR-002, NFR-005             | planned |
+| S-01 | private-learning-shell            | register, sign in and reach a private empty learning area                       | F-01 for hosted proof | US-01, FR-001, FR-002, FR-003, NFR-003                       | local   |
+| S-02 | starter-pack-concept-crud         | load ten concepts and manage a private collection without duplicates            | S-01                  | US-02, US-03, US-06, FR-004, FR-005, FR-006, FR-012, NFR-004 | local   |
+| S-03 | calibrated-concept-review         | declare confidence and persist a scored review                                  | S-02                  | US-04, FR-007, FR-008, FR-009, NFR-006                       | local   |
+| S-04 | learning-recommendation-dashboard | see the next concept and five-domain progress                                   | S-03                  | US-05, FR-010, FR-011, NFR-001, NFR-002, NFR-005             | local   |
 
 ## Baseline
 
-Observed before the first commit on 2026-07-31.
+Updated after local implementation on 2026-07-31.
 
-- **Frontend/backend/data/auth:** absent; contracts exist only in this planning package.
-- **Starter:** selected but not yet imported.
-- **Deploy/observability:** planned; hosted accounts and public URL do not yet exist.
+- **Frontend/backend/data/auth:** implemented with Astro/React, API routes and Supabase contracts.
+- **Starter:** imported after planning in commit `3397461`.
+- **Deploy/observability:** Worker build passes; hosted accounts and public URL do not yet exist.
 
 ## Foundations
 

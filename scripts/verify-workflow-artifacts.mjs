@@ -1,0 +1,207 @@
+import { access, readFile } from "node:fs/promises";
+
+const requiredFiles = [
+  "AGENTS.md",
+  "context/archive/README.md",
+  "context/changes/README.md",
+  "context/foundation/README.md",
+  "context/foundation/shape-notes.md",
+  "context/foundation/prd.md",
+  "context/foundation/business-requirements.md",
+  "context/foundation/tech-stack.md",
+  "context/foundation/technical-requirements.md",
+  "context/foundation/infrastructure.md",
+  "context/foundation/roadmap.md",
+  "context/foundation/test-plan.md",
+  "context/changes/bootstrap-verification/verification.md",
+  "context/changes/ai-concept-compass-mvp/change.md",
+  "context/changes/ai-concept-compass-mvp/research.md",
+  "context/changes/ai-concept-compass-mvp/plan.md",
+  "context/changes/ai-concept-compass-mvp/plan-brief.md",
+  "context/changes/ai-concept-compass-mvp/specs/api.md",
+  "context/changes/ai-concept-compass-mvp/specs/database.md",
+  "context/changes/ai-concept-compass-mvp/specs/ui.md",
+  "context/changes/ai-concept-compass-mvp/verification.md",
+  "context/deployment/deploy-plan.md",
+  "context/evidence/builder-mvp-check.md",
+  "context/evidence/mission-log-fields.md",
+  "context/evidence/security-audit.md",
+];
+
+const errors = [];
+
+for (const path of requiredFiles) {
+  try {
+    await access(path);
+  } catch {
+    errors.push(`missing file: ${path}`);
+  }
+}
+
+async function load(path) {
+  try {
+    return await readFile(path, "utf8");
+  } catch {
+    return "";
+  }
+}
+
+function requireText(path, content, expected) {
+  if (!content.includes(expected)) {
+    errors.push(`${path}: missing ${JSON.stringify(expected)}`);
+  }
+}
+
+function requireOrderedHeadings(path, content, headings) {
+  let previous = -1;
+  for (const heading of headings) {
+    const matches = [...content.matchAll(new RegExp(`^${escapeRegExp(heading)}$`, "gm"))];
+    if (matches.length !== 1) {
+      errors.push(`${path}: expected exactly one ${JSON.stringify(heading)}, found ${matches.length}`);
+      continue;
+    }
+    const position = matches[0].index ?? -1;
+    if (position <= previous) {
+      errors.push(`${path}: heading out of order: ${heading}`);
+    }
+    previous = position;
+  }
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const shape = await load("context/foundation/shape-notes.md");
+for (const marker of [
+  "context_type: greenfield",
+  "checkpoint:",
+  "quality_check_status: accepted",
+  "Pochodzenie dokumentu",
+]) {
+  requireText("context/foundation/shape-notes.md", shape, marker);
+}
+
+const prdPath = "context/foundation/prd.md";
+const prd = await load(prdPath);
+for (const marker of ["context_type: greenfield", "product_type: web-app", "target_scale:", "timeline_budget:"]) {
+  requireText(prdPath, prd, marker);
+}
+requireOrderedHeadings(prdPath, prd, [
+  "## Vision & Problem Statement",
+  "## User & Persona",
+  "## Success Criteria",
+  "## User Stories",
+  "## Functional Requirements",
+  "## Non-Functional Requirements",
+  "## Business Logic",
+  "## Access Control",
+  "## Non-Goals",
+  "## Open Questions",
+]);
+
+const expectedPrdStories = [
+  "### US-01: Prywatne konto",
+  "### US-02: Pakiet startowy",
+  "### US-03: Własna kolekcja pojęć",
+  "### US-04: Kalibracja wiedzy",
+  "### US-05: Rekomendacja następnego tematu",
+  "### US-06: Prawo do usunięcia",
+  "### US-07: Pusty i błędny stan",
+];
+for (const story of expectedPrdStories) requireText(prdPath, prd, story);
+const prdStoryIds = [...prd.matchAll(/^### (US-\d{2}):/gm)].map((match) => match[1]);
+if (new Set(prdStoryIds).size !== prdStoryIds.length) {
+  errors.push(`${prdPath}: duplicate user-story identifier`);
+}
+
+for (const storyId of ["US-01", "US-02", "US-03", "US-04", "US-05", "US-06", "US-07"]) {
+  requireText("context/foundation/shape-notes.md", shape, `### ${storyId}:`);
+}
+
+const businessPath = "context/foundation/business-requirements.md";
+const business = await load(businessPath);
+requireText(businessPath, business, "US-03/US-06; FR-005/FR-006/FR-012");
+requireText(businessPath, business, "US-07; NFR-004/NFR-005");
+
+const roadmapPath = "context/foundation/roadmap.md";
+const roadmap = await load(roadmapPath);
+if (/^## Streams$/m.test(roadmap)) {
+  errors.push(`${roadmapPath}: Streams must be omitted while the dependency graph is one chain`);
+}
+for (const slice of ["F-01", "S-01", "S-02", "S-03", "S-04"]) {
+  requireText(roadmapPath, roadmap, `| ${slice} |`);
+}
+
+const stackPath = "context/foundation/tech-stack.md";
+const stack = await load(stackPath);
+for (const marker of [
+  "starter_id: 10x-astro-starter",
+  "package_manager: npm",
+  "project_name: ai-concept-compass",
+  "hints:",
+  "bootstrapper_confidence:",
+  "path_taken:",
+  "self_check_answers:",
+  "has_auth: true",
+  "has_ai: false",
+  "## Why this stack",
+]) {
+  requireText(stackPath, stack, marker);
+}
+
+const planPath = "context/changes/ai-concept-compass-mvp/plan.md";
+const plan = await load(planPath);
+const progressHeadings = [...plan.matchAll(/^## Progress$/gm)].length;
+if (progressHeadings !== 1) {
+  errors.push(`${planPath}: expected exactly one ## Progress, found ${progressHeadings}`);
+}
+for (const phase of [1, 2, 3, 4, 5]) {
+  requireText(planPath, plan, `## Phase ${phase}:`);
+  requireText(planPath, plan, `### Phase ${phase}:`);
+}
+
+const changePath = "context/changes/ai-concept-compass-mvp/change.md";
+const change = await load(changePath);
+const status = change.match(/^status:\s*(\S+)$/m)?.[1];
+const pendingProgress = [...plan.matchAll(/^- \[ \] /gm)].length;
+if (status === "complete" && pendingProgress > 0) {
+  errors.push(`${changePath}: status complete conflicts with ${pendingProgress} pending progress rows`);
+}
+if (status === "implementing" && pendingProgress === 0) {
+  errors.push(`${changePath}: status implementing requires at least one pending progress row`);
+}
+
+const bootstrapPath = "context/changes/bootstrap-verification/verification.md";
+const bootstrap = await load(bootstrapPath);
+for (const marker of [
+  "formal_bootstrapper_run: false",
+  "planning commit precedes scaffold commit",
+  "imported without upstream Git history",
+]) {
+  requireText(bootstrapPath, bootstrap, marker);
+}
+
+const testPlanPath = "context/foundation/test-plan.md";
+const testPlan = await load(testPlanPath);
+requireOrderedHeadings(testPlanPath, testPlan, [
+  "## 1. Strategy",
+  "## 2. Risk Map",
+  "## 3. Phased Rollout",
+  "## 4. Stack",
+  "## 5. Quality Gates",
+  "## 6. Cookbook Patterns",
+  "## 7. What We Deliberately Don't Test",
+  "## 8. Freshness Ledger",
+]);
+
+const verification = await load("context/changes/ai-concept-compass-mvp/verification.md");
+requireText("context/changes/ai-concept-compass-mvp/verification.md", verification, "delivery is **not yet complete**");
+
+if (errors.length > 0) {
+  console.error("10xWorkflow artifact check failed:");
+  for (const error of errors) console.error(`- ${error}`);
+  process.exitCode = 1;
+} else {
+  console.log(`10xWorkflow artifact check passed (${requiredFiles.length} required files).`);
+}

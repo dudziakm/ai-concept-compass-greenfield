@@ -1,0 +1,26 @@
+---
+interface Props {
+  email: string;
+}
+
+const { email } = Astro.props;
+---
+
+<header class="border-b border-slate-800 bg-slate-950 text-white">
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
+    <a href="/dashboard" class="flex items-center gap-3 font-bold">
+      <span class="grid size-9 place-items-center rounded-xl bg-cyan-300 font-black text-slate-950">C</span>
+      <span class="hidden sm:inline">AI Concept Compass</span>
+    </a>
+    <div class="flex items-center gap-4">
+      <span class="hidden max-w-56 truncate text-sm text-slate-400 sm:inline">{email}</span>
+      <form method="POST" action="/api/auth/signout">
+        <button
+          type="submit"
+          class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold transition hover:bg-slate-800"
+          >Wyloguj się</button
+        >
+      </form>
+    </div>
+  </div>
+</header>

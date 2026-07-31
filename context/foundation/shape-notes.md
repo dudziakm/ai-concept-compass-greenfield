@@ -113,6 +113,12 @@ pojęcia.
 - **When** właściciel potwierdza usunięcie pojęcia
 - **Then** pojęcie i jego historia przestają być dostępne
 
+### US-07: Pusty i błędny stan
+
+- **Given** kolekcja jest pusta albo operacja się nie powiodła
+- **When** użytkownik otwiera obszar nauki lub wykonuje akcję
+- **Then** otrzymuje jasny następny krok albo czytelny błąd bez utraty danych
+
 ## Draft Functional Requirements
 
 ### Identity and ownership

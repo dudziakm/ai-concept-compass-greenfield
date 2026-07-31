@@ -97,11 +97,11 @@ The team assumes the adapter makes every Node dependency Worker-safe, then adds
 CPU-heavy or filesystem-dependent code. Local build remains green, but production
 requests hit CPU/runtime constraints. At the same time the hosted database lives
 far from common Worker execution, making an otherwise small dashboard feel slow.
-Because production was deployed from one laptop, no immutable CI run identifies
-which revision is live. A rushed database migration is applied independently of
-the Worker and cannot be rolled back with the application. The application itself
-is recoverable, but data compatibility and missing deployment evidence turn a
-simple rollback into a manual incident.
+If production were deployed from one laptop without an immutable CI run, no
+evidence would identify which revision is live. A rushed database migration is
+applied independently of the Worker and cannot be rolled back with the
+application. The release plan therefore requires revision/run capture and a
+reviewed forward migration strategy.
 
 ### Unknown Unknowns
 

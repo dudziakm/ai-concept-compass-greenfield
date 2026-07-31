@@ -50,9 +50,9 @@ schema changes.
 
 ## Verification
 
-`tests/migration-contract.test.ts` will check the SQL contract text.
-`tests/rls.integration.test.ts` will be the executable two-account proof for
+`tests/migration-contract.test.ts` checks the SQL contract text.
+`tests/rls.integration.test.ts` is the executable two-account harness for
 read/update/delete/insert denial, owner access and cascade deletion. It uses
 only the anon/publishable key and ordinary confirmed users. Its hosted run and
-retained CI evidence will remain pending until credentials exist; a harness on
+retained CI evidence remains pending until credentials exist; a harness on
 disk will not be presented as a passing RLS proof.

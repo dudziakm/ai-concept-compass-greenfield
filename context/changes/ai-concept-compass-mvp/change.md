@@ -1,7 +1,7 @@
 ---
 change_id: ai-concept-compass-mvp
 title: Deliver the AI Concept Compass MVP
-status: planned
+status: implementing
 created: 2026-07-31
 updated: 2026-07-31
 archived_at: null
@@ -29,4 +29,4 @@ self-assessment, and receive a deterministic next-topic recommendation.
 - `research.md` records decisions and risks before implementation.
 - `specs/` owns API, database and UI contracts.
 - `plan.md` owns implementation order and progress.
-- `verification.md` will be created only after executable evidence exists.
+- `verification.md` separates local executable evidence from hosted/manual work.
