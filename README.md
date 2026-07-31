@@ -11,6 +11,9 @@ pewności — działa przewidywalnie, tanio i jest w pełni testowalna.
 > przechodzą lokalne bramki bez sekretów. Publiczny deploy, hosted E2E i runtime
 > RLS są celowo oznaczone jako oczekujące — wymagają projektu Supabase, dwóch
 > kont testowych i dostępu Cloudflare. Repo nie udaje zaliczenia tych kroków.
+> Publiczny [quality run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616)
+> przechodzi Builder i lokalne bramki Championa; hosted RLS/E2E pozostają
+> czerwone wyłącznie z powodu nieustawionych sekretów.
 
 ## Najważniejszy przepływ
 

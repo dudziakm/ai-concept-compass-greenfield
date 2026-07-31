@@ -151,7 +151,7 @@ npm run test:e2e
 
 ### Phase 5: Automated
 
-- [ ] 5.1 Local and CI quality gates pass
+- [x] 5.1 Local and CI quality gates pass — [run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616)
 - [ ] 5.2 Hosted RLS and E2E gates pass
 
 ### Phase 5: Manual
