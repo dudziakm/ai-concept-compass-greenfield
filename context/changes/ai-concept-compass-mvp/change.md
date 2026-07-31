@@ -1,0 +1,32 @@
+---
+change_id: ai-concept-compass-mvp
+title: Deliver the AI Concept Compass MVP
+status: planned
+created: 2026-07-31
+updated: 2026-07-31
+archived_at: null
+---
+
+# AI Concept Compass MVP
+
+Deliver the smallest hosted learning loop that lets one authenticated learner
+load ten authored concepts, manage a private collection, record confidence and
+self-assessment, and receive a deterministic next-topic recommendation.
+
+## Inputs
+
+- `context/foundation/shape-notes.md`
+- `context/foundation/prd.md`
+- `context/foundation/business-requirements.md`
+- `context/foundation/technical-requirements.md`
+- `context/foundation/tech-stack.md`
+- `context/foundation/infrastructure.md`
+- `context/foundation/roadmap.md`
+- `context/foundation/test-plan.md`
+
+## Output contracts
+
+- `research.md` records decisions and risks before implementation.
+- `specs/` owns API, database and UI contracts.
+- `plan.md` owns implementation order and progress.
+- `verification.md` will be created only after executable evidence exists.
