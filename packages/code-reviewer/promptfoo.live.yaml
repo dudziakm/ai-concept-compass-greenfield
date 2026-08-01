@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: M5L3 manual three-model code-review matrix — never run in CI
+
+prompts:
+  - "{{caseId}}"
+
+providers:
+  - id: file://dist/src/evals/promptfoo-provider.js
+    label: glm-5.1-reviewer
+    config:
+      mode: live
+      model: z-ai/glm-5.1
+  - id: file://dist/src/evals/promptfoo-provider.js
+    label: deepseek-v4-flash-reviewer
+    config:
+      mode: live
+      model: deepseek/deepseek-v4-flash
+  - id: file://dist/src/evals/promptfoo-provider.js
+    label: mistral-small-3.2-reviewer
+    config:
+      mode: live
+      model: mistralai/mistral-small-3.2-24b-instruct
+
+tests:
+  - description: React 16 to React 19 migration finds all three seeded blockers
+    vars:
+      caseId: react16-to-react19-migration
+    assert:
+      - type: is-json
+      - type: javascript
+        value: |
+          const result = JSON.parse(output);
+          return result.verdict === "fail" &&
+            Object.keys(result.scores).length === 6 &&
+            ["correctness", "idiomaticity", "complexity", "test-risk-coverage", "documentation", "security-safety"]
+              .every((dimension) => Number.isInteger(result.scores[dimension]) && result.scores[dimension] >= 1 && result.scores[dimension] <= 10);
+      - type: llm-rubric
+        value: |
+          Evaluate only the JSON code-review output for a React 16 to React 19 migration.
+          Pass only when it requests changes and identifies all three seeded blockers with
+          concrete evidence and a fix: (1) ReactDOM.render must be replaced by createRoot,
+          (2) the string ref plus this.refs must be replaced by a modern ref, and (3) legacy
+          childContextTypes/getChildContext must be replaced by modern context. It must include
+          all six scores and must not invent an unrelated critical security issue.
+        provider:
+          id: openrouter:openai/gpt-4o-mini
+          config:
+            temperature: 0
+            max_tokens: 300

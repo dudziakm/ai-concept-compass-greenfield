@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "eval:offline": "vitest run src/evals/offline-evals.test.ts",
-    "eval:promptfoo": "npm run build:eval && PROMPTFOO_DISABLE_TELEMETRY=1 promptfoo eval --no-cache --config promptfooconfig.yaml"
+    "eval:promptfoo": "npm run build:eval && PROMPTFOO_DISABLE_TELEMETRY=1 promptfoo eval --no-cache --config promptfooconfig.yaml",
+    "eval:matrix": "npm run build:eval && node scripts/preflight-live-eval.mjs && PROMPTFOO_LIVE=1 PROMPTFOO_DISABLE_TELEMETRY=1 promptfoo eval --no-cache --config promptfoo.live.yaml"
   },
   "dependencies": {
     "@openrouter/ai-sdk-provider": "3.0.0",

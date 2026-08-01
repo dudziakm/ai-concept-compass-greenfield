@@ -1,0 +1,32 @@
+{
+  "name": "@dudziakm/ai-toolkit",
+  "version": "0.1.0",
+  "description": "Team AI artifacts distributed through GitHub Packages",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dudziakm/ai-concept-compass-greenfield.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "files": [
+    "skills/",
+    "rules/",
+    "install.js",
+    "uninstall.js",
+    "README.md"
+  ],
+  "scripts": {
+    "postinstall": "node install.js",
+    "validate": "node validate-package.js",
+    "test:installer": "node verify-installer.mjs"
+  },
+  "bin": {
+    "ai-toolkit": "./install.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
