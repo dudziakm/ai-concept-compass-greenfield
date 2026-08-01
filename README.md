@@ -7,13 +7,13 @@ odpowiedź ze wzorcem i otrzymuje deterministyczną rekomendację kolejnego tema
 MVP celowo nie używa LLM. Jego wartość — wykrywanie luk mastery i nadmiernej
 pewności — działa przewidywalnie, tanio i jest w pełni testowalna.
 
-> **Stan 31 lipca 2026:** aplikacja i pełny przepływ są zaimplementowane oraz
-> przechodzą lokalne bramki bez sekretów. Publiczny deploy, hosted E2E i runtime
-> RLS są celowo oznaczone jako oczekujące — wymagają projektu Supabase, dwóch
-> kont testowych i dostępu Cloudflare. Repo nie udaje zaliczenia tych kroków.
+> **Stan 1 sierpnia 2026:** aplikacja, osobny hosted Supabase, runtime RLS oraz
+> krytyczny E2E są skonfigurowane i przechodzą. Publiczny deploy, końcowy smoke
+> rejestracji z e-mailem oraz screenshoty z publicznego środowiska nadal są
+> oznaczone jako oczekujące — repo nie udaje zaliczenia tych kroków.
 > Publiczny [quality run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616)
-> przechodzi Builder i lokalne bramki Championa; hosted RLS/E2E pozostają
-> czerwone wyłącznie z powodu nieustawionych sekretów.
+> przechodzi Builder i lokalne bramki Championa; hosted RLS/E2E zostały
+> dodatkowo wykonane lokalnie przeciwko prawdziwemu projektowi Supabase.
 
 ## Najważniejszy przepływ
 
@@ -108,10 +108,10 @@ npm run test:coverage
 npm run build
 ```
 
-Lokalny pakiet ma testy scoringu, schematów, migracji oraz tras API i 100%
+Lokalny pakiet ma 53 testy scoringu, schematów, migracji oraz tras API i 100%
 pokrycia instrukcji, funkcji, linii oraz gałęzi silnika scoringu. Statyczny test
 migracji sprawdza RLS, cascade i idempotencję; osobny hosted harness wykonuje
-rzeczywistą macierz dwóch użytkowników.
+rzeczywistą macierz dwóch użytkowników. 1 sierpnia 2026 macierz przeszła 3/3.
 
 E2E wymaga potwierdzonego konta testowego oraz zmiennych
 `E2E_USER_EMAIL`/`E2E_USER_PASSWORD`:
@@ -124,7 +124,8 @@ npm run test:e2e
 Setup Playwright loguje konto raz do `storageState` i czyści jego dane. Główny
 scenariusz przechodzi przez prawdziwe auth, routing, API i bazę: pakiet → edycja
 → review → rekomendacja → usunięcie. Artefakty uwierzytelnienia są ignorowane
-przez Git. Sama trasa rejestracji ma test integracyjny; pełna rejestracja z
+przez Git. Krytyczny scenariusz przeszedł również pięć kolejnych powtórzeń bez
+niestabilności. Sama trasa rejestracji ma test integracyjny; pełna rejestracja z
 potwierdzeniem e-mail pozostaje manualnym testem hosted, ponieważ zależy od
 zewnętrznego dostawcy poczty.
 

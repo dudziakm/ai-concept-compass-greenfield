@@ -4,6 +4,7 @@ import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
+import { useHydrated } from "@/components/auth/useHydrated";
 
 interface Props {
   serverError?: string | null;
@@ -14,6 +15,7 @@ export default function SignInForm({ serverError }: Props) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const hydrated = useHydrated();
 
   function validate() {
     const next: typeof errors = {};
@@ -46,6 +48,7 @@ export default function SignInForm({ serverError }: Props) {
         type="email"
         label="Email"
         value={email}
+        disabled={!hydrated}
         onChange={(v) => {
           setEmail(v);
           clearError("email");
@@ -60,6 +63,7 @@ export default function SignInForm({ serverError }: Props) {
         label="Hasło"
         type={showPassword ? "text" : "password"}
         value={password}
+        disabled={!hydrated}
         onChange={(v) => {
           setPassword(v);
           clearError("password");
@@ -79,7 +83,7 @@ export default function SignInForm({ serverError }: Props) {
 
       <ServerError message={serverError} />
 
-      <SubmitButton pendingText="Loguję…" icon={<LogIn className="size-4" />}>
+      <SubmitButton pendingText="Loguję…" icon={<LogIn className="size-4" />} disabled={!hydrated}>
         Zaloguj się
       </SubmitButton>
     </form>

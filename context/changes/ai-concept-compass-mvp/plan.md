@@ -129,11 +129,11 @@ npm run test:e2e
 
 - [x] 2.1 Auth and protected route implemented
 - [x] 2.2 Schema, RLS, templates and migration contract tests implemented
-- [ ] 2.3 Hosted two-user RLS matrix passes
+- [x] 2.3 Hosted two-user RLS matrix passes — 3/3 on 2026-08-01
 
 #### Manual
 
-- [ ] 2.4 Migration and auth settings reviewed in hosted Supabase
+- [x] 2.4 Migration and auth settings reviewed in hosted Supabase
 
 ### Phase 3: Starter pack and private CRUD
 
@@ -144,14 +144,14 @@ npm run test:e2e
 
 #### Manual
 
-- [ ] 3.3 Desktop/mobile CRUD and busy/error states pass
+- [x] 3.3 Desktop/mobile CRUD and busy/error states pass
 
 ### Phase 4: Review engine and recommendation
 
 #### Automated
 
 - [x] 4.1 Scoring and ranking suite passes
-- [ ] 4.2 Hosted critical Playwright scenario passes
+- [x] 4.2 Hosted critical Playwright scenario passes — repeated 5/5 on 2026-08-01
 
 #### Manual
 
@@ -162,7 +162,7 @@ npm run test:e2e
 #### Automated
 
 - [x] 5.1 Local and CI quality gates pass — [quality job for PR #1](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662797133/job/91262708283); hosted jobs remain deliberately separate.
-- [ ] 5.2 Hosted RLS and E2E gates pass
+- [x] 5.2 Hosted RLS and E2E gates pass locally against hosted Supabase
 
 #### Manual
 
@@ -181,3 +181,19 @@ npm run test:e2e
 - Nie oznaczać 2.3, 2.4, 4.2, 5.2–5.4 jako gotowych: Supabase MCP wymaga
   restartu sesji, nie ma sekretów/kont hosted, a Cloudflare CLI nie jest
   zalogowane. Pełny handoff workspace: `../HANDOFF-2026-07-31.md`.
+
+## Continuation checkpoint — 2026-08-01
+
+- Powstał osobny hosted projekt Supabase z zastosowaną migracją, 10 szablonami,
+  włączonym RLS i dwoma potwierdzonymi zwykłymi kontami testowymi.
+- Hosted RLS przechodzi 3/3; krytyczny Playwright przechodzi cały przepływ
+  auth → pakiet → custom CRUD → review → rekomendacja → delete i pięć kolejnych
+  powtórzeń bez niestabilności.
+- Mobile CRUD na 360 px, kolejność fokusu klawiatury i konsola bez błędów
+  przeszły lokalny smoke. Lokalne zrzuty kandydackie są w
+  `context/evidence/screenshots/builder/`.
+- Dwa uzupełniające indeksy FK są przygotowane w osobnej migracji. Bieżące
+  połączenie MCP zachowało tryb read-only mimo odświeżenia OAuth, więc zdalne
+  zastosowanie tej nieblokującej optymalizacji pozostaje do nowej sesji.
+- Nadal nieukończone: publiczny Cloudflare Worker, publiczny signup/e-mail smoke,
+  finalne screenshoty z wdrożenia i wysłanie formularzy.

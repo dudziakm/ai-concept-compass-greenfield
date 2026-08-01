@@ -1,6 +1,7 @@
 // risk: context/testing/test-plan.md — auth → starter pack → CRUD → review → recommendation breaks across boundaries
 // seed: e2e/seed.spec.ts
 import { expect, test } from "@playwright/test";
+import { sameOriginHeaders } from "./support/request-headers";
 
 test.describe("Główny przepływ nauki", () => {
   test("pakiet, edycja, review i rekomendacja działają przez prawdziwe API i bazę", async ({ page }) => {
@@ -17,7 +18,9 @@ test.describe("Główny przepływ nauki", () => {
       await expect(page.getByText("Wszystkie pojęcia")).toBeVisible();
 
       // Powtórzenie pakietu jest idempotentne na prawdziwej bazie.
-      const repeatedStarter = await page.request.post("/api/starter-pack");
+      const repeatedStarter = await page.request.post("/api/starter-pack", {
+        headers: sameOriginHeaders(page),
+      });
       expect(repeatedStarter.status()).toBe(200);
       const repeatedPayload = (await repeatedStarter.json()) as { concepts: { id: string }[]; templateCount: number };
       expect(repeatedPayload.templateCount).toBe(10);
@@ -25,6 +28,7 @@ test.describe("Główny przepływ nauki", () => {
 
       // Pełny custom CRUD przechodzi przez endpointy i hosted persistence.
       const customCreate = await page.request.post("/api/concepts", {
+        headers: sameOriginHeaders(page),
         data: {
           title: "Własne pojęcie E2E",
           domain: "ai-ml-fundamentals",
@@ -39,10 +43,13 @@ test.describe("Główny przepływ nauki", () => {
       const customRead = await page.request.get(`/api/concepts/${customId}`);
       expect(customRead.status()).toBe(200);
       const customUpdate = await page.request.patch(`/api/concepts/${customId}`, {
+        headers: sameOriginHeaders(page),
         data: { title: "Własne pojęcie E2E — zmienione" },
       });
       expect(customUpdate.status()).toBe(200);
-      const customDelete = await page.request.delete(`/api/concepts/${customId}`);
+      const customDelete = await page.request.delete(`/api/concepts/${customId}`, {
+        headers: sameOriginHeaders(page),
+      });
       expect(customDelete.status()).toBe(204);
       expect((await page.request.get(`/api/concepts/${customId}`)).status()).toBe(404);
 
@@ -58,7 +65,10 @@ test.describe("Główny przepływ nauki", () => {
       await expect(page.getByText(editedTitle, { exact: true })).toBeVisible();
 
       // Wykonaj review i zweryfikuj biznesowy wynik mastery.
-      await page.getByRole("button", { name: new RegExp(editedTitle) }).click();
+      const editedConceptCard = page.locator("article").filter({
+        has: page.getByRole("heading", { level: 3, name: editedTitle, exact: true }),
+      });
+      await editedConceptCard.getByRole("button").first().click();
       const recommendationHeading = page.getByRole("heading", { level: 2 }).filter({ hasText: editedTitle });
       await expect(recommendationHeading).toBeVisible();
       await page.getByRole("button", { name: "5", exact: true }).click();
@@ -80,7 +90,11 @@ test.describe("Główny przepływ nauki", () => {
       const response = await page.request.get("/api/concepts");
       if (response.ok()) {
         const payload = (await response.json()) as { concepts: { id: string }[] };
-        await Promise.all(payload.concepts.map((concept) => page.request.delete(`/api/concepts/${concept.id}`)));
+        await Promise.all(
+          payload.concepts.map((concept) =>
+            page.request.delete(`/api/concepts/${concept.id}`, { headers: sameOriginHeaders(page) }),
+          ),
+        );
       }
     }
   });

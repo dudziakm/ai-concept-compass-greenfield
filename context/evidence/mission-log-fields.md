@@ -37,6 +37,8 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
       <https://github.com/dudziakm/ai-concept-compass/actions/runs/30655754312/job/91239593977>;
 - [ ] URL wdrożenia;
 - [ ] wymagane screenshoty w `context/evidence/screenshots/builder/`;
+- [x] lokalne kandydaty screenshotów: logowanie, pusty mobile dashboard,
+      załadowany desktop dashboard i wynik review;
 - [ ] screenshot realnego E2E na hosted Supabase;
 - [ ] finalny tekst komentarza bez deklarowania niezweryfikowanych wyników.
 

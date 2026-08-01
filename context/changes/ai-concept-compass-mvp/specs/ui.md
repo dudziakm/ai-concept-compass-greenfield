@@ -48,9 +48,12 @@
 - Tests prefer role/label/text locators; DOM structure, CSS selectors, XPath and
   fixed timeout sleeps are forbidden by `e2e/AGENTS.md`.
 
-## Manual evidence still required
+## Evidence status
 
-- Screenshots of signup/signin, empty state, loaded dashboard, review and mobile.
-- Keyboard-only smoke across the main flow.
-- Console/network error check on public deployment.
+- Local screenshots of signin, empty mobile state, loaded dashboard and review
+  result are retained in `context/evidence/screenshots/builder/`.
+- Local keyboard focus order, 360 px mobile CRUD/no-overflow and zero-console-error
+  smoke passed on 2026-08-01.
+- Final screenshots and console/network smoke still need the public deployment.
+- Signup with real e-mail confirmation still needs the public environment.
 - Cross-account visual confirmation after database-level deny proof.

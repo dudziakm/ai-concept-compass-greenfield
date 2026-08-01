@@ -4,6 +4,7 @@ import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
+import { useHydrated } from "@/components/auth/useHydrated";
 
 const MIN_PASSWORD_LENGTH = 6;
 
@@ -18,6 +19,7 @@ export default function SignUpForm({ serverError }: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const hydrated = useHydrated();
 
   function validate() {
     const next: typeof errors = {};
@@ -66,6 +68,7 @@ export default function SignUpForm({ serverError }: Props) {
         type="email"
         label="Email"
         value={email}
+        disabled={!hydrated}
         onChange={(v) => {
           setEmail(v);
           clearError("email");
@@ -80,6 +83,7 @@ export default function SignUpForm({ serverError }: Props) {
         label="Hasło"
         type={showPassword ? "text" : "password"}
         value={password}
+        disabled={!hydrated}
         onChange={(v) => {
           setPassword(v);
           clearError("password");
@@ -104,6 +108,7 @@ export default function SignUpForm({ serverError }: Props) {
         label="Powtórz hasło"
         type={showConfirmPassword ? "text" : "password"}
         value={confirmPassword}
+        disabled={!hydrated}
         onChange={(v) => {
           setConfirmPassword(v);
           clearError("confirmPassword");
@@ -123,7 +128,7 @@ export default function SignUpForm({ serverError }: Props) {
 
       <ServerError message={serverError} />
 
-      <SubmitButton pendingText="Tworzę konto…" icon={<UserPlus className="size-4" />}>
+      <SubmitButton pendingText="Tworzę konto…" icon={<UserPlus className="size-4" />} disabled={!hydrated}>
         Załóż konto
       </SubmitButton>
     </form>

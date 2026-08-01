@@ -1,4 +1,5 @@
 import { expect, test as setup } from "@playwright/test";
+import { sameOriginHeaders } from "./support/request-headers";
 
 const authFile = "playwright/.auth/user.json";
 
@@ -20,7 +21,9 @@ setup("authenticate E2E user and reset its concepts", async ({ page }) => {
   expect(response.ok()).toBe(true);
   const payload = (await response.json()) as { concepts: { id: string }[] };
   for (const concept of payload.concepts) {
-    const deleted = await page.request.delete(`/api/concepts/${concept.id}`);
+    const deleted = await page.request.delete(`/api/concepts/${concept.id}`, {
+      headers: sameOriginHeaders(page),
+    });
     expect(deleted.ok()).toBe(true);
   }
 
