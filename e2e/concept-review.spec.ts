@@ -16,6 +16,10 @@ async function findConceptCardIndex(page: Page, title: string) {
 
 test.describe("Główny przepływ nauki", () => {
   test("pakiet, edycja, review i rekomendacja działają przez prawdziwe API i bazę", async ({ page }) => {
+    // Hosted Supabase and browser navigation can consume most of Playwright's
+    // default 30 s budget. Leave enough time for deterministic cleanup, so a
+    // completed user flow cannot turn red while restoring the shared test pack.
+    test.setTimeout(60_000);
     const editedTitle = `Embeddings i RAG — E2E ${Date.now()}`;
     const customTitle = `Własne pojęcie E2E ${Date.now()}`;
 

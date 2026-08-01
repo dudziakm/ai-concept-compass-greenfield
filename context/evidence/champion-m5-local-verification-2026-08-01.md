@@ -24,6 +24,9 @@
 - Toolkit deliberate-break check: PASS. Replacing the installer manifest entry
   with `not-managed` made the isolated installer test red; the production line
   was restored before the final green run.
+- Hosted E2E hardening: PASS. The end-to-end flow has a 60 s budget so its
+  required starter-pack cleanup cannot race the default 30 s timeout; the full
+  hosted suite then passed `4/4` without retry.
 
 ## Deliberately pending live proof
 
