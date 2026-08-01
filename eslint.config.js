@@ -69,16 +69,22 @@ const astroConfig = tseslint.config({
 });
 
 const nodeScriptConfig = tseslint.config({
-  files: ["scripts/**/*.mjs"],
+  files: ["scripts/**/*.mjs", "packages/ai-toolkit/**/*.{js,mjs}"],
   extends: [tseslint.configs.disableTypeChecked],
   languageOptions: {
+    parserOptions: {
+      sourceType: "commonjs",
+    },
     globals: {
       console: "readonly",
       process: "readonly",
+      require: "readonly",
+      __dirname: "readonly",
     },
   },
   rules: {
     "no-console": "off",
+    "@typescript-eslint/no-require-imports": "off",
   },
 });
 

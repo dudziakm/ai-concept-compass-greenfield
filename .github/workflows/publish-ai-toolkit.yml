@@ -1,0 +1,60 @@
+name: Publish AI Toolkit
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "packages/ai-toolkit/**"
+      - "skills/code-review/**"
+      - ".github/workflows/publish-ai-toolkit.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "packages/ai-toolkit/**"
+      - "skills/code-review/**"
+      - ".github/workflows/publish-ai-toolkit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@dudziakm"
+
+      - run: npm ci --ignore-scripts
+        working-directory: packages/ai-toolkit
+      - run: node validate-package.js
+        working-directory: packages/ai-toolkit
+      - run: npm pack --dry-run
+        working-directory: packages/ai-toolkit
+
+  publish:
+    needs: validate
+    if: github.event_name == 'push' && vars.AI_TOOLKIT_PUBLISH_APPROVED == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@dudziakm"
+
+      - run: npm ci --ignore-scripts
+        working-directory: packages/ai-toolkit
+      - run: npm publish
+        working-directory: packages/ai-toolkit
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

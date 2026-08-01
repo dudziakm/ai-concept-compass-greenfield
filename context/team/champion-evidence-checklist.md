@@ -8,10 +8,15 @@
 - [x] Limit pełnego wejścia 50k JS `String.length`, fail-closed `INPUT_TOO_LARGE`, jedno wywołanie, timeout 60 s, koszt ≤$0.20.
 - [x] Lokalny kontrakt M5L3: sześć dokładnie nazwanych ocen `1..10`; pass wymaga każdej oceny ≥7 i braku findingu `critical`/`high`/`medium`, a `ERROR` pozostaje osobnym exit `2`.
 - [x] Sześć stałych eval cases i deterministyczny promptfoo baseline.
+- [x] M5L3: manualna macierz jednego złożonego diffu React 16 → React 19 dla `z-ai/glm-5.1`, `deepseek/deepseek-v4-flash` i `mistralai/mistral-small-3.2-24b-instruct`, z osobnym jawnym judge `openrouter:openai/gpt-4o-mini` (`temperature: 0`).
+- [x] M5L3: test kontraktu potwierdza dokładnie trzy seedowane blokery, limit wejścia i przekazanie jawnego modelu; komenda matrix odmawia bez opt-inu lub klucza przed wywołaniem providera.
+- [x] M5L4: `skills/code-review/SKILL.md` ma literalny kontrakt kursu; walidator skilla i static checker są zielone, a niezależny forward-test Gemini zwrócił poprawny format `REQUEST CHANGES` dla kontrolowanego diffu.
+- [x] M5L4: `@dudziakm/ai-toolkit` zawiera identyczną kopię skilla, reguły, fail-soft installer/uninstaller, manifest i test idempotencji/bezpieczeństwa na tymczasowym konsumencie.
 - [x] Workflow z minimalnymi permissions, ochroną forków, sticky comment, labels i retry.
 - [x] Natywny czerwony/zielony check jako bramka — workflow implementuje zachowanie.
+- [x] Workflow `Publish AI Toolkit` waliduje PR (`npm ci --ignore-scripts`, metadata/frontmatter i `npm pack --dry-run`); publikacja z push jest celowo dodatkowo chroniona zmienną `AI_TOOLKIT_PUBLISH_APPROVED`.
 - [ ] Live smoke test providera wykonany i zapisany bez sekretów.
-- [ ] Live promptfoo 6/6 wykonane na wybranym modelu.
+- [ ] Live promptfoo macierz 3×1 z LLM-as-a-judge wykonana na skonfigurowanym, nowym kluczu.
 
 ## Konfiguracja GitHub — manualna
 
@@ -21,6 +26,7 @@
 - [x] Pierwszy run zarejestrował check `AI Code Review Gate` — [run 30663070207](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30663070207) potwierdził też sticky comment i `ai-cr:failed` dla kontrolowanego błędu bez sekretu.
 - [ ] Ruleset/branch protection wymaga `AI Code Review Gate` oraz deterministycznego CI.
 - [ ] Sprawdzono, że fork PR nie otrzymuje sekretu i nie wykonuje kodu head.
+- [ ] Pakiet `@dudziakm/ai-toolkit@0.1.0` opublikowany jako **private** GitHub Package po świadomym wyborze widoczności; publiczne repo źródłowe nie jest dowodem prywatności paczki.
 
 ## PR odrzucony — manualny dowód
 
@@ -51,4 +57,4 @@
 
 ## Granica uczciwego zgłoszenia
 
-Tor nie jest gotowy do zgłoszenia wyłącznie na podstawie zielonych testów lokalnych. Wymagane są realny sekret skonfigurowany przez użytkownika, branch protection oraz dwa prawdziwe PR-y z zachowanymi URL-ami i screenshotami. Shared Registry i remote agents są poza zakresem tego sprintu.
+Tor nie jest gotowy do zgłoszenia wyłącznie na podstawie zielonych testów lokalnych. Wymagane są: nowy sekret skonfigurowany przez użytkownika, realna macierz trzech modeli, branch protection oraz dwa prawdziwe PR-y z zachowanymi URL-ami i screenshotami. Pakiet GitHub Packages jest zaimplementowany i lokalnie sprawdzony, lecz jego pierwsza publikacja wymaga świadomego potwierdzenia prywatności.

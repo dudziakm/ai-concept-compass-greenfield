@@ -72,8 +72,8 @@
 
 #### Automated
 
-- [x] 2.1 Create and validate the exact course skill
-- [x] 2.2 Run static contract check and a harmless forward test
+- [x] 2.1 Create and validate the exact course skill — e0e7599
+- [x] 2.2 Run static contract check and a harmless forward test — e0e7599
 
 #### Manual
 
@@ -85,7 +85,7 @@
 
 - [x] 3.1 Build the private package and its fail-soft installer
 - [x] 3.2 Test pack/install/idempotency/uninstall in an isolated temporary consumer
-- [ ] 3.3 Run full local quality gates and commit
+- [x] 3.3 Run full local quality gates and commit
 
 #### Manual
 

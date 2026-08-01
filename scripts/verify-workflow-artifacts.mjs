@@ -29,6 +29,7 @@ const requiredFiles = [
   "context/deployment/deploy-plan.md",
   "context/evidence/builder-mvp-check.md",
   "context/evidence/mission-log-fields.md",
+  "context/evidence/champion-m5-local-verification-2026-08-01.md",
   "context/evidence/security-audit.md",
   "context/team/opportunity-map.md",
   "context/team/mom-test-validation.md",
@@ -36,8 +37,20 @@ const requiredFiles = [
   "context/team/champion-evidence-checklist.md",
   ".github/actions/ai-code-review/action.yml",
   ".github/workflows/ai-code-review.yml",
+  ".github/workflows/publish-ai-toolkit.yml",
   "packages/code-reviewer/package.json",
   "packages/code-reviewer/promptfooconfig.yaml",
+  "packages/code-reviewer/promptfoo.live.yaml",
+  "skills/code-review/SKILL.md",
+  "packages/ai-toolkit/package.json",
+  "packages/ai-toolkit/package-lock.json",
+  "packages/ai-toolkit/README.md",
+  "packages/ai-toolkit/install.js",
+  "packages/ai-toolkit/uninstall.js",
+  "packages/ai-toolkit/validate-package.js",
+  "packages/ai-toolkit/verify-installer.mjs",
+  "packages/ai-toolkit/skills/code-review/SKILL.md",
+  "packages/ai-toolkit/rules/CLAUDE.md",
 ];
 
 const errors = [];
@@ -278,6 +291,68 @@ const promptfoo = await load(promptfooPath);
 const evalCases = [...promptfoo.matchAll(/^ {2}- description:/gm)].length;
 if (evalCases !== 6) {
   errors.push(`${promptfooPath}: expected exactly 6 fixed eval cases, found ${evalCases}`);
+}
+
+const livePromptfooPath = "packages/code-reviewer/promptfoo.live.yaml";
+const livePromptfoo = await load(livePromptfooPath);
+for (const marker of ["mode: live", "type: llm-rubric", "id: openrouter:openai/gpt-4o-mini", "temperature: 0"]) {
+  requireText(livePromptfooPath, livePromptfoo, marker);
+}
+for (const model of ["z-ai/glm-5.1", "deepseek/deepseek-v4-flash", "mistralai/mistral-small-3.2-24b-instruct"]) {
+  const declaration = new RegExp(`^ {6}model: ${escapeRegExp(model)}$`, "gm");
+  if ([...livePromptfoo.matchAll(declaration)].length !== 1) {
+    errors.push(`${livePromptfooPath}: expected exactly one declared model ${model}`);
+  }
+}
+
+const skillPath = "skills/code-review/SKILL.md";
+const skill = await load(skillPath);
+for (const marker of [
+  "name: code-review",
+  "description: Review code changes against team engineering conventions, testing standards and security expectations.",
+  "review code",
+  "check this PR",
+  "review my changes",
+  "code review",
+  "### Naming",
+  "### Error handling",
+  "### TypeScript",
+  "### Function design",
+  "### Security",
+  "### Testing",
+  "### Critical",
+  "### Warning",
+  "### Suggestion",
+  "APPROVE",
+  "REQUEST CHANGES",
+  "NEEDS DISCUSSION",
+]) {
+  requireText(skillPath, skill, marker);
+}
+
+const toolkitPackagePath = "packages/ai-toolkit/package.json";
+const toolkitPackage = await load(toolkitPackagePath);
+for (const marker of [
+  '"name": "@dudziakm/ai-toolkit"',
+  '"version": "0.1.0"',
+  '"registry": "https://npm.pkg.github.com"',
+  '"postinstall": "node install.js"',
+]) {
+  requireText(toolkitPackagePath, toolkitPackage, marker);
+}
+
+const toolkitWorkflowPath = ".github/workflows/publish-ai-toolkit.yml";
+const toolkitWorkflow = await load(toolkitWorkflowPath);
+for (const marker of [
+  "name: Publish AI Toolkit",
+  "branches: [main, master]",
+  "packages: write",
+  "npm ci --ignore-scripts",
+  "npm pack --dry-run",
+  "NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}",
+  "AI_TOOLKIT_PUBLISH_APPROVED == 'true'",
+]) {
+  requireText(toolkitWorkflowPath, toolkitWorkflow, marker);
 }
 
 if (errors.length > 0) {
