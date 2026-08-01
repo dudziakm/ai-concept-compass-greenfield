@@ -1,7 +1,7 @@
 ---
 change_id: builder-public-e2e-stability
 title: Make the hosted critical E2E journey deterministic and recovery-aware
-status: implementing
+status: implemented
 created: 2026-08-01
 updated: 2026-08-01
 archived_at: null

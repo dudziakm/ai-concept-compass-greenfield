@@ -40,9 +40,9 @@
 
 #### Automated
 
-- [x] 1.1 Make setup recovery-aware and scope the post-edit locator
-- [x] 1.2 Prove the locator break and run local/public critical journeys
-- [x] 1.3 Run full quality gates and commit the verified change
+- [x] 1.1 Make setup recovery-aware and scope the post-edit locator — ef9fc94
+- [x] 1.2 Prove the locator break and run local/public critical journeys — ef9fc94
+- [x] 1.3 Run full quality gates and commit the verified change — ef9fc94
 
 #### Manual
 
