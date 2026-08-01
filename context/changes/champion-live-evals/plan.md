@@ -59,9 +59,9 @@
 
 #### Automated
 
-- [x] 1.1 Implement the explicit provider/config and fixture contract
-- [x] 1.2 Validate offline suite and no-spend preflight
-- [x] 1.3 Run full local quality gates and commit
+- [x] 1.1 Implement the explicit provider/config and fixture contract — 999ca0f
+- [x] 1.2 Validate offline suite and no-spend preflight — 999ca0f
+- [x] 1.3 Run full local quality gates and commit — 999ca0f
 
 #### Manual
 

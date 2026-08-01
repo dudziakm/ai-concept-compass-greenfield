@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Review diffs against team conventions"
+  default_prompt: "Use $code-review to review these changes against the shared engineering conventions."
