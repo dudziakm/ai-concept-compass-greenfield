@@ -83,9 +83,9 @@
 
 #### Automated
 
-- [x] 3.1 Build the private package and its fail-soft installer
-- [x] 3.2 Test pack/install/idempotency/uninstall in an isolated temporary consumer
-- [x] 3.3 Run full local quality gates and commit
+- [x] 3.1 Build the private package and its fail-soft installer — 42c881b
+- [x] 3.2 Test pack/install/idempotency/uninstall in an isolated temporary consumer — 42c881b
+- [x] 3.3 Run full local quality gates and commit — 42c881b
 
 #### Manual
 

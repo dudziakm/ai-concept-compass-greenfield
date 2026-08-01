@@ -1,8 +1,9 @@
 ---
 change_id: champion-live-evals
 title: Add explicit three-model Champion evaluation and shared review skill
-status: implementing
+status: implemented
 created: 2026-08-01
+updated: 2026-08-01
 ---
 
 # Champion live evaluations and shared skill
