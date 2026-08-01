@@ -3,6 +3,11 @@
 Private GitHub Packages distribution of the team `code-review` skill and shared
 engineering conventions.
 
+The first package published under this personal GitHub scope is private by
+default. After the initial release, verify the package page still shows private
+visibility before granting consumers access; changing a package to public cannot
+be reversed to private.
+
 ## Consumer setup
 
 Commit only this registry mapping to the consumer repository's `.npmrc`:
