@@ -77,12 +77,12 @@ test.describe("Główny przepływ nauki", () => {
       );
       await page.getByRole("button", { name: "Zapisz zmiany" }).click();
       expect((await editResponse).status()).toBe(200);
-      await expect(page.getByText(editedTitle, { exact: true })).toBeVisible();
 
       // Zapis nie zmienia miejsca karty i wyraźnie przenosi do niej kontekst użytkownika.
       const editedConceptCard = page.getByRole("article").filter({
         has: page.getByRole("heading", { level: 3, name: editedTitle, exact: true }),
       });
+      await expect(editedConceptCard.getByRole("heading", { level: 3, name: editedTitle, exact: true })).toBeVisible();
       expect(await findConceptCardIndex(page, editedTitle)).toBe(originalCardIndex);
       await expect(page.getByRole("status")).toContainText(
         `Zapisano zmiany. Pojęcie „${editedTitle}” pozostaje na swoim miejscu.`,

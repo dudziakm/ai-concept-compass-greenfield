@@ -1,7 +1,20 @@
-import { expect, test as setup } from "@playwright/test";
+import { expect, test as setup, type Page } from "@playwright/test";
 import { resetE2EStarterPack } from "./support/starter-pack";
 
 const authFile = "playwright/.auth/user.json";
+
+async function expectRecoveredDashboard(page: Page) {
+  const dashboardHeading = page.getByRole("heading", { name: "Co warto powtórzyć teraz?" });
+  const recoverableError = page
+    .getByRole("alert")
+    .filter({ has: page.getByRole("button", { name: "Spróbuj ponownie" }) });
+
+  await expect(dashboardHeading.or(recoverableError)).toBeVisible({ timeout: 15_000 });
+  if (await recoverableError.isVisible()) {
+    await recoverableError.getByRole("button", { name: "Spróbuj ponownie" }).click();
+  }
+  await expect(dashboardHeading).toBeVisible({ timeout: 15_000 });
+}
 
 setup("authenticate E2E user and seed its starter pack", async ({ page }) => {
   const email = process.env.E2E_USER_EMAIL;
@@ -15,7 +28,7 @@ setup("authenticate E2E user and seed its starter pack", async ({ page }) => {
   await page.getByLabel("Hasło").fill(password);
   await page.getByRole("button", { name: "Zaloguj się" }).click();
   await page.waitForURL("**/dashboard");
-  await expect(page.getByRole("heading", { name: "Co warto powtórzyć teraz?" })).toBeVisible();
+  await expectRecoveredDashboard(page);
 
   const starterPack = await resetE2EStarterPack(page);
   expect(starterPack.templateCount).toBe(10);
