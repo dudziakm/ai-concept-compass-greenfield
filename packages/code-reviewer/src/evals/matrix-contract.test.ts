@@ -59,8 +59,10 @@ describe("M5L3 live matrix contract", () => {
   });
 
   it("passes the model declared in the live provider configuration", async () => {
-    const previous = process.env.PROMPTFOO_LIVE;
+    const previousLive = process.env.PROMPTFOO_LIVE;
+    const previousOptIn = process.env.PROMPTFOO_LIVE_OPT_IN;
     process.env.PROMPTFOO_LIVE = "1";
+    process.env.PROMPTFOO_LIVE_OPT_IN = "1";
     const review = vi.fn().mockResolvedValue(passingResult);
     const provider = new CodeReviewerEvalProvider(
       { config: { mode: "live", model: "deepseek/deepseek-v4-flash" } },
@@ -71,8 +73,10 @@ describe("M5L3 live matrix contract", () => {
       await provider.callApi("clean");
       expect(review).toHaveBeenCalledWith(expect.anything(), { model: "deepseek/deepseek-v4-flash" });
     } finally {
-      if (previous === undefined) delete process.env.PROMPTFOO_LIVE;
-      else process.env.PROMPTFOO_LIVE = previous;
+      if (previousLive === undefined) delete process.env.PROMPTFOO_LIVE;
+      else process.env.PROMPTFOO_LIVE = previousLive;
+      if (previousOptIn === undefined) delete process.env.PROMPTFOO_LIVE_OPT_IN;
+      else process.env.PROMPTFOO_LIVE_OPT_IN = previousOptIn;
     }
   });
 });

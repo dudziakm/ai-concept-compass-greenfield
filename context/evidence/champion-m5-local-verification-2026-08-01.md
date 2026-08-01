@@ -27,6 +27,12 @@
 - Hosted E2E hardening: PASS. The end-to-end flow has a 60 s budget so its
   required starter-pack cleanup cannot race the default 30 s timeout; the full
   hosted suite then passed `4/4` without retry.
+- Independent AGY/Gemini Pro review: accepted the structured matrix and
+  toolkit tests, flagged the layered live-opt-in wording and the package privacy
+  decision. The provider now requires both the runner marker and user opt-in;
+  GitHub's npm documentation confirms that a first personal package is private
+  by default, with post-merge visibility verification still retained as manual
+  evidence.
 
 ## Deliberately pending live proof
 

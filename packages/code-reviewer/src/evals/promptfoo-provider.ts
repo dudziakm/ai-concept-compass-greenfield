@@ -43,7 +43,7 @@ export default class CodeReviewerEvalProvider {
     const evalCase = getEvalCase(caseId.trim());
 
     if (this.config.mode === "live") {
-      if (process.env.PROMPTFOO_LIVE !== "1") {
+      if (process.env.PROMPTFOO_LIVE !== "1" || process.env.PROMPTFOO_LIVE_OPT_IN !== "1") {
         throw new Error("Live matrix requires the eval:matrix command and explicit PROMPTFOO_LIVE_OPT_IN=1.");
       }
       if (!this.config.model) {
