@@ -13,7 +13,8 @@ export class ConceptService {
       .from("concepts")
       .select("*")
       .eq("user_id", userId)
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true });
     if (error) throw error;
     return data;
   }
@@ -147,7 +148,12 @@ export class ConceptService {
 
   async dashboard(userId: string, now: Date): Promise<DashboardData> {
     const [{ data: concepts, error: conceptsError }, { data: attempts, error: attemptsError }] = await Promise.all([
-      this.supabase.from("concepts").select("*").eq("user_id", userId).order("created_at", { ascending: true }),
+      this.supabase
+        .from("concepts")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true }),
       this.supabase
         .from("review_attempts")
         .select("*")

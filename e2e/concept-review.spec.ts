@@ -1,8 +1,18 @@
 // risk: context/testing/test-plan.md — auth → starter pack → CRUD → review → recommendation breaks across boundaries
 // seed: e2e/seed.spec.ts
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { sameOriginHeaders } from "./support/request-headers";
 import { clearE2EConcepts, resetE2EStarterPack } from "./support/starter-pack";
+
+async function findConceptCardIndex(page: Page, title: string) {
+  const cards = await page.getByRole("article").all();
+
+  for (const [index, card] of cards.entries()) {
+    if (await card.getByRole("heading", { level: 3, name: title, exact: true }).count()) return index;
+  }
+
+  throw new Error(`Concept card not found: ${title}`);
+}
 
 test.describe("Główny przepływ nauki", () => {
   test("pakiet, edycja, review i rekomendacja działają przez prawdziwe API i bazę", async ({ page }) => {
@@ -59,6 +69,7 @@ test.describe("Główny przepływ nauki", () => {
 
       // Edytuj jedno pojęcie i sprawdź, że wynik przetrwał granicę UI/API/DB.
       const originalTitle = "Embeddings, wyszukiwanie wektorowe i RAG";
+      const originalCardIndex = await findConceptCardIndex(page, originalTitle);
       await page.getByRole("button", { name: `Edytuj ${originalTitle}` }).click();
       await page.getByLabel("Nazwa pojęcia").fill(editedTitle);
       const editResponse = page.waitForResponse(
@@ -68,10 +79,18 @@ test.describe("Główny przepływ nauki", () => {
       expect((await editResponse).status()).toBe(200);
       await expect(page.getByText(editedTitle, { exact: true })).toBeVisible();
 
-      // Wykonaj review i zweryfikuj biznesowy wynik mastery.
+      // Zapis nie zmienia miejsca karty i wyraźnie przenosi do niej kontekst użytkownika.
       const editedConceptCard = page.getByRole("article").filter({
         has: page.getByRole("heading", { level: 3, name: editedTitle, exact: true }),
       });
+      expect(await findConceptCardIndex(page, editedTitle)).toBe(originalCardIndex);
+      await expect(page.getByRole("status")).toContainText(
+        `Zapisano zmiany. Pojęcie „${editedTitle}” pozostaje na swoim miejscu.`,
+      );
+      await expect(editedConceptCard).toHaveAttribute("aria-describedby", "concept-save-status");
+      await expect(editedConceptCard.getByRole("button").first()).toBeFocused();
+
+      // Wykonaj review i zweryfikuj biznesowy wynik mastery.
       await editedConceptCard.getByRole("button").first().click();
       const recommendationHeading = page.getByRole("heading", { level: 2 }).filter({ hasText: editedTitle });
       await expect(recommendationHeading).toBeVisible();

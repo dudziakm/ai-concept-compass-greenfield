@@ -8,7 +8,9 @@ matching code or retained evidence exists.
 Implement registration/login, private concepts, an idempotent ten-concept
 starter pack, calibrated reviews, a deterministic recommendation dashboard,
 tests, blocking CI and a Cloudflare Worker deployment. Do not add LLM calls,
-payments, teams, admin, imports, notifications, gamification or advanced SRS.
+payments, teams, admin, imports, general notifications, gamification or advanced
+SRS. A temporary, accessible confirmation after editing a concept is in scope
+because it preserves CRUD context.
 
 ## Phase 1: Planning and verified starter baseline
 
@@ -51,6 +53,10 @@ payments, teams, admin, imports, notifications, gamification or advanced SRS.
 - Every JSON write is validated by Zod.
 - Starter pack remains exactly ten template copies after retry.
 - The Polish dashboard supports empty/loading/error/create/edit/delete states.
+- Editing preserves the card's position and confirms the saved card with visible
+  focus and screen-reader feedback.
+- Collection ordering is stable for equal creation timestamps by using the
+  concept identifier as a secondary key.
 
 ### Phase 3: Work
 
@@ -59,6 +65,10 @@ payments, teams, admin, imports, notifications, gamification or advanced SRS.
 3. Implement `/api/concepts*` and `/api/starter-pack`.
 4. Implement accessible dashboard forms and busy-state protection.
 5. Add route-contract tests for 400/401/404/409/500.
+6. Keep post-edit learner context with a temporary saved-card status, highlight
+   and focus, covered by the critical browser journey.
+7. Add a deterministic secondary sort key so bulk-created concepts do not move
+   between dashboard refreshes.
 
 ## Phase 4: Review engine and recommendation
 
@@ -141,6 +151,7 @@ npm run test:e2e
 
 - [x] 3.1 API contracts, starter idempotency and private CRUD implemented
 - [x] 3.2 Route-contract tests pass
+- [x] 3.4 Post-edit saved-card context is announced, focused and stays in list order
 
 #### Manual
 
