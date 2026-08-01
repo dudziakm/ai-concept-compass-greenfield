@@ -9,9 +9,13 @@ pewności — działa przewidywalnie, tanio i jest w pełni testowalna.
 
 > **Stan 1 sierpnia 2026:** aplikacja działa publicznie na
 > [Cloudflare Workers](https://ai-concept-compass.dudziak-michal.workers.dev).
-> Runtime RLS oraz krytyczny E2E przechodzą przeciwko temu URL-owi. Końcowy
-> smoke świeżej rejestracji z prawdziwym e-mailem i screenshoty z publicznego
-> środowiska pozostają osobnymi, jawnymi krokami przed wysłaniem formularza.
+> Hosted RLS oraz krytyczny E2E dla aktualnego kodu przeszły w kontrolowanym
+> środowisku, ale publiczny Worker nie jest obecnie dowodem tego przepływu: po
+> edycji karty publiczny E2E oczekiwał pozycji `3`, a otrzymał `9`. Należy
+> wdrożyć przetestowaną rewizję, następnie ponownie uruchomić publiczny flow i
+> dopiero wtedy uznać go za zielony. Końcowy smoke świeżej rejestracji z
+> prawdziwym e-mailem i screenshoty z publicznego środowiska pozostają osobnymi,
+> jawnymi krokami przed wysłaniem formularza.
 > Run `30662052616` nie jest dowodem zielonego pełnego CI: job `quality`
 > przeszedł, ale hosted `e2e` i `rls` zakończyły się przed testami, ponieważ
 > wymagane GitHub Actions Secrets nie były ustawione. Pełne CI będzie dowodem

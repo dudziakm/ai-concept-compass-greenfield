@@ -94,7 +94,10 @@ because it preserves CRUD context.
 - Hosted RLS proves isolation for two users.
 - Serial Playwright covers login, retry-safe pack, custom CRUD, review,
   recommendation and deletion against hosted persistence.
-- Public Worker URL passes desktop/mobile/keyboard/console smoke.
+- Public Worker URL requires desktop/mobile/keyboard/console smoke after the
+  tested SHA is deployed and the public critical E2E is rerun; the currently
+  deployed public flow fails after card edit (expected position `3`, received
+  `9`).
 - URLs and screenshots are mapped to Mission Log fields before submission.
 
 ### Phase 5: Work
@@ -162,7 +165,10 @@ npm run test:e2e
 #### Automated
 
 - [x] 4.1 Scoring and ranking suite passes
-- [x] 4.2 Hosted critical Playwright scenario passes — repeated 5/5 on 2026-08-01
+- [x] 4.2 Critical Playwright against hosted Supabase passes locally — repeated
+      5/5 on 2026-08-01; the deployed public Worker remains a separate failed
+      check after card edit (expected position `3`, received `9`) until a tested
+      SHA is deployed and rerun
 
 #### Manual
 
@@ -179,7 +185,8 @@ npm run test:e2e
 
 #### Manual
 
-- [ ] 5.3 Public deploy smoke and screenshots complete
+- [ ] 5.3 Deploy the tested SHA, rerun the public critical flow, then complete
+      public smoke and screenshots
 - [ ] 5.4 Mission Log evidence package submitted
 
 ## Pause checkpoint — 2026-07-31
