@@ -26,6 +26,14 @@ nie zwraca częściowego wyniku `pass`.
 {
   "verdict": "fail",
   "summary": "Brakuje testu zmienionej reguły biznesowej.",
+  "scores": {
+    "correctness": 7,
+    "idiomaticity": 8,
+    "complexity": 8,
+    "test-risk-coverage": 4,
+    "documentation": 7,
+    "security-safety": 9
+  },
   "findings": [
     {
       "severity": "medium",
@@ -48,7 +56,7 @@ nie zwraca częściowego wyniku `pass`.
 }
 ```
 
-Wymiary DoD: `correctness`, `idiomaticity`, `complexity`, `test-risk-coverage`, `documentation`, `security-safety`.
+Wymiary DoD: `correctness`, `idiomaticity`, `complexity`, `test-risk-coverage`, `documentation`, `security-safety`. Każdy prawidłowy wynik zawiera dokładnie jedną całkowitą ocenę `1..10` dla każdego wymiaru. Lokalna bramka kanonizuje wynik do `fail`, gdy dowolna ocena jest niższa niż `7` lub gdy istnieje finding `critical`, `high` albo `medium`; modelowy `fail` pozostaje `fail`. Finding `low` sam nie blokuje bramki. Błąd `ERROR` (exit `2`) nie ma ocen i nie jest findingiem kodu.
 
 Kody procesu:
 
@@ -81,6 +89,8 @@ src/evals/              6 fixture'ów, offline oracle, provider promptfoo
 - koszt z OpenRouter usage jest weryfikowany po odpowiedzi; przy braku pola `cost` używana jest estymacja według górnych stawek;
 - `data_collection: deny`, `zdr: true`, `require_parameters: true`;
 - diff, klucz i nagłówki nie są logowane; log zawiera tylko verdict, liczbę findingów, koszt i czas;
+- sticky comment pokazuje sześć ocen i zwięzły dowód findingu, ale redaguje
+  surowy diff oraz rozpoznane przypisania sekretów;
 - GitHub Action ma osobny limit transportowy, ale każdy diff poza pełnym budżetem
   reviewera kończy się `INPUT_TOO_LARGE` przed wywołaniem modelu;
 - workflow wykonuje reviewer z zaufanego commita bazowego. Kod head PR-a nie jest checkoutowany ani wykonywany z sekretem — jest czytany tylko przez `git diff`.
@@ -97,7 +107,7 @@ npm test
 npm run eval:promptfoo
 ```
 
-Offline promptfoo nie używa klucza ani modelu. Ten deterministyczny baseline sprawdza sześć stałych przypadków i kontrakt assertions.
+Offline promptfoo nie używa klucza ani modelu. Ten deterministyczny baseline sprawdza sześć stałych przypadków, pełny zestaw sześciu ocen `1..10` i kontrakt assertions. Nie jest dowodem jakości live modelu ani zastępstwem wymaganej później oceny wielomodelowej/LLM-rubric.
 
 Prawdziwe review (klucz ma już być bezpiecznie dostępny w środowisku; nie wpisuj go do repo ani argumentu CLI):
 

@@ -10,6 +10,14 @@ import { ReviewErrorSchema, ReviewResultSchema, type ReviewResult } from "./sche
 const baseResult: ReviewResult = {
   verdict: "pass",
   summary: "OK",
+  scores: {
+    correctness: 8,
+    idiomaticity: 8,
+    complexity: 8,
+    "test-risk-coverage": 8,
+    documentation: 8,
+    "security-safety": 8,
+  },
   findings: [],
   usage: {
     provider: "openrouter",

@@ -19,6 +19,9 @@ Oczekiwane:
 
 - typecheck: exit 0;
 - Vitest: wszystkie testy zielone, w tym kody 0/1/2;
+- każdy poprawny wynik ma sześć dokładnie nazwanych ocen całkowitych `1..10`;
+- wynik `pass` ma wszystkie oceny co najmniej `7` oraz nie ma findingu
+  `critical`/`high`/`medium`; `ERROR` pozostaje osobnym exit `2`;
 - promptfoo: 6/6;
 - runtime audit: 0 podatności.
 
@@ -27,7 +30,8 @@ Oczekiwane:
 1. Unieważnij i obróć każdy wcześniejszy klucz, który pojawił się w lokalnym outputcie, logu testu albo historii shell. **Nie używaj wcześniej ujawnionego klucza.**
 2. Dostarcz nowy `OPENROUTER_API_KEY` przez bezpieczny secret store/shell session. Nie umieszczaj wartości w `.env` śledzonym przez Git.
 3. Uruchom review na kontrolowanym diffie.
-4. Sprawdź: poprawny JSON, `usage.totalCostUsd <= 0.20`, `durationMs <= 60000`, brak diffu/klucza w logu.
+4. Sprawdź: poprawny JSON ze wszystkimi sześcioma ocenami `1..10`,
+   `usage.totalCostUsd <= 0.20`, `durationMs <= 60000`, brak diffu/klucza w logu.
 5. Uruchom `PROMPTFOO_LIVE=1 npm run eval:promptfoo` tylko po świadomej akceptacji budżetu maksymalnego `$1.20` dla sześciu review.
 6. Zapisz timestamp, model, wynik 6/6, koszt sumaryczny i screenshot — bez zapisywania klucza ani pełnych diffów.
 

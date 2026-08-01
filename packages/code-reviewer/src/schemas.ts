@@ -3,15 +3,29 @@ import { z } from "zod";
 export const MAX_INPUT_CHARS = 50_000;
 export const MAX_REVIEW_COST_USD = 0.2;
 export const MAX_REVIEW_DURATION_MS = 60_000;
+export const MINIMUM_PASS_SCORE = 7;
 
-export const ReviewDimensionSchema = z.enum([
+export const REVIEW_DIMENSIONS = [
   "correctness",
   "idiomaticity",
   "complexity",
   "test-risk-coverage",
   "documentation",
   "security-safety",
-]);
+] as const;
+
+export const ReviewDimensionSchema = z.enum(REVIEW_DIMENSIONS);
+export const ReviewScoreSchema = z.number().int().min(1).max(10);
+export const ReviewScoresSchema = z
+  .object({
+    correctness: ReviewScoreSchema,
+    idiomaticity: ReviewScoreSchema,
+    complexity: ReviewScoreSchema,
+    "test-risk-coverage": ReviewScoreSchema,
+    documentation: ReviewScoreSchema,
+    "security-safety": ReviewScoreSchema,
+  })
+  .strict();
 
 export const FindingSeveritySchema = z.enum(["critical", "high", "medium", "low"]);
 
@@ -27,6 +41,7 @@ export const ReviewFindingSchema = z.object({
 export const ReviewDecisionSchema = z.object({
   verdict: z.enum(["pass", "fail"]),
   summary: z.string().trim().min(1).max(2_000),
+  scores: ReviewScoresSchema,
   findings: z.array(ReviewFindingSchema).max(20),
 });
 
@@ -78,6 +93,7 @@ export const ReviewErrorSchema = z.object({
 });
 
 export type ReviewDimension = z.infer<typeof ReviewDimensionSchema>;
+export type ReviewScores = z.infer<typeof ReviewScoresSchema>;
 export type FindingSeverity = z.infer<typeof FindingSeveritySchema>;
 export type ReviewFinding = z.infer<typeof ReviewFindingSchema>;
 export type ReviewDecision = z.infer<typeof ReviewDecisionSchema>;
@@ -90,9 +106,10 @@ export function canonicalizeDecision(decision: ReviewDecision): ReviewDecision {
   const hasBlockingFinding = decision.findings.some((finding) =>
     ["critical", "high", "medium"].includes(finding.severity),
   );
+  const hasScoreBelowPassThreshold = Object.values(decision.scores).some((score) => score < MINIMUM_PASS_SCORE);
 
   return {
     ...decision,
-    verdict: decision.verdict === "fail" || hasBlockingFinding ? "fail" : "pass",
+    verdict: decision.verdict === "fail" || hasBlockingFinding || hasScoreBelowPassThreshold ? "fail" : "pass",
   };
 }

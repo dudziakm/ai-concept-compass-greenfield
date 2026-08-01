@@ -1,6 +1,24 @@
 import { describe, expect, it } from "vitest";
 
-import { canonicalizeDecision, MAX_INPUT_CHARS, ReviewInputSchema, ReviewResultSchema } from "./schemas.js";
+import {
+  canonicalizeDecision,
+  MAX_INPUT_CHARS,
+  MINIMUM_PASS_SCORE,
+  REVIEW_DIMENSIONS,
+  ReviewDecisionSchema,
+  ReviewInputSchema,
+  ReviewResultSchema,
+  type ReviewScores,
+} from "./schemas.js";
+
+const passingScores: ReviewScores = {
+  correctness: 8,
+  idiomaticity: 8,
+  complexity: 8,
+  "test-risk-coverage": 8,
+  documentation: 8,
+  "security-safety": 8,
+};
 
 describe("ReviewInputSchema", () => {
   it("akceptuje prawidłowe wejście", () => {
@@ -46,11 +64,96 @@ describe("ReviewInputSchema", () => {
 });
 
 describe("Definition of Done", () => {
+  it("wymaga dokładnie jednej poprawnej oceny dla każdego wymiaru", () => {
+    const complete = { ...passingScores };
+    const incomplete = Object.fromEntries(
+      Object.entries(passingScores).filter(([dimension]) => dimension !== "documentation"),
+    );
+
+    expect(Object.keys(complete)).toEqual(REVIEW_DIMENSIONS);
+    expect(
+      ReviewDecisionSchema.safeParse({
+        verdict: "pass",
+        summary: "Komplet ocen.",
+        scores: complete,
+        findings: [],
+      }).success,
+    ).toBe(true);
+    expect(
+      ReviewDecisionSchema.safeParse({
+        verdict: "pass",
+        summary: "Brakuje oceny.",
+        scores: incomplete,
+        findings: [],
+      }).success,
+    ).toBe(false);
+    expect(
+      ReviewDecisionSchema.safeParse({
+        verdict: "pass",
+        summary: "Dodatkowa ocena.",
+        scores: { ...passingScores, maintainability: 8 },
+        findings: [],
+      }).success,
+    ).toBe(false);
+  });
+
+  it("odrzuca ocenę poza skalą 1–10 lub niecałkowitą", () => {
+    for (const invalidScore of [0, 10.1, 11]) {
+      expect(
+        ReviewDecisionSchema.safeParse({
+          verdict: "pass",
+          summary: "Niedozwolona ocena.",
+          scores: { ...passingScores, correctness: invalidScore },
+          findings: [],
+        }).success,
+      ).toBe(false);
+    }
+  });
+
+  it("zmienia pass na fail, gdy którykolwiek score jest poniżej progu", () => {
+    expect(
+      canonicalizeDecision({
+        verdict: "pass",
+        summary: "Ocena correctness jest za niska.",
+        scores: { ...passingScores, correctness: MINIMUM_PASS_SCORE - 1 },
+        findings: [],
+      }).verdict,
+    ).toBe("fail");
+  });
+
+  it("pozostawia pass dla ocen dokładnie na progu i tylko low findingu", () => {
+    expect(
+      canonicalizeDecision({
+        verdict: "pass",
+        summary: "Nieblokująca sugestia.",
+        scores: {
+          correctness: MINIMUM_PASS_SCORE,
+          idiomaticity: MINIMUM_PASS_SCORE,
+          complexity: MINIMUM_PASS_SCORE,
+          "test-risk-coverage": MINIMUM_PASS_SCORE,
+          documentation: MINIMUM_PASS_SCORE,
+          "security-safety": MINIMUM_PASS_SCORE,
+        },
+        findings: [
+          {
+            severity: "low",
+            dimension: "idiomaticity",
+            file: "src/lib/example.ts",
+            line: 5,
+            evidence: "Nazwa może być krótsza.",
+            recommendation: "Rozważ zwięźlejszą nazwę.",
+          },
+        ],
+      }).verdict,
+    ).toBe("pass");
+  });
+
   it("zmienia pass na fail przy medium findingu", () => {
     expect(
       canonicalizeDecision({
         verdict: "pass",
         summary: "Model przeoczył blokujący finding.",
+        scores: passingScores,
         findings: [
           {
             severity: "medium",
@@ -69,6 +172,7 @@ describe("Definition of Done", () => {
     const result = {
       verdict: "pass",
       summary: "OK",
+      scores: passingScores,
       findings: [],
       usage: {
         provider: "openrouter",

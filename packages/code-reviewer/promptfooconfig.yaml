@@ -14,7 +14,7 @@ tests:
     assert:
       - type: is-json
       - type: javascript
-        value: JSON.parse(output).verdict === "pass" && JSON.parse(output).findings.length === 0
+        value: JSON.parse(output).verdict === "pass" && JSON.parse(output).findings.length === 0 && Object.keys(JSON.parse(output).scores).length === 6 && ["correctness", "idiomaticity", "complexity", "test-risk-coverage", "documentation", "security-safety"].every((dimension) => Number.isInteger(JSON.parse(output).scores[dimension]) && JSON.parse(output).scores[dimension] >= 1 && JSON.parse(output).scores[dimension] <= 10)
 
   - description: missing risk test fails
     vars:
@@ -22,7 +22,7 @@ tests:
     assert:
       - type: is-json
       - type: javascript
-        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "test-risk-coverage")
+        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "test-risk-coverage") && Object.keys(JSON.parse(output).scores).length === 6 && ["correctness", "idiomaticity", "complexity", "test-risk-coverage", "documentation", "security-safety"].every((dimension) => Number.isInteger(JSON.parse(output).scores[dimension]) && JSON.parse(output).scores[dimension] >= 1 && JSON.parse(output).scores[dimension] <= 10)
 
   - description: security gap fails
     vars:
@@ -30,7 +30,7 @@ tests:
     assert:
       - type: is-json
       - type: javascript
-        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "security-safety")
+        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "security-safety") && Object.keys(JSON.parse(output).scores).length === 6 && ["correctness", "idiomaticity", "complexity", "test-risk-coverage", "documentation", "security-safety"].every((dimension) => Number.isInteger(JSON.parse(output).scores[dimension]) && JSON.parse(output).scores[dimension] >= 1 && JSON.parse(output).scores[dimension] <= 10)
 
   - description: excessive complexity fails
     vars:
@@ -38,7 +38,7 @@ tests:
     assert:
       - type: is-json
       - type: javascript
-        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "complexity")
+        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "complexity") && Object.keys(JSON.parse(output).scores).length === 6 && ["correctness", "idiomaticity", "complexity", "test-risk-coverage", "documentation", "security-safety"].every((dimension) => Number.isInteger(JSON.parse(output).scores[dimension]) && JSON.parse(output).scores[dimension] >= 1 && JSON.parse(output).scores[dimension] <= 10)
 
   - description: missing public-contract documentation fails
     vars:
@@ -46,7 +46,7 @@ tests:
     assert:
       - type: is-json
       - type: javascript
-        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "documentation")
+        value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "documentation") && Object.keys(JSON.parse(output).scores).length === 6 && ["correctness", "idiomaticity", "complexity", "test-risk-coverage", "documentation", "security-safety"].every((dimension) => Number.isInteger(JSON.parse(output).scores[dimension]) && JSON.parse(output).scores[dimension] >= 1 && JSON.parse(output).scores[dimension] <= 10)
 
   - description: malformed input is rejected before a model call
     vars:

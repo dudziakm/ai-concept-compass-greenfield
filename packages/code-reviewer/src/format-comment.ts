@@ -1,6 +1,15 @@
-import type { ReviewError, ReviewResult } from "./schemas.js";
+import { REVIEW_DIMENSIONS, type ReviewError, type ReviewResult } from "./schemas.js";
 
 export const REVIEW_COMMENT_MARKER = "<!-- AI-CODE-REVIEW -->";
+
+function redactCommentText(value: string): string {
+  return value
+    .replace(/\bdiff --git\b[\s\S]*/gi, "[zredagowano surowy diff]")
+    .replace(
+      /\b(?:OPENROUTER_API_KEY|SERVICE_ROLE_KEY|SUPABASE_(?:URL|KEY)|authorization|api[_-]?key|token|secret)\b\s*[:=]\s*["']?[^\s\x60"',]+/gi,
+      "[zredagowano sekret]",
+    );
+}
 
 function formatLocation(file: string, line: number | null): string {
   return line === null ? `\`${file}\`` : `\`${file}:${line}\``;
@@ -17,14 +26,18 @@ export function formatReviewComment(result: ReviewResult): string {
               `- **${finding.severity.toUpperCase()} · ${finding.dimension}** — ${formatLocation(
                 finding.file,
                 finding.line,
-              )}\n  - Dowód: ${finding.evidence}\n  - Rekomendacja: ${finding.recommendation}`,
+              )}\n  - Dowód: ${redactCommentText(finding.evidence)}\n  - Rekomendacja: ${redactCommentText(finding.recommendation)}`,
           )
           .join("\n");
 
   return `${REVIEW_COMMENT_MARKER}
 ## AI Code Review — ${verdict}
 
-${result.summary}
+${redactCommentText(result.summary)}
+
+### Oceny DoD
+
+${REVIEW_DIMENSIONS.map((dimension) => `- \`${dimension}\`: ${result.scores[dimension]}/10`).join("\n")}
 
 ### Findings
 
@@ -47,7 +60,7 @@ export function formatErrorComment(error: ReviewError): string {
 Reviewer nie zakończył oceny. To błąd infrastruktury lub kontraktu, a nie negatywny werdykt kodu.
 
 - Kod: \`${error.error.code}\`
-- Komunikat: ${error.error.message}
+- Komunikat: ${redactCommentText(error.error.message)}
 
 _Check pozostaje czerwony. Po naprawieniu przyczyny dodaj label \`ai-cr:review\`, aby ponowić review._`;
 }
