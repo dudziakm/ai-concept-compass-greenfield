@@ -7,10 +7,11 @@ odpowiedź ze wzorcem i otrzymuje deterministyczną rekomendację kolejnego tema
 MVP celowo nie używa LLM. Jego wartość — wykrywanie luk mastery i nadmiernej
 pewności — działa przewidywalnie, tanio i jest w pełni testowalna.
 
-> **Stan 1 sierpnia 2026:** aplikacja, osobny hosted Supabase, runtime RLS oraz
-> krytyczny E2E są skonfigurowane i przechodzą. Publiczny deploy, końcowy smoke
-> rejestracji z e-mailem oraz screenshoty z publicznego środowiska nadal są
-> oznaczone jako oczekujące — repo nie udaje zaliczenia tych kroków.
+> **Stan 1 sierpnia 2026:** aplikacja działa publicznie na
+> [Cloudflare Workers](https://ai-concept-compass.dudziak-michal.workers.dev).
+> Runtime RLS oraz krytyczny E2E przechodzą przeciwko temu URL-owi. Końcowy
+> smoke świeżej rejestracji z prawdziwym e-mailem i screenshoty z publicznego
+> środowiska pozostają osobnymi, jawnymi krokami przed wysłaniem formularza.
 > Publiczny [quality run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616)
 > przechodzi Builder i lokalne bramki Championa; hosted RLS/E2E zostały
 > dodatkowo wykonane lokalnie przeciwko prawdziwemu projektowi Supabase.

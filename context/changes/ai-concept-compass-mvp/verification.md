@@ -1,7 +1,7 @@
 # Verification status — AI Concept Compass MVP
 
-Checked 2026-08-01 on the implementation worktree and a dedicated hosted
-Supabase project.
+Checked 2026-08-01 on the implementation worktree, a dedicated hosted Supabase
+project and the public Cloudflare Worker.
 
 ## Local automated evidence
 
@@ -10,11 +10,11 @@ Supabase project.
 | Workflow chain and traceability   | pass   | `npm run workflow:check`                                                                              |
 | Lint                              | pass   | `npm run lint`                                                                                        |
 | Astro typecheck                   | pass   | 0 errors                                                                                              |
-| Unit/route/migration tests        | pass   | 53 passed                                                                                             |
+| Unit/route/migration tests        | pass   | 50 local tests; 3 hosted RLS tests are run separately                                                 |
 | Hosted two-user RLS               | pass   | 3/3 with two confirmed ordinary accounts                                                              |
 | Protected coverage scope          | pass   | 100% statements/branches/functions/lines                                                              |
 | Cloudflare Worker build           | pass   | `npm run build`                                                                                       |
-| Hosted critical Playwright        | pass   | auth, retry-safe pack, CRUD, review, recommendation and delete; 5/5 repeat run                        |
+| Public critical Playwright        | pass   | Cloudflare URL: auth, retry-safe pack, CRUD, review, recommendation and delete; 3/3                  |
 | Local responsive/keyboard/console | pass   | 360 px no overflow, mobile CRUD, expected focus order, zero console errors                            |
 | Public CI quality                 | pass   | [run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616) |
 
@@ -22,17 +22,17 @@ Supabase project.
 
 | Check                                        | Status                                     |
 | -------------------------------------------- | ------------------------------------------ |
-| Hosted migration and 10 templates            | pass                                       |
-| Supabase security advisor                    | pass, zero security findings               |
-| Additional FK performance indexes            | prepared; remote apply pending MCP restart |
-| Public Worker URL                            | pending Cloudflare authentication          |
-| Signup email confirmation smoke              | pending public environment                 |
-| Public mobile, keyboard and console smoke    | pending Worker URL                         |
-| Final screenshots and Mission Log submission | pending public deploy                      |
+| Hosted migration, 10 templates and FK indexes | pass                                      |
+| Supabase security advisor                     | warn: leaked-password protection disabled |
+| Public Worker URL                             | pass: <https://ai-concept-compass.dudziak-michal.workers.dev> |
+| Cloudflare deployment                         | pass: version `309c17bc-2fef-4c4c-b443-10c5a24f6a29`, 2026-08-01 17:00:35 UTC |
+| Signup email confirmation smoke               | pending a real inbox                       |
+| Public mobile, keyboard and console smoke     | pending final visual evidence              |
+| Final screenshots and Mission Log submission  | pending                                   |
 
 ## Conclusion
 
-The application, hosted database security and critical end-to-end flow are
-complete and green. Certification-ready delivery is **not yet complete** because
-the public Worker deployment, production signup/e-mail smoke, final public
-screenshots and form submission remain outstanding.
+The deployed application, hosted database and public end-to-end flow are green.
+Certification-ready delivery is **not yet complete** because a fresh
+signup/e-mail-confirmation smoke, final public screenshots, the Mission Log
+submission and the leaked-password-protection decision remain outstanding.

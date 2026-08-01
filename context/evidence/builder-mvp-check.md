@@ -1,4 +1,4 @@
-# MVP Project Analysis Report — 31 lipca 2026
+# MVP Project Analysis Report — 1 sierpnia 2026
 
 Wynik lokalnego audytu według kursowego `.claude/prompts/mvp-check.md`: **5/5
 (100%)**. Audyt ocenia fundamenty techniczne w repozytorium, nie status
@@ -35,9 +35,11 @@ przechodzą lokalnie, hosted RLS przechodzi 3/3 na dwóch zwykłych kontach, a
 scoring ma 100% branch coverage.
 
 Ryzyko cross-boundary jest związane z `e2e/concept-review.spec.ts`; scenariusz
-przechodzi przeciwko hosted Supabase i obejmuje auth, idempotentny starter pack,
-custom CRUD, review, rekomendację oraz sprzątanie danych. Powtórzenie 5/5 nie
-wykazało niestabilności.
+przechodzi przeciwko hosted Supabase i publicznemu
+<https://ai-concept-compass.dudziak-michal.workers.dev>. Obejmuje auth,
+idempotentny starter pack, custom CRUD, review, rekomendację oraz sprzątanie
+danych. Powtórzenie 5/5 lokalnie i finalny publiczny run 3/3 nie wykazały
+niestabilności.
 
 ## 4. Authentication tied to a user — ✅
 
@@ -54,8 +56,8 @@ stacku, a `context/testing/test-plan.md` mapuje ryzyka na warstwy testów.
 
 ## Priorytetowe prace poza samym audytem technicznym
 
-1. Zastosować przygotowaną, nieblokującą migrację dwóch indeksów FK po restarcie
-   połączenia Supabase MCP.
-2. Skonfigurować sekrety wdrożeniowe i wdrożyć zieloną rewizję na Cloudflare.
-3. Po wdrożeniu zebrać publiczny URL, finalne screenshoty, smoke rejestracji
-   e-mail oraz zielone runy hosted CI.
+1. Wykonać świeżą rejestrację i kliknąć prawdziwy link potwierdzający e-mail na
+   publicznym środowisku.
+2. Zebrać finalne publiczne screenshoty i dowód zielonego E2E do Mission Log.
+3. Podjąć świadomą decyzję o Supabase Leaked Password Protection, które advisor
+   raportuje jako wyłączone.
