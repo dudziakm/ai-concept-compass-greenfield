@@ -12,9 +12,12 @@ pewności — działa przewidywalnie, tanio i jest w pełni testowalna.
 > Runtime RLS oraz krytyczny E2E przechodzą przeciwko temu URL-owi. Końcowy
 > smoke świeżej rejestracji z prawdziwym e-mailem i screenshoty z publicznego
 > środowiska pozostają osobnymi, jawnymi krokami przed wysłaniem formularza.
-> Publiczny [quality run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616)
-> przechodzi Builder i lokalne bramki Championa; hosted RLS/E2E zostały
-> dodatkowo wykonane lokalnie przeciwko prawdziwemu projektowi Supabase.
+> Run `30662052616` nie jest dowodem zielonego pełnego CI: job `quality`
+> przeszedł, ale hosted `e2e` i `rls` zakończyły się przed testami, ponieważ
+> wymagane GitHub Actions Secrets nie były ustawione. Pełne CI będzie dowodem
+> dopiero po jednym runie z zielonymi jobami `quality`, `e2e` i `rls` dla
+> właściwej rewizji. Hosted RLS/E2E były dodatkowo wykonane lokalnie przeciwko
+> prawdziwemu projektowi Supabase.
 
 ## Najważniejszy przepływ
 

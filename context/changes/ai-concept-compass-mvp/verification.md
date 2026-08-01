@@ -17,7 +17,8 @@ project and the public Cloudflare Worker.
 | Post-edit learner context         | pass   | Critical Chromium flow preserves the edited card's order and verifies its Polish status and focus     |
 | Public critical Playwright        | pass   | Cloudflare URL: auth, retry-safe pack, CRUD, review, recommendation and delete; 3/3                   |
 | Local responsive/keyboard/console | pass   | 360 px no overflow, mobile CRUD, expected focus order, zero console errors                            |
-| Public CI quality                 | pass   | [run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616) |
+| GitHub Actions quality            | pass   | [quality job in run 30711961269](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30711961269/job/91400869696) |
+| Hosted CI E2E and RLS             | blocked | [run 30711961269](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30711961269) stops before both suites because the required GitHub Actions Secrets are unset; it is not green evidence |
 
 ## Hosted/manual evidence
 
@@ -33,7 +34,10 @@ project and the public Cloudflare Worker.
 
 ## Conclusion
 
-The deployed application, hosted database and public end-to-end flow are green.
-Certification-ready delivery is **not yet complete** because a fresh
-signup/e-mail-confirmation smoke, final public screenshots, the Mission Log
-submission and the leaked-password-protection decision remain outstanding.
+Local quality gates and the recorded deployed-flow evidence are green, but the
+full GitHub Actions CI is **not** green: `quality` passes while hosted `e2e` and
+`rls` are blocked before test execution by unset repository secrets. Certification-ready
+delivery is **not yet complete** until one revision has green `quality`, `e2e`
+and `rls` jobs, followed by a fresh signup/e-mail-confirmation smoke, final
+public screenshots, the Mission Log submission and the
+leaked-password-protection decision.

@@ -172,7 +172,9 @@ npm run test:e2e
 
 #### Automated
 
-- [x] 5.1 Local and CI quality gates pass — [quality job for PR #1](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662797133/job/91262708283); hosted jobs remain deliberately separate.
+- [x] 5.1 Local gates and the GitHub `quality` job pass — hosted `e2e` and `rls`
+      are not marked green until repository Secrets are configured and one full
+      run passes all three jobs.
 - [x] 5.2 Hosted RLS and E2E gates pass locally against hosted Supabase
 
 #### Manual
