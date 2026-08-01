@@ -150,6 +150,20 @@ CI wymaga czterech sekretów E2E (`SUPABASE_URL`, `SUPABASE_KEY`,
 `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`) oraz danych dwóch kont `RLS_USER_A_*` i
 `RLS_USER_B_*`. Quality, E2E i RLS są osobnymi bramkami merge.
 
+### Hook jakości po edycji (M3L3)
+
+Projektowy hook Codexa w [`.codex/hooks.json`](.codex/hooks.json) reaguje tylko
+po wywołaniu narzędzia `apply_patch`. Uruchamia
+[`scripts/post-edit-quality.sh`](scripts/post-edit-quality.sh), który odnajduje
+root repozytorium przez Git, a następnie wykonuje szybkie `npm run lint` i
+`npm run typecheck`. Handler ma limit 120 sekund. To lokalny feedback po edycji,
+nie zamiennik testów, CI, review ani sprawdzeń hosted.
+
+Codex nie uruchomi nowego hooka automatycznie: użytkownik musi ręcznie otworzyć
+`/hooks`, sprawdzić dokładną definicję projektu i ją zaufać (trust). Zmiana lub
+brak trustu oznacza, że hook pozostaje pominięty. Skrypt nie odczytuje ani nie
+loguje plików `.env`.
+
 ## Wdrożenie na Cloudflare Workers
 
 Po zalogowaniu do Cloudflare ustaw dwa sekrety i wdroż aplikację:

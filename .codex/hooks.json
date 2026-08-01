@@ -1,0 +1,18 @@
+{
+  "description": "Fast project-local quality feedback after Codex apply_patch edits.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^apply_patch$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/scripts/post-edit-quality.sh\"",
+            "timeout": 120,
+            "statusMessage": "Running post-edit lint and typecheck"
+          }
+        ]
+      }
+    ]
+  }
+}
