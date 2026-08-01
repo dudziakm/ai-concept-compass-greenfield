@@ -38,8 +38,9 @@ Ryzyko cross-boundary jest związane z `e2e/concept-review.spec.ts`; scenariusz
 przechodzi przeciwko hosted Supabase i publicznemu
 <https://ai-concept-compass.dudziak-michal.workers.dev>. Obejmuje auth,
 idempotentny starter pack, custom CRUD, review, rekomendację oraz sprzątanie
-danych. Powtórzenie 5/5 lokalnie i finalny publiczny run 3/3 nie wykazały
-niestabilności.
+danych. Krytyczny test publiczny był dodatkowo powtórzony pięć razy bez
+niestabilności, a świeża pełna suite publiczna przeszła 4/4; immutable URL-e i
+artefakty są w [rekordzie weryfikacji](builder-public-verification-2026-08-01.md).
 
 ## 4. Authentication tied to a user — ✅
 
@@ -58,6 +59,8 @@ stacku, a `context/testing/test-plan.md` mapuje ryzyka na warstwy testów.
 
 1. Wykonać świeżą rejestrację i kliknąć prawdziwy link potwierdzający e-mail na
    publicznym środowisku.
-2. Zebrać finalne publiczne screenshoty i dowód zielonego E2E do Mission Log.
-3. Podjąć świadomą decyzję o Supabase Leaked Password Protection, które advisor
+2. Podjąć świadomą decyzję o Supabase Leaked Password Protection, które advisor
    raportuje jako wyłączone.
+3. Ręcznie zaufać hookowi M3 i potwierdzić jego wywołanie po kolejnym
+   `apply_patch`, a następnie wysłać Builder Mission Log z już przygotowanymi
+   screenshotami i URL-ami.

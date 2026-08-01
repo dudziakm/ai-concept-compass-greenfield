@@ -1,6 +1,6 @@
 # Deploy plan — AI Concept Compass MVP
 
-> Status: **blocked on human account access**  
+> Status: **deployed and verified; remaining human certification actions**
 > Target: Cloudflare Workers + hosted Supabase  
 > Decision record: `context/foundation/infrastructure.md`
 
@@ -14,11 +14,10 @@ session. Secrets must never be printed or committed.
 
 ## Preconditions
 
-- [ ] Human has a hosted Supabase project and records its region privately.
-- [ ] Human has a Cloudflare account allowed to deploy Workers.
-- [ ] `npx supabase login` and `npx wrangler login` succeed in the repo.
-- [ ] Confirmed E2E account exists; credentials are stored only in approved secret stores.
-- [ ] Local quality gates pass on the exact revision intended for deploy.
+- [x] Hosted Supabase and an allowed Cloudflare account are configured.
+- [x] Confirmed E2E account and CI secrets exist only in approved secret stores.
+- [x] Local and full remote quality gates pass; exact immutable evidence is in
+      `context/evidence/builder-public-verification-2026-08-01.md`.
 
 ## Database preparation
 
@@ -45,18 +44,18 @@ session. Secrets must never be printed or committed.
 
 ### Automated
 
-- [ ] Hosted two-user RLS matrix passes.
-- [ ] `npm run test:e2e` passes against `E2E_BASE_URL=<public-or-preview-url>`.
-- [ ] Repository CI `quality` and `e2e` jobs pass for the deployed revision.
+- [x] Hosted two-user RLS matrix passes.
+- [x] `npm run test:e2e` passes against the public Worker (4/4).
+- [x] Repository CI `quality`, `e2e` and `rls` pass for merge commit `28bc365`.
 
 ### Manual
 
 - [ ] Fresh user completes signup/confirmation/signin.
-- [ ] Empty state loads the pack once and does not duplicate on retry.
-- [ ] User edits a concept, records a review and sees a new recommendation.
-- [ ] Delete removes the item and history.
-- [ ] Second account cannot see first account data.
-- [ ] 360 px and keyboard smoke pass; browser console/network show no unexpected errors.
+- [x] Empty state loads the pack once and does not duplicate on retry.
+- [x] User edits a concept, records a review and sees a new recommendation.
+- [x] Delete removes the item and history.
+- [x] Second account cannot see first account data.
+- [x] 360 px and keyboard smoke pass; browser console/page errors are clean.
 
 ## Rollback
 
@@ -70,13 +69,12 @@ session. Secrets must never be printed or committed.
 
 ## Evidence package
 
-- [ ] Public URL and exact git revision.
-- [ ] Green CI quality and E2E run URLs.
-- [ ] Deploy run/identifier and timestamp.
-- [ ] Screenshot: signup/signin.
-- [ ] Screenshot: loaded dashboard and recommendation.
-- [ ] Screenshot: mobile view.
-- [ ] Screenshot or recorded test result: two-account isolation.
+- [x] Public URL, Worker version, release revision and timestamp.
+- [x] Green CI quality/E2E/RLS run URL.
+- [x] Screenshot: public sign-in.
+- [x] Screenshot: loaded dashboard and recommendation.
+- [x] Screenshot: 360 px mobile view.
+- [x] Recorded test result: two-account isolation.
 - [ ] Dependency-risk decision and rollback note.
 
 No checkbox above may be flipped solely because code/config exists locally.

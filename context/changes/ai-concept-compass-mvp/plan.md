@@ -94,10 +94,9 @@ because it preserves CRUD context.
 - Hosted RLS proves isolation for two users.
 - Serial Playwright covers login, retry-safe pack, custom CRUD, review,
   recommendation and deletion against hosted persistence.
-- Public Worker URL requires desktop/mobile/keyboard/console smoke after the
-  tested SHA is deployed and the public critical E2E is rerun; the currently
-  deployed public flow fails after card edit (expected position `3`, received
-  `9`).
+- Public Worker URL has desktop/mobile/keyboard/console smoke and a fresh
+  public critical E2E result; the record must retain exact version, run and
+  screenshot evidence.
 - URLs and screenshots are mapped to Mission Log fields before submission.
 
 ### Phase 5: Work
@@ -165,10 +164,10 @@ npm run test:e2e
 #### Automated
 
 - [x] 4.1 Scoring and ranking suite passes
-- [x] 4.2 Critical Playwright against hosted Supabase passes locally — repeated
-      5/5 on 2026-08-01; the deployed public Worker remains a separate failed
-      check after card edit (expected position `3`, received `9`) until a tested
-      SHA is deployed and rerun
+- [x] 4.2 Critical Playwright against hosted Supabase and the public Worker
+      passes — public critical flow repeated 5/5, then fresh full public suite
+      4/4 on 2026-08-01; exact record in
+      `context/evidence/builder-public-verification-2026-08-01.md`
 
 #### Manual
 
@@ -178,15 +177,14 @@ npm run test:e2e
 
 #### Automated
 
-- [x] 5.1 Local gates and the GitHub `quality` job pass — hosted `e2e` and `rls`
-      are not marked green until repository Secrets are configured and one full
-      run passes all three jobs.
+- [x] 5.1 Local gates and full GitHub CI pass — `quality`, hosted `e2e` and
+      `rls` are green for merge commit `28bc365` in run `30715121885`.
 - [x] 5.2 Hosted RLS and E2E gates pass locally against hosted Supabase
 
 #### Manual
 
-- [ ] 5.3 Deploy the tested SHA, rerun the public critical flow, then complete
-      public smoke and screenshots
+- [x] 5.3 Deploy the tested revision, rerun the public critical flow, and
+      capture public smoke/screenshots
 - [ ] 5.4 Mission Log evidence package submitted
 
 ## Pause checkpoint — 2026-07-31
@@ -215,5 +213,7 @@ npm run test:e2e
 - Dwa uzupełniające indeksy FK są przygotowane w osobnej migracji. Bieżące
   połączenie MCP zachowało tryb read-only mimo odświeżenia OAuth, więc zdalne
   zastosowanie tej nieblokującej optymalizacji pozostaje do nowej sesji.
-- Nadal nieukończone: publiczny Cloudflare Worker, publiczny signup/e-mail smoke,
-  finalne screenshoty z wdrożenia i wysłanie formularzy.
+- Nadal nieukończone: publiczny signup/e-mail smoke, decyzja o Leaked Password
+  Protection, zaufanie lokalnemu hookowi M3 i wysłanie formularzy. Worker,
+  publiczny E2E i screenshoty są udokumentowane w
+  `context/evidence/builder-public-verification-2026-08-01.md`.

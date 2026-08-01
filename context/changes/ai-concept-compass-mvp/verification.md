@@ -15,10 +15,10 @@ project and the public Cloudflare Worker.
 | Protected coverage scope          | pass   | 100% statements/branches/functions/lines                                                              |
 | Cloudflare Worker build           | pass   | `npm run build`                                                                                       |
 | Post-edit learner context         | pass   | Critical Chromium flow preserves the edited card's order and verifies its Polish status and focus     |
-| Public critical Playwright        | fail   | Public Worker run stops after card edit: expected card position `3`, received `9`; deploy a tested SHA and rerun before accepting public evidence |
-| Local responsive/keyboard/console | pass   | 360 px no overflow, mobile CRUD, expected focus order, zero console errors                            |
-| GitHub Actions quality            | pass   | [quality job in run 30711961269](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30711961269/job/91400869696) |
-| Hosted CI E2E and RLS             | blocked | [run 30711961269](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30711961269) stops before both suites because the required GitHub Actions Secrets are unset; it is not green evidence |
+| Public critical Playwright        | pass   | Fresh full public run: auth, CRUD/review/recommendation, recovery and seed — 4/4 passed; see [verification record](../../evidence/builder-public-verification-2026-08-01.md) |
+| Public responsive/keyboard/console | pass  | Desktop and 360 px screenshots, keyboard focus probe, zero unexpected console or uncaught page errors |
+| GitHub Actions quality            | pass   | [quality job in green merge CI](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30715121885/job/91409300678) |
+| Hosted CI E2E and RLS             | pass   | [run 30715121885](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30715121885) has green `e2e` and `rls` jobs |
 
 ## Hosted/manual evidence
 
@@ -26,20 +26,20 @@ project and the public Cloudflare Worker.
 | --------------------------------------------- | ----------------------------------------------------------------------------- |
 | Hosted migration, 10 templates and FK indexes | pass                                                                          |
 | Supabase security advisor                     | warn: leaked-password protection disabled                                     |
-| Public Worker URL                             | reachable: <https://ai-concept-compass.dudziak-michal.workers.dev>; critical E2E is not accepted as passing |
-| Cloudflare deployment                         | deployed: version `309c17bc-2fef-4c4c-b443-10c5a24f6a29`, 2026-08-01 17:00:35 UTC; not accepted as a functional public-flow proof |
+| Public Worker URL                             | verified: <https://ai-concept-compass.dudziak-michal.workers.dev>; fresh public E2E passes 4/4 |
+| Cloudflare deployment                         | verified: deployment `8c09f7d2-a731-497f-a8e3-4223ab652ff6`, version `8908bbab-5dfb-47e4-9edd-dc55b3fa5561`, 2026-08-01 19:20:37 UTC |
 | Signup email confirmation smoke               | pending a real inbox                                                          |
-| Public mobile, keyboard and console smoke     | pending final visual evidence                                                 |
-| Final screenshots and Mission Log submission  | pending                                                                       |
+| Public mobile, keyboard and console smoke     | pass; screenshots and clean probes in builder public verification record     |
+| Final screenshots                             | pass; public sign-in, dashboard, mobile and review/recommendation captured   |
+| Mission Log submission                        | pending; requires personal fields and explicit final submission               |
 
 ## Conclusion
 
-Local quality gates, hosted RLS and the current-code critical E2E are green,
-but the deployed public critical flow is **failing** after a card edit (expected
-position `3`, received `9`). The full GitHub Actions CI is also **not** green:
-`quality` passes while hosted `e2e` and `rls` are blocked before test execution
-by unset repository secrets. Certification-ready delivery is **not yet complete**
-until a tested SHA is deployed and the public flow is rerun successfully, one
-revision has green `quality`, `e2e` and `rls` jobs, and the fresh
-signup/e-mail-confirmation smoke, final public screenshots, Mission Log
-submission and leaked-password-protection decision are complete.
+Local quality gates, hosted RLS, current-code E2E and the deployed public flow
+are green. The canonical merge CI has green `quality`, `e2e` and `rls` jobs.
+Certification delivery is **not yet complete** only because the remaining
+user-owned certification actions are deliberately narrow: fresh
+signup/e-mail-confirmation smoke, a recorded Leaked Password Protection
+decision, trusted M3-hook observation, and the user-owned Mission Log
+submission. The full immutable/public record is
+[builder-public-verification-2026-08-01.md](../../evidence/builder-public-verification-2026-08-01.md).

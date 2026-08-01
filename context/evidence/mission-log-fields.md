@@ -33,17 +33,18 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
 ### Dowody pomocnicze do przygotowania przed wysłaniem
 
 - [x] URL repozytorium;
-- [ ] URL pełnego zielonego runu CI dla kanonicznego repozytorium — dodać
-      dopiero po sukcesie `quality`, `e2e` i `rls`; wcześniejsze runy nie są
-      dowodem, ponieważ hosted joby nie miały wymaganych Secrets;
+- [x] URL pełnego zielonego runu CI dla kanonicznego repozytorium:
+      <https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30715121885>
+      (`quality`, `e2e`, `rls` zielone dla merge commitu `28bc365`);
 - [x] URL wdrożenia: <https://ai-concept-compass.dudziak-michal.workers.dev>
-      (Cloudflare deployment `13e96ef5-d6fb-4d57-a5ad-7c55ba6dc63e`, version
-      `309c17bc-2fef-4c4c-b443-10c5a24f6a29`);
-- [ ] wymagane screenshoty w `context/evidence/screenshots/builder/`;
-- [x] lokalne kandydaty screenshotów: logowanie, pusty mobile dashboard,
-      załadowany desktop dashboard i wynik review;
-- [ ] screenshot realnego E2E na hosted Supabase;
-- [ ] finalny tekst komentarza bez deklarowania niezweryfikowanych wyników.
+      (Cloudflare deployment `8c09f7d2-a731-497f-a8e3-4223ab652ff6`, version
+      `8908bbab-5dfb-47e4-9edd-dc55b3fa5561`);
+- [x] wymagane screenshoty publiczne w `context/evidence/screenshots/builder/`:
+      sign-in, desktop dashboard, 360 px mobile dashboard i review/recommendation;
+- [x] świeży screenshot/wynik realnego E2E na hosted Supabase — 4/4 publiczne
+      testy; szczegóły w `builder-public-verification-2026-08-01.md`;
+- [ ] finalny tekst komentarza bez deklarowania niezweryfikowanych wyników oraz
+      wpisanie osobistych pól i wysłanie formularza.
 
 ## Architect — wspólny formularz M4/M5
 
