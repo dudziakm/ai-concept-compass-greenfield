@@ -9,19 +9,13 @@ pewności — działa przewidywalnie, tanio i jest w pełni testowalna.
 
 > **Stan 1 sierpnia 2026:** aplikacja działa publicznie na
 > [Cloudflare Workers](https://ai-concept-compass.dudziak-michal.workers.dev).
-> Hosted RLS oraz krytyczny E2E dla aktualnego kodu przeszły w kontrolowanym
-> środowisku, ale publiczny Worker nie jest obecnie dowodem tego przepływu: po
-> edycji karty publiczny E2E oczekiwał pozycji `3`, a otrzymał `9`. Należy
-> wdrożyć przetestowaną rewizję, następnie ponownie uruchomić publiczny flow i
-> dopiero wtedy uznać go za zielony. Końcowy smoke świeżej rejestracji z
-> prawdziwym e-mailem i screenshoty z publicznego środowiska pozostają osobnymi,
-> jawnymi krokami przed wysłaniem formularza.
-> Run `30662052616` nie jest dowodem zielonego pełnego CI: job `quality`
-> przeszedł, ale hosted `e2e` i `rls` zakończyły się przed testami, ponieważ
-> wymagane GitHub Actions Secrets nie były ustawione. Pełne CI będzie dowodem
-> dopiero po jednym runie z zielonymi jobami `quality`, `e2e` i `rls` dla
-> właściwej rewizji. Hosted RLS/E2E były dodatkowo wykonane lokalnie przeciwko
-> prawdziwemu projektowi Supabase.
+> Pełny CI dla merge commitu Buildera ([run 30715121885](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30715121885))
+> ma zielone `quality`, `e2e` i `rls`, a świeży, uwierzytelniony E2E przeciwko
+> publicznemu Workerowi przeszedł 4/4. Dokładne wersje Workera, URL-e i
+> screenshoty zapisuje [publiczny rekord weryfikacji](context/evidence/builder-public-verification-2026-08-01.md).
+> Świeża rejestracja z kliknięciem prawdziwego linku e-mail, decyzja o Leaked
+> Password Protection, zaufanie hookowi M3 i wysłanie formularza nadal wymagają
+> jawnego działania właściciela konta.
 
 ## Najważniejszy przepływ
 
