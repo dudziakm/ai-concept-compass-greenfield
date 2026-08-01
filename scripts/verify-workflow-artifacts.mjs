@@ -1,4 +1,8 @@
+import { execFile } from "node:child_process";
 import { access, readFile } from "node:fs/promises";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 
 const requiredFiles = [
   "AGENTS.md",
@@ -137,8 +141,25 @@ const roadmap = await load(roadmapPath);
 if (/^## Streams$/m.test(roadmap)) {
   errors.push(`${roadmapPath}: Streams must be omitted while the dependency graph is one chain`);
 }
-for (const slice of ["F-01", "S-01", "S-02", "S-03", "S-04"]) {
+const roadmapIds = ["F-01", "S-01", "S-02", "S-03", "S-04"];
+const allowedRoadmapStatuses = new Set(["proposed", "ready", "blocked", "done"]);
+for (const slice of roadmapIds) {
   requireText(roadmapPath, roadmap, `| ${slice} |`);
+}
+for (const id of roadmapIds) {
+  const row = roadmap.match(new RegExp(`^\\| ${id} \\|.*\\|\\s*(\\S+)\\s*\\|$`, "m"));
+  const detail = roadmap.match(new RegExp(`^### ${id}:.*?^- \\*\\*Status:\\*\\*\\s*(\\S+)\\s*$`, "ms"));
+  const rowStatus = row?.[1];
+  const detailStatus = detail?.[1];
+  if (!rowStatus || !allowedRoadmapStatuses.has(rowStatus)) {
+    errors.push(`${roadmapPath}: ${id} table status must be one of ${[...allowedRoadmapStatuses].join(", ")}`);
+  }
+  if (!detailStatus || !allowedRoadmapStatuses.has(detailStatus)) {
+    errors.push(`${roadmapPath}: ${id} detail status must be one of ${[...allowedRoadmapStatuses].join(", ")}`);
+  }
+  if (rowStatus && detailStatus && rowStatus !== detailStatus) {
+    errors.push(`${roadmapPath}: ${id} table status ${rowStatus} disagrees with detail status ${detailStatus}`);
+  }
 }
 
 const stackPath = "context/foundation/tech-stack.md";
@@ -164,9 +185,24 @@ const progressHeadings = [...plan.matchAll(/^## Progress$/gm)].length;
 if (progressHeadings !== 1) {
   errors.push(`${planPath}: expected exactly one ## Progress, found ${progressHeadings}`);
 }
-for (const phase of [1, 2, 3, 4, 5]) {
+const progressPhaseNames = [
+  "Planning and verified starter baseline",
+  "Identity, schema and ownership",
+  "Starter pack and private CRUD",
+  "Review engine and recommendation",
+  "Shared gates, deploy and evidence",
+];
+for (const [index, phaseName] of progressPhaseNames.entries()) {
+  const phase = index + 1;
   requireText(planPath, plan, `## Phase ${phase}:`);
-  requireText(planPath, plan, `### Phase ${phase}:`);
+  requireText(planPath, plan, `### Phase ${phase}: ${phaseName}`);
+}
+const progressSection = plan.slice(plan.indexOf("## Progress"));
+if ([...progressSection.matchAll(/^#### Automated$/gm)].length !== 5) {
+  errors.push(`${planPath}: expected five Progress/Automated headings`);
+}
+if ([...progressSection.matchAll(/^#### Manual$/gm)].length !== 5) {
+  errors.push(`${planPath}: expected five Progress/Manual headings`);
 }
 
 const changePath = "context/changes/ai-concept-compass-mvp/change.md";
@@ -188,6 +224,18 @@ for (const marker of [
   "imported without upstream Git history",
 ]) {
   requireText(bootstrapPath, bootstrap, marker);
+}
+const bootstrappedAt = bootstrap.match(/^bootstrapped_at:\s*(\S+)$/m)?.[1];
+try {
+  const { stdout } = await execFileAsync("git", ["log", "-1", "--format=%aI", "3397461"]);
+  const scaffoldCommittedAt = stdout.trim();
+  if (!bootstrappedAt || Number.isNaN(Date.parse(bootstrappedAt))) {
+    errors.push(`${bootstrapPath}: bootstrapped_at must be a valid ISO timestamp`);
+  } else if (Date.parse(bootstrappedAt) < Date.parse(scaffoldCommittedAt)) {
+    errors.push(`${bootstrapPath}: bootstrapped_at predates scaffold commit 3397461`);
+  }
+} catch {
+  errors.push(`${bootstrapPath}: cannot read scaffold commit 3397461`);
 }
 
 const testPlanPath = "context/foundation/test-plan.md";
@@ -211,6 +259,7 @@ const reviewerWorkflow = await load(reviewerWorkflowPath);
 for (const marker of [
   "branches: [main]",
   "permissions: {}",
+  "pull-requests: write",
   "github-actions[bot]",
   "AI Code Review Gate",
   "OPENROUTER_API_KEY",

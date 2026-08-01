@@ -1,4 +1,4 @@
-# MVP Project Analysis Report — 31 lipca 2026
+# MVP Project Analysis Report — 1 sierpnia 2026
 
 Wynik lokalnego audytu według kursowego `.claude/prompts/mvp-check.md`: **5/5
 (100%)**. Audyt ocenia fundamenty techniczne w repozytorium, nie status
@@ -30,13 +30,16 @@ rekomendacji. `ConceptService.createReview()` utrwala obliczony wynik, a
 
 `context/testing/test-plan.md` nazywa ryzyko błędnego scoringu/rekomendacji.
 `src/lib/scoring.test.ts` obejmuje wszystkie wyniki, dwie kolejne poprawne
-odpowiedzi, overconfidence, przeterminowanie, clamp i ranking. 50 testów
-przechodzi lokalnie, 3 hosted RLS są pomijane bez konfiguracji, a scoring ma
-100% branch coverage.
+odpowiedzi, overconfidence, przeterminowanie, clamp i ranking. 53 testy
+przechodzą lokalnie, hosted RLS przechodzi 3/3 na dwóch zwykłych kontach, a
+scoring ma 100% branch coverage.
 
-Ryzyko cross-boundary jest związane z
-`e2e/concept-review.spec.ts`; scenariusz jest gotowy, lecz jego realne wykonanie
-wymaga skonfigurowanego hosted Supabase i konta testowego.
+Ryzyko cross-boundary jest związane z `e2e/concept-review.spec.ts`; scenariusz
+przechodzi przeciwko hosted Supabase i publicznemu
+<https://ai-concept-compass.dudziak-michal.workers.dev>. Obejmuje auth,
+idempotentny starter pack, custom CRUD, review, rekomendację oraz sprzątanie
+danych. Powtórzenie 5/5 lokalnie i finalny publiczny run 3/3 nie wykazały
+niestabilności.
 
 ## 4. Authentication tied to a user — ✅
 
@@ -53,8 +56,8 @@ stacku, a `context/testing/test-plan.md` mapuje ryzyka na warstwy testów.
 
 ## Priorytetowe prace poza samym audytem technicznym
 
-1. Użytkownik loguje się do Supabase i Cloudflare, stosuje migrację i tworzy
-   potwierdzone konto E2E.
-2. Cztery sekrety trafiają do GitHub Actions; pełny E2E i CI muszą być zielone.
-3. Po wdrożeniu należy zebrać publiczny URL oraz screenshoty mobile, auth,
-   dashboardu i izolacji dwóch kont.
+1. Wykonać świeżą rejestrację i kliknąć prawdziwy link potwierdzający e-mail na
+   publicznym środowisku.
+2. Zebrać finalne publiczne screenshoty i dowód zielonego E2E do Mission Log.
+3. Podjąć świadomą decyzję o Supabase Leaked Password Protection, które advisor
+   raportuje jako wyłączone.

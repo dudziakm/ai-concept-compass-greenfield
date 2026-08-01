@@ -5,7 +5,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { ReviewInfrastructureError, toReviewError } from "./errors.js";
 import { formatErrorComment, formatReviewComment } from "./format-comment.js";
 import { reviewPullRequest } from "./reviewer.js";
-import { ReviewInputSchema, type ReviewInput, type ReviewResult } from "./schemas.js";
+import { MAX_INPUT_CHARS, ReviewInputSchema, type ReviewInput, type ReviewResult } from "./schemas.js";
 
 interface CliOptions {
   diffFile: string | undefined;
@@ -78,6 +78,21 @@ async function readInput(options: CliOptions): Promise<unknown> {
   }
 }
 
+function rejectOversizedReviewInput(rawInput: unknown): void {
+  if (typeof rawInput !== "object" || rawInput === null || Array.isArray(rawInput)) return;
+
+  const { title, body = "", diff } = rawInput as Record<string, unknown>;
+  if (typeof title !== "string" || typeof body !== "string" || typeof diff !== "string") return;
+
+  const totalChars = title.trim().length + body.length + diff.length;
+  if (totalChars > MAX_INPUT_CHARS) {
+    throw new ReviewInfrastructureError(
+      "INPUT_TOO_LARGE",
+      `Wejście review ma ${totalChars} znaków, a limit wynosi ${MAX_INPUT_CHARS}. Podziel Pull Request na mniejsze, samodzielnie reviewowalne zmiany.`,
+    );
+  }
+}
+
 async function writeOutput(path: string | undefined, content: string): Promise<void> {
   if (path) {
     try {
@@ -107,7 +122,9 @@ export async function runCli(
 
   try {
     options = parseOptions(args);
-    const input = ReviewInputSchema.parse(await readInput(options));
+    const rawInput = await readInput(options);
+    rejectOversizedReviewInput(rawInput);
+    const input = ReviewInputSchema.parse(rawInput);
     const result = await review(input);
     await writeOutput(options.outputFile, JSON.stringify(result, null, 2));
 

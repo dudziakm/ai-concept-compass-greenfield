@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { ReviewInfrastructureError } from "./errors.js";
 import { reviewPullRequest, type GenerateDecision } from "./reviewer.js";
+import type { ReviewScores } from "./schemas.js";
 
 const input = {
   title: "fix: safe change",
@@ -9,9 +10,18 @@ const input = {
   diff: "+export const answer = 42;",
 };
 
+const passingScores: ReviewScores = {
+  correctness: 8,
+  idiomaticity: 8,
+  complexity: 8,
+  "test-risk-coverage": 8,
+  documentation: 8,
+  "security-safety": 8,
+};
+
 function response(overrides: Partial<Awaited<ReturnType<GenerateDecision>>> = {}) {
   return {
-    decision: { verdict: "pass" as const, summary: "Zmiana jest bezpieczna.", findings: [] },
+    decision: { verdict: "pass" as const, summary: "Zmiana jest bezpieczna.", scores: passingScores, findings: [] },
     inputTokens: 100,
     outputTokens: 20,
     totalTokens: 120,
@@ -66,7 +76,7 @@ describe("reviewPullRequest", () => {
   it("odróżnia niezgodny output modelu od błędu wejścia", async () => {
     const generateDecision = vi.fn<GenerateDecision>().mockResolvedValue(
       response({
-        decision: { verdict: "pass", summary: "", findings: [] },
+        decision: { verdict: "pass", summary: "", scores: passingScores, findings: [] },
       }),
     );
 

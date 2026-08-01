@@ -5,7 +5,8 @@
 - [x] `context/team/opportunity-map.md` — fakty, inferencje, otwarte pytania i wariant no-build.
 - [x] `context/team/mom-test-validation.md` — neutralny plan walidacji i progi decyzji.
 - [x] `packages/code-reviewer` — TypeScript, AI SDK, OpenRouter, Zod, CLI 0/1/2.
-- [x] Limit wejścia 50k, jedno wywołanie, timeout 60 s, koszt ≤$0.20.
+- [x] Limit pełnego wejścia 50k JS `String.length`, fail-closed `INPUT_TOO_LARGE`, jedno wywołanie, timeout 60 s, koszt ≤$0.20.
+- [x] Lokalny kontrakt M5L3: sześć dokładnie nazwanych ocen `1..10`; pass wymaga każdej oceny ≥7 i braku findingu `critical`/`high`/`medium`, a `ERROR` pozostaje osobnym exit `2`.
 - [x] Sześć stałych eval cases i deterministyczny promptfoo baseline.
 - [x] Workflow z minimalnymi permissions, ochroną forków, sticky comment, labels i retry.
 - [x] Natywny czerwony/zielony check jako bramka — workflow implementuje zachowanie.
@@ -16,8 +17,8 @@
 
 - [ ] Każdy wcześniej ujawniony klucz OpenRouter unieważniony; nowy klucz utworzony.
 - [ ] Nowy `OPENROUTER_API_KEY` ustawiony jako Actions repository secret.
-- [ ] Workflow reviewera obecny na zaufanym `main`.
-- [ ] Pierwszy run zarejestrował check `AI Code Review Gate`.
+- [x] Workflow reviewera obecny na zaufanym `main`.
+- [x] Pierwszy run zarejestrował check `AI Code Review Gate` — [run 30663070207](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30663070207) potwierdził też sticky comment i `ai-cr:failed` dla kontrolowanego błędu bez sekretu.
 - [ ] Ruleset/branch protection wymaga `AI Code Review Gate` oraz deterministycznego CI.
 - [ ] Sprawdzono, że fork PR nie otrzymuje sekretu i nie wykonuje kodu head.
 

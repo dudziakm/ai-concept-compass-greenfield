@@ -122,6 +122,7 @@ describe("API route contract", () => {
 
     expect(response.status).toBe(500);
     expect(body).toContain("INTERNAL_ERROR");
+    expect(body).toContain("Nie udało się wczytać planu nauki");
     expect(body).not.toContain("database host");
   });
 

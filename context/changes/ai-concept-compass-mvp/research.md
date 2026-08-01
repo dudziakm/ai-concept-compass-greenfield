@@ -37,6 +37,14 @@ without making an LLM or local Docker a release dependency?
    require serial execution and explicit cleanup.
 8. Cloudflare Workers is the selected SSR target. Account login, secret entry,
    hosted migration and production promotion remain human-controlled steps.
+9. Closing an edit dialog without identifying the saved concept makes a long
+   collection difficult to resume. A temporary, accessible confirmation tied to
+   the unchanged card preserves learner context without adding a general
+   notification system or changing the collection's sort order.
+10. A bulk-created starter pack can give multiple concepts the same
+    `created_at` value. Ordering by that timestamp alone is therefore not
+    deterministic across refreshes; the concept identifier must be the stable
+    secondary key.
 
 ## Content boundary
 
@@ -57,5 +65,7 @@ weights are 20/24/28/14/14 percent.
 
 Proceed with the selected starter, pure scoring module, authenticated API
 routes, hosted Supabase RLS, one serial hosted E2E flow and separate local versus
-hosted evidence ledgers. LLM features, payments, teams, imports, notifications,
-gamification and advanced SRS remain outside MVP.
+hosted evidence ledgers. LLM features, payments, teams, imports, general
+notifications, gamification and advanced SRS remain outside MVP. The narrowly
+scoped post-edit confirmation is part of CRUD accessibility, not a notification
+feature.

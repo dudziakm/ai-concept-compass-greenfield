@@ -1,10 +1,29 @@
 import { toReviewError } from "../errors.js";
-import { ReviewInputSchema, type ReviewDecision, type ReviewDimension, type ReviewInput } from "../schemas.js";
+import {
+  ReviewInputSchema,
+  type ReviewDecision,
+  type ReviewDimension,
+  type ReviewInput,
+  type ReviewScores,
+} from "../schemas.js";
+
+const PASSING_SCORES: ReviewScores = {
+  correctness: 8,
+  idiomaticity: 8,
+  complexity: 8,
+  "test-risk-coverage": 8,
+  documentation: 8,
+  "security-safety": 8,
+};
 
 function fail(dimension: ReviewDimension, file: string, evidence: string, recommendation: string): ReviewDecision {
+  const scores = { ...PASSING_SCORES };
+  scores[dimension] = dimension === "security-safety" ? 1 : 4;
+
   return {
     verdict: "fail",
     summary: "Deterministyczny oracle wykrył blokujący wzorzec w kontrolowanym diffie.",
+    scores,
     findings: [
       {
         severity: dimension === "security-safety" ? "critical" : "medium",
@@ -69,6 +88,7 @@ export function runOfflineOracle(rawInput: unknown): ReviewDecision | ReturnType
   return {
     verdict: "pass",
     summary: "Kontrolowany diff spełnia deterministyczne oczekiwania baseline'u.",
+    scores: { ...PASSING_SCORES },
     findings: [],
   };
 }

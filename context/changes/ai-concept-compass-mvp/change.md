@@ -3,7 +3,7 @@ change_id: ai-concept-compass-mvp
 title: Deliver the AI Concept Compass MVP
 status: implementing
 created: 2026-07-31
-updated: 2026-07-31
+updated: 2026-08-01
 archived_at: null
 ---
 
@@ -30,3 +30,6 @@ self-assessment, and receive a deterministic next-topic recommendation.
 - `specs/` owns API, database and UI contracts.
 - `plan.md` owns implementation order and progress.
 - `verification.md` separates local executable evidence from hosted/manual work.
+- An edit confirmation keeps the learner's context: the saved concept retains its
+  list position, receives temporary focus and highlighting, and is announced to
+  assistive technology.

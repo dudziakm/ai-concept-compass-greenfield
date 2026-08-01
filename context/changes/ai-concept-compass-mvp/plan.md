@@ -8,7 +8,9 @@ matching code or retained evidence exists.
 Implement registration/login, private concepts, an idempotent ten-concept
 starter pack, calibrated reviews, a deterministic recommendation dashboard,
 tests, blocking CI and a Cloudflare Worker deployment. Do not add LLM calls,
-payments, teams, admin, imports, notifications, gamification or advanced SRS.
+payments, teams, admin, imports, general notifications, gamification or advanced
+SRS. A temporary, accessible confirmation after editing a concept is in scope
+because it preserves CRUD context.
 
 ## Phase 1: Planning and verified starter baseline
 
@@ -51,6 +53,10 @@ payments, teams, admin, imports, notifications, gamification or advanced SRS.
 - Every JSON write is validated by Zod.
 - Starter pack remains exactly ten template copies after retry.
 - The Polish dashboard supports empty/loading/error/create/edit/delete states.
+- Editing preserves the card's position and confirms the saved card with visible
+  focus and screen-reader feedback.
+- Collection ordering is stable for equal creation timestamps by using the
+  concept identifier as a secondary key.
 
 ### Phase 3: Work
 
@@ -59,6 +65,10 @@ payments, teams, admin, imports, notifications, gamification or advanced SRS.
 3. Implement `/api/concepts*` and `/api/starter-pack`.
 4. Implement accessible dashboard forms and busy-state protection.
 5. Add route-contract tests for 400/401/404/409/500.
+6. Keep post-edit learner context with a temporary saved-card status, highlight
+   and focus, covered by the critical browser journey.
+7. Add a deterministic secondary sort key so bulk-created concepts do not move
+   between dashboard refreshes.
 
 ## Phase 4: Review engine and recommendation
 
@@ -84,7 +94,10 @@ payments, teams, admin, imports, notifications, gamification or advanced SRS.
 - Hosted RLS proves isolation for two users.
 - Serial Playwright covers login, retry-safe pack, custom CRUD, review,
   recommendation and deletion against hosted persistence.
-- Public Worker URL passes desktop/mobile/keyboard/console smoke.
+- Public Worker URL requires desktop/mobile/keyboard/console smoke after the
+  tested SHA is deployed and the public critical E2E is rerun; the currently
+  deployed public flow fails after card edit (expected position `3`, received
+  `9`).
 - URLs and screenshots are mapped to Mission Log fields before submission.
 
 ### Phase 5: Work
@@ -111,50 +124,96 @@ npm run test:e2e
 
 ## Progress
 
-### Phase 1: Automated
+### Phase 1: Planning and verified starter baseline
+
+#### Automated
 
 - [x] 1.1 Planning-only repository state committed
 - [x] 1.2 Official starter imported after planning — 3397461
 - [x] 1.3 Starter provenance and final local quality baseline recorded
 
-### Phase 1: Manual
+#### Manual
 
 - [ ] 1.4 Product owner accepts scope and open questions
 
-### Phase 2: Automated
+### Phase 2: Identity, schema and ownership
+
+#### Automated
 
 - [x] 2.1 Auth and protected route implemented
 - [x] 2.2 Schema, RLS, templates and migration contract tests implemented
-- [ ] 2.3 Hosted two-user RLS matrix passes
+- [x] 2.3 Hosted two-user RLS matrix passes — 3/3 on 2026-08-01
 
-### Phase 2: Manual
+#### Manual
 
-- [ ] 2.4 Migration and auth settings reviewed in hosted Supabase
+- [x] 2.4 Migration and auth settings reviewed in hosted Supabase
 
-### Phase 3: Automated
+### Phase 3: Starter pack and private CRUD
+
+#### Automated
 
 - [x] 3.1 API contracts, starter idempotency and private CRUD implemented
 - [x] 3.2 Route-contract tests pass
+- [x] 3.4 Post-edit saved-card context is announced, focused and stays in list order
 
-### Phase 3: Manual
+#### Manual
 
-- [ ] 3.3 Desktop/mobile CRUD and busy/error states pass
+- [x] 3.3 Desktop/mobile CRUD and busy/error states pass
 
-### Phase 4: Automated
+### Phase 4: Review engine and recommendation
+
+#### Automated
 
 - [x] 4.1 Scoring and ranking suite passes
-- [ ] 4.2 Hosted critical Playwright scenario passes
+- [x] 4.2 Critical Playwright against hosted Supabase passes locally — repeated
+      5/5 on 2026-08-01; the deployed public Worker remains a separate failed
+      check after card edit (expected position `3`, received `9`) until a tested
+      SHA is deployed and rerun
 
-### Phase 4: Manual
+#### Manual
 
 - [ ] 4.3 Learner understands review and recommendation sequence
 
-### Phase 5: Automated
+### Phase 5: Shared gates, deploy and evidence
 
-- [x] 5.1 Local and CI quality gates pass — [run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616)
-- [ ] 5.2 Hosted RLS and E2E gates pass
+#### Automated
 
-### Phase 5: Manual
+- [x] 5.1 Local gates and the GitHub `quality` job pass — hosted `e2e` and `rls`
+      are not marked green until repository Secrets are configured and one full
+      run passes all three jobs.
+- [x] 5.2 Hosted RLS and E2E gates pass locally against hosted Supabase
 
-- [ ] 5.3 Public deploy smoke and screenshots complete
+#### Manual
+
+- [ ] 5.3 Deploy the tested SHA, rerun the public critical flow, then complete
+      public smoke and screenshots
 - [ ] 5.4 Mission Log evidence package submitted
+
+## Pause checkpoint — 2026-07-31
+
+- Publiczny draft PR z utwardzeniem dowodów i workflow reviewera:
+  <https://github.com/dudziakm/ai-concept-compass-greenfield/pull/1>
+  (`agent/harden-workflow-evidence`, `c0e803c`).
+- Lokalnie przechodzą workflow check, lint, typecheck, 50 testów/100% coverage
+  chronionej logiki, build, reviewer 18/18 i promptfoo offline 6/6.
+- Retry reviewera bez sekretu potwierdził sticky comment i `ai-cr:failed`; nie
+  zastępuje to wymaganego później PR-a z rzeczywistym findingiem oraz PR-a pass.
+- Nie oznaczać 2.3, 2.4, 4.2, 5.2–5.4 jako gotowych: Supabase MCP wymaga
+  restartu sesji, nie ma sekretów/kont hosted, a Cloudflare CLI nie jest
+  zalogowane. Pełny handoff workspace: `../HANDOFF-2026-07-31.md`.
+
+## Continuation checkpoint — 2026-08-01
+
+- Powstał osobny hosted projekt Supabase z zastosowaną migracją, 10 szablonami,
+  włączonym RLS i dwoma potwierdzonymi zwykłymi kontami testowymi.
+- Hosted RLS przechodzi 3/3; krytyczny Playwright przechodzi cały przepływ
+  auth → pakiet → custom CRUD → review → rekomendacja → delete i pięć kolejnych
+  powtórzeń bez niestabilności.
+- Mobile CRUD na 360 px, kolejność fokusu klawiatury i konsola bez błędów
+  przeszły lokalny smoke. Lokalne zrzuty kandydackie są w
+  `context/evidence/screenshots/builder/`.
+- Dwa uzupełniające indeksy FK są przygotowane w osobnej migracji. Bieżące
+  połączenie MCP zachowało tryb read-only mimo odświeżenia OAuth, więc zdalne
+  zastosowanie tej nieblokującej optymalizacji pozostaje do nowej sesji.
+- Nadal nieukończone: publiczny Cloudflare Worker, publiczny signup/e-mail smoke,
+  finalne screenshoty z wdrożenia i wysłanie formularzy.

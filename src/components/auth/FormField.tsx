@@ -12,6 +12,7 @@ interface FormFieldProps {
   type?: string;
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
   placeholder?: string;
   error?: string;
   hint?: ReactNode;
@@ -26,6 +27,7 @@ export function FormField({
   type = "text",
   value,
   onChange,
+  disabled = false,
   placeholder,
   error,
   hint,
@@ -44,12 +46,14 @@ export function FormField({
           name={name ?? id}
           type={type}
           value={value}
+          disabled={disabled}
           onChange={(e) => {
             onChange(e.target.value);
           }}
           placeholder={placeholder}
           className={cn(
             inputBase,
+            "disabled:cursor-wait disabled:opacity-60",
             error ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
           )}
         />

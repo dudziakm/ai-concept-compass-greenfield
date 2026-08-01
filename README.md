@@ -7,13 +7,21 @@ odpowiedź ze wzorcem i otrzymuje deterministyczną rekomendację kolejnego tema
 MVP celowo nie używa LLM. Jego wartość — wykrywanie luk mastery i nadmiernej
 pewności — działa przewidywalnie, tanio i jest w pełni testowalna.
 
-> **Stan 31 lipca 2026:** aplikacja i pełny przepływ są zaimplementowane oraz
-> przechodzą lokalne bramki bez sekretów. Publiczny deploy, hosted E2E i runtime
-> RLS są celowo oznaczone jako oczekujące — wymagają projektu Supabase, dwóch
-> kont testowych i dostępu Cloudflare. Repo nie udaje zaliczenia tych kroków.
-> Publiczny [quality run 30662052616](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30662052616)
-> przechodzi Builder i lokalne bramki Championa; hosted RLS/E2E pozostają
-> czerwone wyłącznie z powodu nieustawionych sekretów.
+> **Stan 1 sierpnia 2026:** aplikacja działa publicznie na
+> [Cloudflare Workers](https://ai-concept-compass.dudziak-michal.workers.dev).
+> Hosted RLS oraz krytyczny E2E dla aktualnego kodu przeszły w kontrolowanym
+> środowisku, ale publiczny Worker nie jest obecnie dowodem tego przepływu: po
+> edycji karty publiczny E2E oczekiwał pozycji `3`, a otrzymał `9`. Należy
+> wdrożyć przetestowaną rewizję, następnie ponownie uruchomić publiczny flow i
+> dopiero wtedy uznać go za zielony. Końcowy smoke świeżej rejestracji z
+> prawdziwym e-mailem i screenshoty z publicznego środowiska pozostają osobnymi,
+> jawnymi krokami przed wysłaniem formularza.
+> Run `30662052616` nie jest dowodem zielonego pełnego CI: job `quality`
+> przeszedł, ale hosted `e2e` i `rls` zakończyły się przed testami, ponieważ
+> wymagane GitHub Actions Secrets nie były ustawione. Pełne CI będzie dowodem
+> dopiero po jednym runie z zielonymi jobami `quality`, `e2e` i `rls` dla
+> właściwej rewizji. Hosted RLS/E2E były dodatkowo wykonane lokalnie przeciwko
+> prawdziwemu projektowi Supabase.
 
 ## Najważniejszy przepływ
 
@@ -108,10 +116,10 @@ npm run test:coverage
 npm run build
 ```
 
-Lokalny pakiet ma testy scoringu, schematów, migracji oraz tras API i 100%
+Lokalny pakiet ma 53 testy scoringu, schematów, migracji oraz tras API i 100%
 pokrycia instrukcji, funkcji, linii oraz gałęzi silnika scoringu. Statyczny test
 migracji sprawdza RLS, cascade i idempotencję; osobny hosted harness wykonuje
-rzeczywistą macierz dwóch użytkowników.
+rzeczywistą macierz dwóch użytkowników. 1 sierpnia 2026 macierz przeszła 3/3.
 
 E2E wymaga potwierdzonego konta testowego oraz zmiennych
 `E2E_USER_EMAIL`/`E2E_USER_PASSWORD`:
@@ -124,7 +132,8 @@ npm run test:e2e
 Setup Playwright loguje konto raz do `storageState` i czyści jego dane. Główny
 scenariusz przechodzi przez prawdziwe auth, routing, API i bazę: pakiet → edycja
 → review → rekomendacja → usunięcie. Artefakty uwierzytelnienia są ignorowane
-przez Git. Sama trasa rejestracji ma test integracyjny; pełna rejestracja z
+przez Git. Krytyczny scenariusz przeszedł również pięć kolejnych powtórzeń bez
+niestabilności. Sama trasa rejestracji ma test integracyjny; pełna rejestracja z
 potwierdzeniem e-mail pozostaje manualnym testem hosted, ponieważ zależy od
 zewnętrznego dostawcy poczty.
 
@@ -140,6 +149,20 @@ RLS_USER_B_EMAIL=... RLS_USER_B_PASSWORD=... npm run test:rls
 CI wymaga czterech sekretów E2E (`SUPABASE_URL`, `SUPABASE_KEY`,
 `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`) oraz danych dwóch kont `RLS_USER_A_*` i
 `RLS_USER_B_*`. Quality, E2E i RLS są osobnymi bramkami merge.
+
+### Hook jakości po edycji (M3L3)
+
+Projektowy hook Codexa w [`.codex/hooks.json`](.codex/hooks.json) reaguje tylko
+po wywołaniu narzędzia `apply_patch`. Uruchamia
+[`scripts/post-edit-quality.sh`](scripts/post-edit-quality.sh), który odnajduje
+root repozytorium przez Git, a następnie wykonuje szybkie `npm run lint` i
+`npm run typecheck`. Handler ma limit 120 sekund. To lokalny feedback po edycji,
+nie zamiennik testów, CI, review ani sprawdzeń hosted.
+
+Codex nie uruchomi nowego hooka automatycznie: użytkownik musi ręcznie otworzyć
+`/hooks`, sprawdzić dokładną definicję projektu i ją zaufać (trust). Zmiana lub
+brak trustu oznacza, że hook pozostaje pominięty. Skrypt nie odczytuje ani nie
+loguje plików `.env`.
 
 ## Wdrożenie na Cloudflare Workers
 

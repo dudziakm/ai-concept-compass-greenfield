@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { BookOpenCheck, Brain, CircleAlert, Pencil, Plus, Sparkles, Target, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { BookOpenCheck, Brain, CheckCircle2, CircleAlert, Pencil, Plus, Sparkles, Target, Trash2 } from "lucide-react";
 import { ConceptForm } from "@/components/dashboard/ConceptForm";
 import { ReviewPanel } from "@/components/dashboard/ReviewPanel";
 import { DOMAIN_LABELS } from "@/lib/domain-labels";
+import { cn } from "@/lib/utils";
 import type { Concept, ConceptDomain, DashboardData, ReviewOutcome } from "@/types";
 
 interface ErrorPayload {
@@ -29,6 +30,10 @@ export default function ConceptDashboard() {
   const [editingConcept, setEditingConcept] = useState<Concept | null | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [savedConcept, setSavedConcept] = useState<{ id: string; title: string } | null>(null);
+  const [dashboardError, setDashboardError] = useState(false);
+  const [isDashboardLoading, setIsDashboardLoading] = useState(true);
+  const conceptButtonRefs = useRef(new Map<string, HTMLButtonElement>());
 
   useEffect(() => {
     let active = true;
@@ -36,26 +41,64 @@ export default function ConceptDashboard() {
       .then((data) => {
         if (active) setDashboard(data);
       })
-      .catch((reason: unknown) => {
-        if (active) setError(reason instanceof Error ? reason.message : "Nie udało się wczytać dashboardu");
+      .catch(() => {
+        if (active) setDashboardError(true);
+      })
+      .finally(() => {
+        if (active) setIsDashboardLoading(false);
       });
     return () => {
       active = false;
     };
   }, []);
 
+  useEffect(() => {
+    if (!savedConcept) return;
+
+    const button = conceptButtonRefs.current.get(savedConcept.id);
+    if (!button) return;
+
+    button.focus({ preventScroll: true });
+    button.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [dashboard, savedConcept]);
+
+  useEffect(() => {
+    if (!savedConcept) return;
+
+    const timeout = window.setTimeout(() => {
+      setSavedConcept(null);
+    }, 5000);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [savedConcept]);
+
+  async function retryDashboard() {
+    setIsDashboardLoading(true);
+    setDashboardError(false);
+    try {
+      setDashboard(await fetchDashboard());
+    } catch {
+      setDashboardError(true);
+    } finally {
+      setIsDashboardLoading(false);
+    }
+  }
+
   async function refresh() {
     const data = await fetchDashboard();
     setDashboard(data);
   }
 
-  async function runAction(action: () => Promise<void>) {
+  async function runAction<T>(action: () => Promise<T>) {
     setBusy(true);
     setError(null);
     try {
-      await action();
+      return await action();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Nie udało się wykonać operacji");
+      return undefined;
     } finally {
       setBusy(false);
     }
@@ -75,16 +118,19 @@ export default function ConceptDashboard() {
     checkQuestion: string;
     answerPattern: string;
   }) {
-    await runAction(async () => {
+    const savedEdit = await runAction(async () => {
       const path = editingConcept ? `/api/concepts/${editingConcept.id}` : "/api/concepts";
-      await requestJson(path, {
+      const response = await requestJson<{ concept: Concept }>(path, {
         method: editingConcept ? "PATCH" : "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(input),
       });
       setEditingConcept(undefined);
       await refresh();
+      return editingConcept ? response.concept : null;
     });
+
+    if (savedEdit) setSavedConcept(savedEdit);
   }
 
   async function deleteConcept(concept: Concept) {
@@ -108,7 +154,7 @@ export default function ConceptDashboard() {
     });
   }
 
-  if (!dashboard && !error) {
+  if (isDashboardLoading && !dashboard) {
     return (
       <main className="mx-auto max-w-7xl px-5 py-10" aria-live="polite">
         <div className="animate-pulse space-y-5">
@@ -116,6 +162,37 @@ export default function ConceptDashboard() {
           <div className="h-52 rounded-3xl bg-slate-200" />
         </div>
         <span className="sr-only">Wczytuję Twoją naukę…</span>
+      </main>
+    );
+  }
+
+  if (dashboardError && !dashboard) {
+    return (
+      <main className="mx-auto max-w-2xl px-5 py-10">
+        <section
+          role="alert"
+          className="rounded-3xl border border-rose-200 bg-rose-50 p-6 text-rose-950 shadow-sm sm:p-8"
+        >
+          <div className="flex items-start gap-3">
+            <CircleAlert className="mt-0.5 size-6 shrink-0" />
+            <div>
+              <h1 className="text-2xl font-black">Nie udało się wczytać Twojego planu nauki</h1>
+              <p className="mt-2 leading-7">
+                Dane nie zostały zmienione. Sprawdź połączenie i spróbuj ponownie. Jeśli problem wróci, odśwież stronę.
+              </p>
+              <button
+                type="button"
+                disabled={isDashboardLoading}
+                onClick={() => {
+                  void retryDashboard();
+                }}
+                className="mt-5 rounded-xl bg-rose-900 px-5 py-3 font-bold text-white transition hover:bg-rose-800 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isDashboardLoading ? "Wczytuję…" : "Spróbuj ponownie"}
+              </button>
+            </div>
+          </div>
+        </section>
       </main>
     );
   }
@@ -152,6 +229,21 @@ export default function ConceptDashboard() {
             <p className="font-bold">Nie udało się</p>
             <p className="text-sm">{error}</p>
           </div>
+        </div>
+      )}
+
+      {savedConcept && (
+        <div
+          id="concept-save-status"
+          role="status"
+          aria-live="polite"
+          className="mt-6 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-950"
+        >
+          <CheckCircle2 className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+          <p className="text-sm leading-6">
+            <span className="font-bold">Zapisano zmiany.</span> Pojęcie „{savedConcept.title}” pozostaje na swoim
+            miejscu.
+          </p>
         </div>
       )}
 
@@ -233,51 +325,64 @@ export default function ConceptDashboard() {
               <span className="text-sm text-slate-500">Wybierz temat do powtórki</span>
             </div>
             <div className="mt-5 grid gap-3 md:grid-cols-2">
-              {dashboard.concepts.map((concept) => (
-                <article
-                  key={concept.id}
-                  className={`rounded-2xl border p-4 transition ${activeConcept?.id === concept.id ? "border-cyan-400 bg-cyan-50/60" : "border-slate-200"}`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedId(concept.id);
-                    }}
-                    className="w-full text-left"
+              {dashboard.concepts.map((concept) => {
+                const isSaved = savedConcept?.id === concept.id;
+
+                return (
+                  <article
+                    key={concept.id}
+                    aria-describedby={isSaved ? "concept-save-status" : undefined}
+                    className={cn(
+                      "rounded-2xl border p-4 transition",
+                      activeConcept?.id === concept.id ? "border-cyan-400 bg-cyan-50/60" : "border-slate-200",
+                      isSaved && "border-emerald-400 bg-emerald-50/70 ring-2 ring-emerald-200",
+                    )}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="font-bold text-slate-950">{concept.title}</h3>
-                      <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold">
-                        {Math.round(concept.currentPriority)}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-xs font-semibold text-cyan-800">{DOMAIN_LABELS[concept.domain]}</p>
-                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{concept.description}</p>
-                  </button>
-                  <div className="mt-3 flex justify-end gap-1 border-t border-slate-100 pt-3">
                     <button
                       type="button"
-                      disabled={busy}
-                      onClick={() => {
-                        setEditingConcept(concept);
+                      ref={(element) => {
+                        if (element) conceptButtonRefs.current.set(concept.id, element);
+                        else conceptButtonRefs.current.delete(concept.id);
                       }}
-                      aria-label={`Edytuj ${concept.title}`}
-                      className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
+                      onClick={() => {
+                        setSelectedId(concept.id);
+                      }}
+                      className="w-full rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
                     >
-                      <Pencil className="size-4" />
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="font-bold text-slate-950">{concept.title}</h3>
+                        <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold">
+                          {Math.round(concept.currentPriority)}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-xs font-semibold text-cyan-800">{DOMAIN_LABELS[concept.domain]}</p>
+                      <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{concept.description}</p>
                     </button>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => deleteConcept(concept)}
-                      aria-label={`Usuń ${concept.title}`}
-                      className="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <Trash2 className="size-4" />
-                    </button>
-                  </div>
-                </article>
-              ))}
+                    <div className="mt-3 flex justify-end gap-1 border-t border-slate-100 pt-3">
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => {
+                          setEditingConcept(concept);
+                        }}
+                        aria-label={`Edytuj ${concept.title}`}
+                        className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <Pencil className="size-4" />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => deleteConcept(concept)}
+                        aria-label={`Usuń ${concept.title}`}
+                        className="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </section>
         </>

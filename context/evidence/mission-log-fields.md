@@ -17,9 +17,9 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
 - [ ] zgoda na wykorzystanie projektu do promocji * — decyzja użytkownika
       (`Tak` albo `Nie`);
 - [x] Repozytorium projektu na GitHub * —
-      <https://github.com/dudziakm/ai-concept-compass>;
-- [ ] publiczny URL wdrożonej aplikacji — opcjonalny w formularzu, ale wymagany
-      przez wewnętrzne kryterium sprintu;
+      <https://github.com/dudziakm/ai-concept-compass-greenfield>;
+- [x] publiczny URL wdrożonej aplikacji —
+      <https://ai-concept-compass.dudziak-michal.workers.dev>;
 - [ ] screenshot ekranu logowania — opcjonalny;
 - [ ] screenshot strony głównej / ekranu po zalogowaniu *;
 - [ ] screenshot głównej funkcjonalności nr 1 * — rekomendowany: ocena pojęcia
@@ -33,10 +33,15 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
 ### Dowody pomocnicze do przygotowania przed wysłaniem
 
 - [x] URL repozytorium;
-- [x] URL jakościowego joba CI:
-      <https://github.com/dudziakm/ai-concept-compass/actions/runs/30655754312/job/91239593977>;
-- [ ] URL wdrożenia;
+- [ ] URL pełnego zielonego runu CI dla kanonicznego repozytorium — dodać
+      dopiero po sukcesie `quality`, `e2e` i `rls`; wcześniejsze runy nie są
+      dowodem, ponieważ hosted joby nie miały wymaganych Secrets;
+- [x] URL wdrożenia: <https://ai-concept-compass.dudziak-michal.workers.dev>
+      (Cloudflare deployment `13e96ef5-d6fb-4d57-a5ad-7c55ba6dc63e`, version
+      `309c17bc-2fef-4c4c-b443-10c5a24f6a29`);
 - [ ] wymagane screenshoty w `context/evidence/screenshots/builder/`;
+- [x] lokalne kandydaty screenshotów: logowanie, pusty mobile dashboard,
+      załadowany desktop dashboard i wynik review;
 - [ ] screenshot realnego E2E na hosted Supabase;
 - [ ] finalny tekst komentarza bez deklarowania niezweryfikowanych wyników.
 

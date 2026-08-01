@@ -11,6 +11,6 @@ export const GET: APIRoute = async (context) => {
   try {
     return json(await api.service.dashboard(api.user.id, new Date()));
   } catch {
-    return errorResponse(500, "INTERNAL_ERROR", "Nie udało się przygotować rekomendacji");
+    return errorResponse(500, "INTERNAL_ERROR", "Nie udało się wczytać planu nauki. Spróbuj ponownie za chwilę.");
   }
 };

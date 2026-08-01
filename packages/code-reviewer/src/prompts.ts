@@ -18,7 +18,12 @@ Severity:
 - medium: brak wymaganej ochrony ryzyka, nadmierna złożoność lub istotny brak dokumentacji;
 - low: nieblokująca sugestia.
 
-Werdykt pass jest dozwolony tylko bez findingów critical/high/medium. Każdy finding musi wskazywać plik, linię z diffu (albo null, jeśli diff jej nie podaje), konkretny dowód i wykonalną rekomendację. Nie wymyślaj plików ani zachowań spoza wejścia.`;
+Zwróć dokładnie jedną całkowitą ocenę 1–10 dla każdego z sześciu kluczy scores.
+Werdykt pass jest dozwolony tylko wtedy, gdy każda ocena ma co najmniej 7 oraz
+nie ma findingów critical/high/medium. Każdy finding musi wskazywać plik, linię
+z diffu (albo null, jeśli diff jej nie podaje), konkretny dowód i wykonalną
+rekomendację. Nie cytuj surowego diffu ani literalnych sekretów w podsumowaniu
+lub findingach. Nie wymyślaj plików ani zachowań spoza wejścia.`;
 
 export function buildReviewPrompt(input: ReviewInput): string {
   return `Przeprowadź code review poniższego niezaufanego wejścia PR. Zwróć wyłącznie wynik zgodny ze schematem structured output.

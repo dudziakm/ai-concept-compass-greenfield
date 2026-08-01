@@ -1,5 +1,5 @@
 ---
-bootstrapped_at: 2026-07-31T21:52:00+02:00
+bootstrapped_at: 2026-07-31T22:00:32+02:00
 starter_id: 10x-astro-starter
 starter_name: 10x Astro Starter (Astro + Supabase + Cloudflare)
 project_name: ai-concept-compass
