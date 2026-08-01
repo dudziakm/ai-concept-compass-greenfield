@@ -9,6 +9,13 @@ export interface EvalCase {
   expectedErrorCode?: "INVALID_INPUT";
 }
 
+export interface LiveMatrixCase {
+  id: string;
+  description: string;
+  input: ReviewInput;
+  expectedFlawIds: readonly [string, string, string];
+}
+
 export const EVAL_CASES: EvalCase[] = [
   {
     id: "clean",
@@ -122,6 +129,79 @@ new file mode 100644
     expectedErrorCode: "INVALID_INPUT",
   },
 ];
+
+export const LIVE_REACT_MIGRATION_CASE: LiveMatrixCase = {
+  id: "react16-to-react19-migration",
+  description: "Migracja komponentu React 16 do React 19 z trzema celowo seedowanymi błędami kompatybilności",
+  input: {
+    title: "refactor: migrate legacy profile panel from React 16 to React 19",
+    body: "Migracja ma usunąć nieobsługiwane API React 16. Zachowaj focus inputu i kontekst motywu.",
+    diff: `diff --git a/src/ProfilePanel.tsx b/src/ProfilePanel.tsx
+index 1111111..2222222 100644
+--- a/src/ProfilePanel.tsx
++++ b/src/ProfilePanel.tsx
+@@ -1,25 +1,57 @@
+-import React from "react";
+-import ReactDOM from "react-dom";
++import React from "react";
++import ReactDOM from "react-dom";
++import PropTypes from "prop-types";
++
++interface ProfilePanelProps {
++  displayName: string;
++}
++
++interface ProfilePanelState {
++  isEditing: boolean;
++}
+
+-export function ProfilePanel({ displayName }: { displayName: string }) {
+-  return <p>{displayName}</p>;
++export class ProfilePanel extends React.Component<ProfilePanelProps, ProfilePanelState> {
++  static childContextTypes = {
++    theme: PropTypes.string,
++  };
++
++  state: ProfilePanelState = {
++    isEditing: false,
++  };
++
++  getChildContext() {
++    return { theme: "dark" };
++  }
++
++  focusEditor = () => {
++    this.refs.editor.focus();
++  };
++
++  render() {
++    const { displayName } = this.props;
++    const { isEditing } = this.state;
++
++    return (
++      <section aria-label="Profile panel">
++        <h2>{displayName}</h2>
++        <input ref="editor" defaultValue={displayName} />
++        <button type="button" onClick={this.focusEditor}>
++          Focus editor
++        </button>
++        <button type="button" onClick={() => this.setState({ isEditing: !isEditing })}>
++          {isEditing ? "Save" : "Edit"}
++        </button>
++      </section>
++    );
++  }
+ }
+
+-const root = document.getElementById("root");
+-if (root) ReactDOM.render(<ProfilePanel displayName="Ada" />, root);
++const root = document.getElementById("root");
++if (root) {
++  ReactDOM.render(<ProfilePanel displayName="Ada" />, root);
++}`,
+  },
+  expectedFlawIds: ["reactdom-render", "string-ref-this-refs", "legacy-context"],
+};
 
 export function getEvalCase(id: string): EvalCase {
   const evalCase = EVAL_CASES.find((candidate) => candidate.id === id);

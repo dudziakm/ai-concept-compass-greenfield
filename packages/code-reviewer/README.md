@@ -74,7 +74,7 @@ src/prompts.ts          system prompt i izolacja niezaufanego PR-a
 src/reviewer.ts         reusable single-shot reviewer + usage/cost/timeout
 src/index.ts            cienki stdin/file CLI i kody 0/1/2
 src/format-comment.ts   stały komentarz GitHub z markerem
-src/evals/              6 fixture'ów, offline oracle, provider promptfoo
+src/evals/              6 fixture'ów offline oraz kontrakt live matrix M5L3
 ```
 
 Świadomie nie używamy `ToolLoopAgent`: reviewer nie potrzebuje tools, a wymagany kontrakt dopuszcza dokładnie jedno wywołanie. To ogranicza koszt, prompt injection i blast radius.
@@ -116,13 +116,35 @@ git diff --no-ext-diff --unified=80 origin/main...HEAD \
   | PR_TITLE="feat: przykład" PR_BODY="Opis" npm run review
 ```
 
-Live promptfoo używa tego samego reviewera dla sześciu przypadków, czyli wykonuje sześć osobnych review:
+Live promptfoo dla sześciu kontraktowych fixture'ów nadal może użyć tego samego
+reviewera (globalny model pozostaje tylko kompatybilnym ustawieniem CLI):
 
 ```bash
 PROMPTFOO_LIVE=1 npm run eval:promptfoo
 ```
 
 Każdy live case nadal ma limit `$0.20/review`; pełny run może więc kosztować do `$1.20`. Nie uruchamiaj go automatycznie bez świadomego budżetu.
+
+### M5L3 — manualna macierz trzech modeli
+
+`promptfoo.live.yaml` nie jest uruchamiany przez CI. Stosuje ten sam reviewer
+do jednego złożonego diffu React 16 → React 19 na trzech jawnie wybranych
+modelach: `z-ai/glm-5.1`, `deepseek/deepseek-v4-flash` i
+`mistralai/mistral-small-3.2-24b-instruct`. Fixture ma dokładnie trzy seedowane
+blokery: `ReactDOM.render`, string ref z `this.refs` oraz legacy context.
+
+```bash
+PROMPTFOO_LIVE_OPT_IN=1 npm run eval:matrix
+```
+
+Polecenie odmawia przed każdym wywołaniem bez jawnego opt-inu albo
+`OPENROUTER_API_KEY`. Każdy wynik przechodzi przez osobno przypięty
+LLM-as-a-judge `openrouter:openai/gpt-4o-mini` (temperatura `0`), który wymaga
+wszystkich trzech findingów i sześciu ocen. To dodaje trzy wywołania judge'a
+poza limitem `$0.20` pojedynczego reviewera, dlatego przed runem sprawdź aktualne
+ceny/model catalog i zapisz model IDs, wynik, koszt i czas bez klucza ani diffu.
+
+Zerokosztowy `npm run eval:promptfoo` pozostaje jedynym evalem w CI.
 
 ## CI
 
