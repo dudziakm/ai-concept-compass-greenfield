@@ -29,6 +29,8 @@ export default function ConceptDashboard() {
   const [editingConcept, setEditingConcept] = useState<Concept | null | undefined>(undefined);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dashboardError, setDashboardError] = useState(false);
+  const [isDashboardLoading, setIsDashboardLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
@@ -36,13 +38,28 @@ export default function ConceptDashboard() {
       .then((data) => {
         if (active) setDashboard(data);
       })
-      .catch((reason: unknown) => {
-        if (active) setError(reason instanceof Error ? reason.message : "Nie udało się wczytać dashboardu");
+      .catch(() => {
+        if (active) setDashboardError(true);
+      })
+      .finally(() => {
+        if (active) setIsDashboardLoading(false);
       });
     return () => {
       active = false;
     };
   }, []);
+
+  async function retryDashboard() {
+    setIsDashboardLoading(true);
+    setDashboardError(false);
+    try {
+      setDashboard(await fetchDashboard());
+    } catch {
+      setDashboardError(true);
+    } finally {
+      setIsDashboardLoading(false);
+    }
+  }
 
   async function refresh() {
     const data = await fetchDashboard();
@@ -108,7 +125,7 @@ export default function ConceptDashboard() {
     });
   }
 
-  if (!dashboard && !error) {
+  if (isDashboardLoading && !dashboard) {
     return (
       <main className="mx-auto max-w-7xl px-5 py-10" aria-live="polite">
         <div className="animate-pulse space-y-5">
@@ -116,6 +133,37 @@ export default function ConceptDashboard() {
           <div className="h-52 rounded-3xl bg-slate-200" />
         </div>
         <span className="sr-only">Wczytuję Twoją naukę…</span>
+      </main>
+    );
+  }
+
+  if (dashboardError && !dashboard) {
+    return (
+      <main className="mx-auto max-w-2xl px-5 py-10">
+        <section
+          role="alert"
+          className="rounded-3xl border border-rose-200 bg-rose-50 p-6 text-rose-950 shadow-sm sm:p-8"
+        >
+          <div className="flex items-start gap-3">
+            <CircleAlert className="mt-0.5 size-6 shrink-0" />
+            <div>
+              <h1 className="text-2xl font-black">Nie udało się wczytać Twojego planu nauki</h1>
+              <p className="mt-2 leading-7">
+                Dane nie zostały zmienione. Sprawdź połączenie i spróbuj ponownie. Jeśli problem wróci, odśwież stronę.
+              </p>
+              <button
+                type="button"
+                disabled={isDashboardLoading}
+                onClick={() => {
+                  void retryDashboard();
+                }}
+                className="mt-5 rounded-xl bg-rose-900 px-5 py-3 font-bold text-white transition hover:bg-rose-800 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isDashboardLoading ? "Wczytuję…" : "Spróbuj ponownie"}
+              </button>
+            </div>
+          </div>
+        </section>
       </main>
     );
   }

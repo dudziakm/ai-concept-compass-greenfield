@@ -2,14 +2,18 @@
 // seed: e2e/seed.spec.ts
 import { expect, test } from "@playwright/test";
 import { sameOriginHeaders } from "./support/request-headers";
+import { clearE2EConcepts, resetE2EStarterPack } from "./support/starter-pack";
 
 test.describe("Główny przepływ nauki", () => {
   test("pakiet, edycja, review i rekomendacja działają przez prawdziwe API i bazę", async ({ page }) => {
     const editedTitle = `Embeddings i RAG — E2E ${Date.now()}`;
+    const customTitle = `Własne pojęcie E2E ${Date.now()}`;
 
     try {
       // Załaduj idempotentny pakiet na pustym koncie.
       await page.goto("/dashboard");
+      await clearE2EConcepts(page);
+      await page.reload();
       const starterResponse = page.waitForResponse(
         (response) => response.url().endsWith("/api/starter-pack") && response.request().method() === "POST",
       );
@@ -30,7 +34,7 @@ test.describe("Główny przepływ nauki", () => {
       const customCreate = await page.request.post("/api/concepts", {
         headers: sameOriginHeaders(page),
         data: {
-          title: "Własne pojęcie E2E",
+          title: customTitle,
           domain: "ai-ml-fundamentals",
           description: "Pojęcie tworzone wyłącznie na czas scenariusza E2E.",
           checkQuestion: "Czy zapis przechodzi przez API do bazy?",
@@ -44,7 +48,7 @@ test.describe("Główny przepływ nauki", () => {
       expect(customRead.status()).toBe(200);
       const customUpdate = await page.request.patch(`/api/concepts/${customId}`, {
         headers: sameOriginHeaders(page),
-        data: { title: "Własne pojęcie E2E — zmienione" },
+        data: { title: `${customTitle} — zmienione` },
       });
       expect(customUpdate.status()).toBe(200);
       const customDelete = await page.request.delete(`/api/concepts/${customId}`, {
@@ -65,7 +69,7 @@ test.describe("Główny przepływ nauki", () => {
       await expect(page.getByText(editedTitle, { exact: true })).toBeVisible();
 
       // Wykonaj review i zweryfikuj biznesowy wynik mastery.
-      const editedConceptCard = page.locator("article").filter({
+      const editedConceptCard = page.getByRole("article").filter({
         has: page.getByRole("heading", { level: 3, name: editedTitle, exact: true }),
       });
       await editedConceptCard.getByRole("button").first().click();
@@ -87,15 +91,7 @@ test.describe("Główny przepływ nauki", () => {
       await page.getByRole("button", { name: `Usuń ${editedTitle}` }).click();
       await expect(page.getByText(editedTitle, { exact: true })).not.toBeVisible();
     } finally {
-      const response = await page.request.get("/api/concepts");
-      if (response.ok()) {
-        const payload = (await response.json()) as { concepts: { id: string }[] };
-        await Promise.all(
-          payload.concepts.map((concept) =>
-            page.request.delete(`/api/concepts/${concept.id}`, { headers: sameOriginHeaders(page) }),
-          ),
-        );
-      }
+      await resetE2EStarterPack(page);
     }
   });
 });

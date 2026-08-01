@@ -1,9 +1,9 @@
 import { expect, test as setup } from "@playwright/test";
-import { sameOriginHeaders } from "./support/request-headers";
+import { resetE2EStarterPack } from "./support/starter-pack";
 
 const authFile = "playwright/.auth/user.json";
 
-setup("authenticate E2E user and reset its concepts", async ({ page }) => {
+setup("authenticate E2E user and seed its starter pack", async ({ page }) => {
   const email = process.env.E2E_USER_EMAIL;
   const password = process.env.E2E_USER_PASSWORD;
   if (!email || !password) {
@@ -17,15 +17,9 @@ setup("authenticate E2E user and reset its concepts", async ({ page }) => {
   await page.waitForURL("**/dashboard");
   await expect(page.getByRole("heading", { name: "Co warto powtórzyć teraz?" })).toBeVisible();
 
-  const response = await page.request.get("/api/concepts");
-  expect(response.ok()).toBe(true);
-  const payload = (await response.json()) as { concepts: { id: string }[] };
-  for (const concept of payload.concepts) {
-    const deleted = await page.request.delete(`/api/concepts/${concept.id}`, {
-      headers: sameOriginHeaders(page),
-    });
-    expect(deleted.ok()).toBe(true);
-  }
+  const starterPack = await resetE2EStarterPack(page);
+  expect(starterPack.templateCount).toBe(10);
+  expect(starterPack.concepts).toHaveLength(10);
 
   await page.context().storageState({ path: authFile });
 });
