@@ -65,6 +65,7 @@ export const ReviewErrorSchema = z.object({
   error: z.object({
     code: z.enum([
       "INVALID_INPUT",
+      "INPUT_TOO_LARGE",
       "MISSING_API_KEY",
       "BUDGET_EXCEEDED",
       "TIMEOUT",

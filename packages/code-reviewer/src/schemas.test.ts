@@ -15,6 +15,34 @@ describe("ReviewInputSchema", () => {
     const input = { title: "x", body: "", diff: "a".repeat(MAX_INPUT_CHARS) };
     expect(ReviewInputSchema.safeParse(input).success).toBe(false);
   });
+
+  it("akceptuje dokładnie 50 tys. znaków z budżetem title i body", () => {
+    const input = {
+      title: "t".repeat(300),
+      body: "b".repeat(10_000),
+      diff: "d".repeat(39_700),
+    };
+    expect(ReviewInputSchema.safeParse(input).success).toBe(true);
+  });
+
+  it("odrzuca 50 001 znaków po wykorzystaniu budżetu title i body", () => {
+    const input = {
+      title: "t".repeat(300),
+      body: "b".repeat(10_000),
+      diff: "d".repeat(39_701),
+    };
+    expect(ReviewInputSchema.safeParse(input).success).toBe(false);
+  });
+
+  it("liczy Unicode według JavaScript String.length", () => {
+    const atLimit = { title: "t", body: "", diff: `${"💡".repeat(24_999)}a` };
+    const overLimit = { title: "t", body: "", diff: `${"💡".repeat(24_999)}aa` };
+
+    expect(atLimit.diff.length + atLimit.title.length).toBe(MAX_INPUT_CHARS);
+    expect(ReviewInputSchema.safeParse(atLimit).success).toBe(true);
+    expect(overLimit.diff.length + overLimit.title.length).toBe(MAX_INPUT_CHARS + 1);
+    expect(ReviewInputSchema.safeParse(overLimit).success).toBe(false);
+  });
 });
 
 describe("Definition of Done", () => {

@@ -14,7 +14,11 @@ Lokalny i CI-owy reviewer dla ścieżki 10xChampion. Przyjmuje tytuł PR-a, opis
 }
 ```
 
-`title + body + diff` ma twardy limit 50 000 znaków. Pusty diff, niepoprawny JSON i przekroczenie limitu kończą się kodem 2 przed wywołaniem modelu.
+`title + body + diff` ma twardy limit 50 000 jednostek JavaScript `String.length`.
+Przekroczenie pełnego budżetu kończy się bezpiecznym błędem `INPUT_TOO_LARGE` i
+kodem 2 przed wywołaniem modelu; należy podzielić Pull Request na mniejsze,
+samodzielnie reviewowalne zmiany. Reviewer nigdy nie skraca diffu po cichu ani
+nie zwraca częściowego wyniku `pass`.
 
 ### Wynik
 
@@ -77,6 +81,8 @@ src/evals/              6 fixture'ów, offline oracle, provider promptfoo
 - koszt z OpenRouter usage jest weryfikowany po odpowiedzi; przy braku pola `cost` używana jest estymacja według górnych stawek;
 - `data_collection: deny`, `zdr: true`, `require_parameters: true`;
 - diff, klucz i nagłówki nie są logowane; log zawiera tylko verdict, liczbę findingów, koszt i czas;
+- GitHub Action ma osobny limit transportowy, ale każdy diff poza pełnym budżetem
+  reviewera kończy się `INPUT_TOO_LARGE` przed wywołaniem modelu;
 - workflow wykonuje reviewer z zaufanego commita bazowego. Kod head PR-a nie jest checkoutowany ani wykonywany z sekretem — jest czytany tylko przez `git diff`.
 
 Ustawienia routingu nie zastępują akceptacji polityki danych. Przed produkcją sprawdź aktualne warunki OpenRouter i konkretnego upstream providera.

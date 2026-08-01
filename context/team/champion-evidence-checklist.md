@@ -5,7 +5,7 @@
 - [x] `context/team/opportunity-map.md` — fakty, inferencje, otwarte pytania i wariant no-build.
 - [x] `context/team/mom-test-validation.md` — neutralny plan walidacji i progi decyzji.
 - [x] `packages/code-reviewer` — TypeScript, AI SDK, OpenRouter, Zod, CLI 0/1/2.
-- [x] Limit wejścia 50k, jedno wywołanie, timeout 60 s, koszt ≤$0.20.
+- [x] Limit pełnego wejścia 50k JS `String.length`, fail-closed `INPUT_TOO_LARGE`, jedno wywołanie, timeout 60 s, koszt ≤$0.20.
 - [x] Sześć stałych eval cases i deterministyczny promptfoo baseline.
 - [x] Workflow z minimalnymi permissions, ochroną forków, sticky comment, labels i retry.
 - [x] Natywny czerwony/zielony check jako bramka — workflow implementuje zachowanie.

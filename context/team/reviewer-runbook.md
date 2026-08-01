@@ -71,7 +71,7 @@ zatwierdzania PR-ów.
 ## 6. Awaria i rollback
 
 - **Exit 1:** napraw finding w kodzie; to nie jest incident providera.
-- **Exit 2 / ERROR:** sprawdź obecność sekretu, dostępność modelu, timeout, limit wejścia i koszt. Nie zmieniaj wyniku na `pass`.
+- **Exit 2 / ERROR:** sprawdź obecność sekretu, dostępność modelu, timeout, limit wejścia i koszt. Kod `INPUT_TOO_LARGE` oznacza fail-closed scope error: podziel PR; nie skracaj diffu po cichu i nie zmieniaj wyniku na `pass`.
 - **Model niedostępny:** ustaw kompatybilny `AI_REVIEW_MODEL` po live evalach i przeglądzie kosztu/ZDR; nie zwiększaj limitu `$0.20`.
 - **False positive:** udokumentuj przypadek w eval fixtures przed zmianą promptu; porównaj baseline przed/po.
 - **Pilny rollback:** wyłącz wymaganie checka w ruleset (jawny ślad administracyjny), a następnie wyłącz workflow. Nie zamieniaj czerwonego checka w milczący success.

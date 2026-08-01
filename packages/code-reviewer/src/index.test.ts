@@ -62,6 +62,35 @@ describe("CLI exit codes", () => {
     expect(exitCode).toBe(1);
   });
 
+  it("uruchamia review dla dokładnie 50 000 znaków", async () => {
+    const { inputPath, outputPath } = await paths({
+      title: "t",
+      body: "b",
+      diff: "d".repeat(49_998),
+    });
+    const review = vi.fn(async () => Promise.resolve(baseResult));
+
+    const exitCode = await runCli(["--input", inputPath, "--output", outputPath], review);
+
+    expect(exitCode).toBe(0);
+    expect(review).toHaveBeenCalledOnce();
+    expect(ReviewResultSchema.parse(JSON.parse(await readFile(outputPath, "utf8")) as unknown).verdict).toBe("pass");
+  });
+
+  it("liczy title po tym samym trimie co schema wejścia", async () => {
+    const { inputPath, outputPath } = await paths({
+      title: " t ",
+      body: "",
+      diff: "d".repeat(49_999),
+    });
+    const review = vi.fn(async () => Promise.resolve(baseResult));
+
+    const exitCode = await runCli(["--input", inputPath, "--output", outputPath], review);
+
+    expect(exitCode).toBe(0);
+    expect(review).toHaveBeenCalledOnce();
+  });
+
   it("zwraca 2 dla błędu schematu bez uruchamiania reviewera", async () => {
     const { inputPath, outputPath } = await paths({ title: "", body: "", diff: "" });
     const review = vi.fn(async () => Promise.resolve(baseResult));
@@ -71,5 +100,32 @@ describe("CLI exit codes", () => {
     expect(review).not.toHaveBeenCalled();
     const output = ReviewErrorSchema.parse(JSON.parse(await readFile(outputPath, "utf8")) as unknown);
     expect(output.error.code).toBe("INVALID_INPUT");
+  });
+
+  it("zwraca INPUT_TOO_LARGE dla 50 001 znaków i nie uruchamia reviewera", async () => {
+    const { inputPath, outputPath } = await paths({
+      title: "t",
+      body: "b",
+      diff: "d".repeat(49_999),
+    });
+    const markdownOutputPath = join(directory, "comment.md");
+    const review = vi.fn(async () => Promise.resolve(baseResult));
+
+    const exitCode = await runCli(
+      ["--input", inputPath, "--output", outputPath, "--markdown-output", markdownOutputPath],
+      review,
+    );
+
+    expect(exitCode).toBe(2);
+    expect(review).not.toHaveBeenCalled();
+
+    const output = ReviewErrorSchema.parse(JSON.parse(await readFile(outputPath, "utf8")) as unknown);
+    expect(output.error.code).toBe("INPUT_TOO_LARGE");
+    expect(output.error.message).toContain("50001");
+
+    const markdown = await readFile(markdownOutputPath, "utf8");
+    expect(markdown).toContain("<!-- AI-CODE-REVIEW -->");
+    expect(markdown).toContain("INPUT_TOO_LARGE");
+    expect(markdown).toContain("Podziel Pull Request");
   });
 });
