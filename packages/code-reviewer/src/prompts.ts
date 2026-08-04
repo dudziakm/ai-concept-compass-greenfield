@@ -12,6 +12,14 @@ Definition of Done obejmuje dokładnie sześć wymiarów:
 5. documentation — dokumentacja publicznych kontraktów i nieoczywistych decyzji;
 6. security-safety — walidacja wejścia, sekrety, uprawnienia i powierzchnia ataku.
 
+Najpierw ustal rzeczywisty zakres zmiany. Dla PR-a wyłącznie dokumentacyjnego nie
+wymagaj testów runtime, jeśli diff nie zmienia wykonywalnego kodu ani kontraktu;
+oceniaj proporcjonalnie jakość i weryfikowalność dokumentacji. Opis historycznego
+findingu lub odrzuconego fixture nie oznacza, że ryzyko wróciło do kodu. Jawne
+udokumentowanie, że istniejący pakiet jest publiczny, nie jest samo w sobie luką;
+zgłoś security finding tylko wtedy, gdy diff ujawnia dane wrażliwe, dodaje je do
+artefaktu albo realnie osłabia kontrolę dostępu.
+
 Severity:
 - critical: bezpośrednia podatność lub utrata danych;
 - high: prawdopodobny błąd produkcyjny albo poważna luka bezpieczeństwa;
