@@ -58,6 +58,14 @@ nie zwraca częściowego wyniku `pass`.
 
 Wymiary DoD: `correctness`, `idiomaticity`, `complexity`, `test-risk-coverage`, `documentation`, `security-safety`. Każdy prawidłowy wynik zawiera dokładnie jedną całkowitą ocenę `1..10` dla każdego wymiaru. Lokalna bramka kanonizuje wynik do `fail`, gdy dowolna ocena jest niższa niż `7` lub gdy istnieje finding `critical`, `high` albo `medium`; modelowy `fail` pozostaje `fail`. Finding `low` sam nie blokuje bramki. Błąd `ERROR` (exit `2`) nie ma ocen i nie jest findingiem kodu.
 
+Reviewer klasyfikuje diff jako `documentation-only` tylko wtedy, gdy wszystkie
+nagłówki `diff --git` wskazują pliki `.md`, `.mdx`, `.rst` lub `.txt`. Diff
+mieszany, kodowy albo bez rozpoznanych nagłówków pozostaje konserwatywnie
+`code-or-mixed`. Zaufana klasyfikacja trafia do promptu poza niezaufanym
+payloadem PR-a. Dzięki temu zmiana dokumentacyjna nie wymaga testów runtime bez
+zmiany wykonywalnego kontraktu, ale każdy niejednoznaczny przypadek zachowuje
+pełne wymagania test-risk-coverage.
+
 Kody procesu:
 
 - `0` — poprawne review z `verdict: pass`;
@@ -87,7 +95,9 @@ src/evals/              6 fixture'ów offline oraz kontrakt live matrix M5L3
 - budżet maksymalnie `$0.20/review`;
 - router ograniczony do endpointów do `$1/M` input i `$5/M` output, bez dodatkowej opłaty per request, z konserwatywnym preflightem `1 znak escaped promptu = 1 token`;
 - koszt z OpenRouter usage jest weryfikowany po odpowiedzi; przy braku pola `cost` używana jest estymacja według górnych stawek;
-- `data_collection: deny`, `zdr: true`, `require_parameters: true`;
+- `data_collection: deny` i `zdr: true`; structured output nadal waliduje
+  `Output.object`, bez filtra `require_parameters`, który odrzucał zgodne
+  endpointy ZDR;
 - diff, klucz i nagłówki nie są logowane; log zawiera tylko verdict, liczbę findingów, koszt i czas;
 - sticky comment pokazuje sześć ocen i zwięzły dowód findingu, ale redaguje
   surowy diff oraz rozpoznane przypisania sekretów;
