@@ -59,8 +59,9 @@ stacku, a `context/testing/test-plan.md` mapuje ryzyka na warstwy testów.
 
 1. Wykonać świeżą rejestrację i kliknąć prawdziwy link potwierdzający e-mail na
    publicznym środowisku.
-2. Podjąć świadomą decyzję o Supabase Leaked Password Protection, które advisor
-   raportuje jako wyłączone.
+2. Decyzja właściciela z 2026-08-04: świadomie pozostawić Supabase Leaked
+   Password Protection wyłączone dla projektu kursowego. To zaakceptowane
+   odstępstwo nie jest rekomendacją dla produkcji z realnymi użytkownikami.
 3. Ręcznie zaufać hookowi M3 i potwierdzić jego wywołanie po kolejnym
    `apply_patch`, a następnie wysłać Builder Mission Log z już przygotowanymi
    screenshotami i URL-ami.

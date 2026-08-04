@@ -53,7 +53,7 @@
 
 - Model/provider bramki: `openai/gpt-4o-mini` przez OpenRouter.
 - Live eval pass rate: `0/3` (`0%`) dla rygorystycznego wymagania wykrycia wszystkich trzech blokerów; wyniki per model opisano wyżej.
-- Koszt PR fail / pass: `$0.0002` / `$0.0002` (wartości zaokrąglone z komentarzy workflow). Łączne użycie nowego klucza po smoke, probach diagnostycznych, matrix, fail/pass i retry: `$0.002231519`, poniżej limitu `$2`.
+- Koszt PR fail / pass: `$0.0002` / `$0.0002` (wartości zaokrąglone z komentarzy workflow). Końcowe łączne użycie nowego klucza po smoke, probach diagnostycznych, matrix, fail/pass/retry i kalibracji false positives: `$0.008329619`, poniżej limitu `$2`.
 - Czas PR fail / pass: `2819 ms` / `2445 ms`; retry pass: zielony run w `17 s` łącznie z workflow.
 - Liczba findingów i podjęte działanie: fail — 1 `high`, PR zamknięty bez merge; pass — 0, PR pozostawiony jako dowód i nośnik aktualizacji checklisty.
 - Data weryfikacji polityki danych/ZDR: 2026-08-04. Reviewer wymusza `data_collection: deny` i `zdr: true`; kontrolowany probe potwierdził routing ZDR. Usunięto wyłącznie niekompatybilny filtr `require_parameters`, pozostawiając walidację `Output.object`.
