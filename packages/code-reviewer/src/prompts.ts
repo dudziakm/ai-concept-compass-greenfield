@@ -5,9 +5,7 @@ export type ReviewScope = "documentation-only" | "code-or-mixed";
 const DOCUMENTATION_PATH = /\.(?:md|mdx|rst|txt)$/i;
 
 export function classifyReviewScope(input: ReviewInput): ReviewScope {
-  const changedPaths = [...input.diff.matchAll(/^diff --git a\/(.+) b\/(.+)$/gm)].map(
-    (match) => match[2] ?? "",
-  );
+  const changedPaths = [...input.diff.matchAll(/^diff --git a\/(.+) b\/(.+)$/gm)].map((match) => match[2] ?? "");
   if (changedPaths.length === 0) return "code-or-mixed";
   return changedPaths.every((changedPath) => DOCUMENTATION_PATH.test(changedPath))
     ? "documentation-only"

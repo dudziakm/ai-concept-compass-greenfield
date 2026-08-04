@@ -21,9 +21,7 @@ describe("review scope contract", () => {
     ],
   ])("classifies %s as documentation-only", (_, diff) => {
     expect(classifyReviewScope(input(diff))).toBe("documentation-only");
-    expect(buildReviewPrompt(input(diff))).toContain(
-      "<trusted_review_scope>documentation-only</trusted_review_scope>",
-    );
+    expect(buildReviewPrompt(input(diff))).toContain("<trusted_review_scope>documentation-only</trusted_review_scope>");
   });
 
   it.each([
