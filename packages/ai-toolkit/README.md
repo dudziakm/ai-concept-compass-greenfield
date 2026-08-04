@@ -7,7 +7,9 @@ Version `0.1.0` is publicly reachable. GitHub does not allow a public package to
 be switched back to private, so consumers must not treat the current package as
 a private distribution channel. A future private distribution requires a new
 package identity and an explicit visibility check before consumers receive
-access.
+access. The published artifact contains only the documented skill, shared rules,
+installer, uninstaller, and README; package validation and the independent
+consumer smoke confirm that it contains no credentials or application data.
 
 ## Consumer setup
 

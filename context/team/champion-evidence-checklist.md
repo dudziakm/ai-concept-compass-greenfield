@@ -37,6 +37,7 @@
 - [ ] Screenshot `ai-cr:failed`: _pending_.
 - [ ] Screenshot blokady merge przez wymagany check: _pending_.
 - [x] Opis seedowanego problemu i oczekiwany wymiar DoD: kontrolowana reguła rabatowa bez testów granicznych, wartości ujemnych i regresji; `test-risk-coverage`. Reviewer zwrócił finding `high`, etykietę `ai-cr:failed`, exit `1`, a chroniony `main` raportował `BLOCKED`.
+- [x] Seedowana reguła była wyłącznie fixture w zamkniętym PR #5, nigdy nie została scalona ani dodana do runtime. Aktualny kod aplikacji zachowuje istniejące 53 testy (50 passed, 3 świadomie skipped), 100% scoped coverage oraz zielone E2E i RLS.
 
 ## PR zaliczony — manualny dowód
 
