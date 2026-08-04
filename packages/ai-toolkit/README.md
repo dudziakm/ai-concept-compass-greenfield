@@ -1,12 +1,15 @@
 # @dudziakm/ai-toolkit
 
-Private GitHub Packages distribution of the team `code-review` skill and shared
+GitHub Packages distribution of the team `code-review` skill and shared
 engineering conventions.
 
-The first package published under this personal GitHub scope is private by
-default. After the initial release, verify the package page still shows private
-visibility before granting consumers access; changing a package to public cannot
-be reversed to private.
+Version `0.1.0` is publicly reachable. GitHub does not allow a public package to
+be switched back to private, so consumers must not treat the current package as
+a private distribution channel. A future private distribution requires a new
+package identity and an explicit visibility check before consumers receive
+access. The published artifact contains only the documented skill, shared rules,
+installer, uninstaller, and README; package validation and the independent
+consumer smoke confirm that it contains no credentials or application data.
 
 ## Consumer setup
 

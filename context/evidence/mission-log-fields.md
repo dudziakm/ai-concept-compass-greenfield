@@ -28,7 +28,12 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
       następnego tematu na dashboardzie;
 - [ ] screenshot zielonego testu lub zestawu testów *;
 - [ ] załączniki niestandardowe — opcjonalne;
-- [ ] komentarz * — przygotować po zebraniu publicznego URL i końcowych dowodów.
+- [x] komentarz * — propozycja do wklejenia:
+      `Własny projekt AI Concept Compass zrealizowany plan-first w Astro 6,
+      React 19 i Supabase. Publiczna aplikacja działa na Cloudflare Workers.
+      CI dla kanonicznego repozytorium obejmuje quality, hosted E2E i testy RLS;
+      publiczna suite E2E przeszła 4/4. Repo, wdrożenie i dowody są podane w
+      formularzu.`
 
 ### Dowody pomocnicze do przygotowania przed wysłaniem
 
@@ -43,8 +48,8 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
       sign-in, desktop dashboard, 360 px mobile dashboard i review/recommendation;
 - [x] świeży screenshot/wynik realnego E2E na hosted Supabase — 4/4 publiczne
       testy; szczegóły w `builder-public-verification-2026-08-01.md`;
-- [ ] finalny tekst komentarza bez deklarowania niezweryfikowanych wyników oraz
-      wpisanie osobistych pól i wysłanie formularza.
+- [x] finalny tekst komentarza bez deklarowania niezweryfikowanych wyników;
+- [ ] wpisanie osobistych pól, wybór zgody promocyjnej i wysłanie formularza.
 
 ## Architect — wspólny formularz M4/M5
 
@@ -58,18 +63,48 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
 
 ### Dowody Architecta do przygotowania przed wysłaniem
 
-- [ ] URL-e mapy repo, analizy feature'u, długu technicznego, blast radius;
-- [ ] URL-e trzech artefaktów DDD;
-- [ ] URL planu `harden-learning-progress`;
-- [ ] URL commita lub PR małego refaktoru `ReviewScheduler`;
-- [ ] URL zielonych testów chroniących istniejący kontrakt API.
+- [x] mapa repo i struktura:
+      <https://github.com/dudziakm/10xCardsAstro/tree/master/context/map>;
+- [x] analiza feature'u, długu i blast radius:
+      <https://github.com/dudziakm/10xCardsAstro/tree/master/context/changes/learning-progress-analysis>;
+- [x] trzy artefakty DDD:
+      <https://github.com/dudziakm/10xCardsAstro/tree/master/context/domain>;
+- [x] plan `harden-learning-progress`:
+      <https://github.com/dudziakm/10xCardsAstro/blob/master/context/changes/harden-learning-progress/plan.md>;
+- [x] mały refaktor `ReviewScheduler`: [PR #25](https://github.com/dudziakm/10xCardsAstro/pull/25),
+      merge commit `2a2b929`;
+- [x] zielone testy chroniące kontrakt API:
+      <https://github.com/dudziakm/10xCardsAstro/actions/runs/30715689313>
+      (`ReviewScheduler characterization`, unit, security, build i E2E).
 
 ## Champion — dowody do komentarza wspólnego formularza
 
-- [ ] URL fail PR, run, stałego komentarza i labela `ai-cr:failed`;
-- [ ] URL poprawionego pass PR, run, komentarza i labela `ai-cr:passed`;
-- [ ] URL lub log sześciu stałych evali;
+- [x] fail: [PR #5](https://github.com/dudziakm/ai-concept-compass-greenfield/pull/5),
+      [run 30930636655](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30930636655),
+      sticky comment i `ai-cr:failed`;
+- [x] pass: [PR #6](https://github.com/dudziakm/ai-concept-compass-greenfield/pull/6),
+      [run 30931114212](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30931114212),
+      retry [30931516252](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30931516252),
+      sticky comment i `ai-cr:passed`;
+- [x] sześć stałych evali: deterministyczny baseline 6/6; manualna macierz
+      `eval-mBw-2026-08-04T16:36:44` miała rygorystyczny wynik 0/3 i jest
+      opisana bez upiększania w `context/team/champion-evidence-checklist.md`;
 - [ ] screenshoty obu wyników w `context/evidence/screenshots/champion/`;
-- [ ] potwierdzenie, że wymagany status check blokuje merge;
-- [ ] finalny komentarz łączący dowody Architecta i Championa, jeśli wybrano
-      `Obie odznaki`.
+- [x] branch protection `main` wymagał `AI Code Review Gate`, `quality`, `e2e`
+      i `rls` podczas dowodu: PR #5 raportował `BLOCKED`, PR #6 `CLEAN`.
+      Po dowodzie AI gate usunięto z required zgodnie z runbookowym progiem
+      stop dla false positives; deterministyczne trzy statusy pozostają wymagane;
+- [x] finalny komentarz do wariantu `Obie odznaki`:
+      `Architect: repo map, analiza blast radius i trzy artefakty DDD doprowadziły
+      do małego refaktoru ReviewScheduler w PR #25; characterization, unit,
+      security, build i E2E są zielone. Champion: wdrożony reviewer ma
+      schematyczny kontrakt sześciu ocen, limity kosztu/czasu, ZDR, ochronę
+      forków i wymagany check. PR #5 został odrzucony z findingiem high
+      test-risk-coverage i zablokowany przez protection; PR #6 przeszedł oraz
+      przeszedł retry. Po dowodzie AI gate wycofano z required, ponieważ
+      przekroczył próg false positives; quality/E2E/RLS pozostają wymagane.
+      Offline evale: 6/6. Manualna macierz trzech modeli:
+      0/3 dla rygorystycznego wykrycia wszystkich trzech blokerów — wynik
+      raportuję jawnie. Toolkit 0.1.0 przeszedł niezależny
+      install/reinstall/uninstall, ale paczka jest publiczna, nie private.`;
+- [ ] wpisać dane osobowe, wybrać `Obie odznaki`, dołączyć screenshoty i wysłać formularz.
