@@ -203,7 +203,9 @@ index 1111111..2222222 100644
   expectedFlawIds: ["reactdom-render", "string-ref-this-refs", "legacy-context"],
 };
 
-export function getEvalCase(id: string): EvalCase {
+export function getEvalCase(id: string): EvalCase | LiveMatrixCase {
+  if (id === LIVE_REACT_MIGRATION_CASE.id) return LIVE_REACT_MIGRATION_CASE;
+
   const evalCase = EVAL_CASES.find((candidate) => candidate.id === id);
   if (!evalCase) throw new Error(`Nieznany przypadek eval: ${id}`);
   return evalCase;
