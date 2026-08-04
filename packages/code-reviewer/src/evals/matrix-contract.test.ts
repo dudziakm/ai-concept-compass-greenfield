@@ -70,8 +70,10 @@ describe("M5L3 live matrix contract", () => {
     );
 
     try {
-      await provider.callApi("clean");
-      expect(review).toHaveBeenCalledWith(expect.anything(), { model: "deepseek/deepseek-v4-flash" });
+      await provider.callApi(LIVE_REACT_MIGRATION_CASE.id);
+      expect(review).toHaveBeenCalledWith(LIVE_REACT_MIGRATION_CASE.input, {
+        model: "deepseek/deepseek-v4-flash",
+      });
     } finally {
       if (previousLive === undefined) delete process.env.PROMPTFOO_LIVE;
       else process.env.PROMPTFOO_LIVE = previousLive;

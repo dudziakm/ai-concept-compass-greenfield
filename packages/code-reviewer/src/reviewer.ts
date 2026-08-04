@@ -91,7 +91,9 @@ export const generateOpenRouterDecision: GenerateDecision = async ({ input, mode
         provider: {
           data_collection: "deny",
           zdr: true,
-          require_parameters: true,
+          // OpenRouter's ZDR-capable routes support structured output but do
+          // not all advertise every parameter for strict routing purposes.
+          // Output.object still validates the response against our schema.
           sort: "price",
           max_price: {
             prompt: MAX_PROMPT_PRICE_PER_MILLION,
