@@ -24,7 +24,8 @@
 - [x] Nowy `OPENROUTER_API_KEY` ustawiony jako Actions repository secret 2026-08-04.
 - [x] Workflow reviewera obecny na zaufanym `main`.
 - [x] Pierwszy run zarejestrował check `AI Code Review Gate` — [run 30663070207](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30663070207) potwierdził też sticky comment i `ai-cr:failed` dla kontrolowanego błędu bez sekretu.
-- [x] Branch protection `main` wymaga `AI Code Review Gate`, `quality`, `e2e` i `rls` (`strict: true`, `enforce_admins: true`, conversation resolution).
+- [x] Branch protection `main` wymagał `AI Code Review Gate`, `quality`, `e2e` i `rls` (`strict: true`, `enforce_admins: true`, conversation resolution) podczas dowodowych PR #5 i #6.
+- [x] Po dowodzie bramka AI została wycofana z wymaganych statusów zgodnie z progiem stop runbooka (>20% false positives): kolejne review dokumentacji dwukrotnie żądało testów runtime, a review poprawki promptu wymyśliło finding w niezmienionym `src/lib/scoring.ts:42`. `quality`, `e2e` i `rls` pozostają wymagane.
 - [ ] Sprawdzono, że fork PR nie otrzymuje sekretu i nie wykonuje kodu head.
 - [ ] Pakiet `@dudziakm/ai-toolkit@0.1.0` jest dostępny anonimowo (HTTP 200), więc jest publiczny, nie private. Dokumentacja pakietu ostrzega, że publicznej widoczności nie można cofnąć; nie usuwano ani nie publikowano ponownie pakietu.
 - [x] Niezależny consumer smoke 2026-08-04: anonimowy install, reinstall i uninstall `@dudziakm/ai-toolkit@0.1.0` zakończone powodzeniem.
@@ -59,4 +60,4 @@
 
 ## Granica uczciwego zgłoszenia
 
-Live smoke, macierz, branch protection i dwa prawdziwe PR-y są wykonane. Do pełnego zgłoszenia nadal brakuje screenshotów oraz potwierdzenia unieważnienia starego klucza. Istnieje też jawne odstępstwo: opublikowany GitHub Package jest publiczny i według dokumentacji pakietu nie może zostać przełączony z powrotem na private. Nie przedstawiać go jako prywatnego w formularzu.
+Live smoke, macierz, czasowo wymagana branch protection i dwa prawdziwe PR-y są wykonane. Do pełnego zgłoszenia nadal brakuje screenshotów oraz potwierdzenia unieważnienia starego klucza. Istnieją dwa jawne odstępstwa: opublikowany GitHub Package jest publiczny i według dokumentacji pakietu nie może zostać przełączony z powrotem na private, a AI gate po zebraniu dowodów wyłączono jako required z powodu przekroczenia progu false positives. Nie przedstawiać paczki jako prywatnej ani bramki AI jako obecnie wymaganej w formularzu.

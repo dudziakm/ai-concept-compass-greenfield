@@ -90,8 +90,10 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
       `eval-mBw-2026-08-04T16:36:44` miała rygorystyczny wynik 0/3 i jest
       opisana bez upiększania w `context/team/champion-evidence-checklist.md`;
 - [ ] screenshoty obu wyników w `context/evidence/screenshots/champion/`;
-- [x] branch protection `main` wymaga `AI Code Review Gate`, `quality`, `e2e`
-      i `rls`; PR #5 raportował `BLOCKED`, PR #6 `CLEAN`;
+- [x] branch protection `main` wymagał `AI Code Review Gate`, `quality`, `e2e`
+      i `rls` podczas dowodu: PR #5 raportował `BLOCKED`, PR #6 `CLEAN`.
+      Po dowodzie AI gate usunięto z required zgodnie z runbookowym progiem
+      stop dla false positives; deterministyczne trzy statusy pozostają wymagane;
 - [x] finalny komentarz do wariantu `Obie odznaki`:
       `Architect: repo map, analiza blast radius i trzy artefakty DDD doprowadziły
       do małego refaktoru ReviewScheduler w PR #25; characterization, unit,
@@ -99,7 +101,9 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
       schematyczny kontrakt sześciu ocen, limity kosztu/czasu, ZDR, ochronę
       forków i wymagany check. PR #5 został odrzucony z findingiem high
       test-risk-coverage i zablokowany przez protection; PR #6 przeszedł oraz
-      przeszedł retry. Offline evale: 6/6. Manualna macierz trzech modeli:
+      przeszedł retry. Po dowodzie AI gate wycofano z required, ponieważ
+      przekroczył próg false positives; quality/E2E/RLS pozostają wymagane.
+      Offline evale: 6/6. Manualna macierz trzech modeli:
       0/3 dla rygorystycznego wykrycia wszystkich trzech blokerów — wynik
       raportuję jawnie. Toolkit 0.1.0 przeszedł niezależny
       install/reinstall/uninstall, ale paczka jest publiczna, nie private.`;
