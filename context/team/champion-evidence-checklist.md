@@ -34,9 +34,9 @@
 
 - [x] URL PR-a: [PR #5](https://github.com/dudziakm/ai-concept-compass-greenfield/pull/5) (zamknięty bez merge).
 - [x] URL czerwonego runa: [run 30930636655](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30930636655).
-- [ ] Screenshot sticky comment z findingiem: _pending_.
-- [ ] Screenshot `ai-cr:failed`: _pending_.
-- [ ] Screenshot blokady merge przez wymagany check: _pending_.
+- [x] Screenshot sticky comment z findingiem: `context/evidence/screenshots/champion/pr-5-fail-sticky-comment-and-label.png` — `AI Code Review — ❌ FAIL`, sześć ocen DoD (`test-risk-coverage` 2/10), finding `HIGH · test-risk-coverage` na `context/evidence/champion-fail-proof.md:12`, telemetria `openai/gpt-4o-mini`, 1164 tokeny, $0.0002, 2819 ms.
+- [x] Screenshot `ai-cr:failed`: ten sam plik — etykieta widoczna w panelu Labels oraz w wierszu zdarzenia „github-actions added the `ai-cr:failed` label".
+- [ ] Screenshot blokady merge przez wymagany check: **nie do odtworzenia i celowo nieodhaczony.** Zrzut zrobiono po zamknięciu PR-a, więc skrzynka merge nie jest już renderowana. Blokada jest udokumentowana zamykającym komentarzem właściciela („protected main reported BLOCKED") oraz stanem `gh pr view 5` → `CLOSED`, `mergedAt null`. Nie da się jej powtórzyć, bo AI gate został po dowodzie zdjęty z wymaganych statusów.
 - [x] Opis seedowanego problemu i oczekiwany wymiar DoD: kontrolowana reguła rabatowa bez testów granicznych, wartości ujemnych i regresji; `test-risk-coverage`. Reviewer zwrócił finding `high`, etykietę `ai-cr:failed`, exit `1`, a chroniony `main` raportował `BLOCKED`.
 - [x] Seedowana reguła była wyłącznie fixture w zamkniętym PR #5, nigdy nie została scalona ani dodana do runtime. Aktualny kod aplikacji zachowuje istniejące 53 testy (50 passed, 3 świadomie skipped), 100% scoped coverage oraz zielone E2E i RLS.
 
@@ -44,9 +44,9 @@
 
 - [x] URL PR-a: [PR #6](https://github.com/dudziakm/ai-concept-compass-greenfield/pull/6).
 - [x] URL zielonego runa: [run 30931114212](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30931114212).
-- [ ] Screenshot zaktualizowanego sticky comment: _pending_.
-- [ ] Screenshot `ai-cr:passed`: _pending_.
-- [ ] Screenshot zielonej bramki merge: _pending_.
+- [x] Screenshot zaktualizowanego sticky comment: `context/evidence/screenshots/champion/pr-6-pass-retry-sticky-comment-and-label.png` — `AI Code Review — ✅ PASS`, „Brak findingów", oceny 8-9/10, telemetria 7151 tokenów, $0.0010, 2977 ms. Komentarz jest oznaczony jako `edited`, co dowodzi aktualizacji tego samego sticky comment bez duplikatu.
+- [x] Screenshot `ai-cr:passed`: ten sam plik — panel Labels plus pełny cykl zdarzeń `ai-cr:passed` → `ai-cr:review` (ręczny retry) → `ai-cr:passed` → `ai-cr:failed` → `ai-cr:passed`.
+- [x] Screenshot zielonej bramki merge: ten sam plik — `Merged`, „merged commit `1d6d756` into main" i „6 checks passed" przy zdarzeniu merge.
 - [x] URL runa po retry przez `ai-cr:review`: [run 30931516252](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30931516252). Sticky comment został zaktualizowany bez duplikatu, a etykieta wróciła do `ai-cr:passed`.
 
 ## Metryki do formularza
