@@ -1,6 +1,7 @@
 # Mission Log — pola i dowody
 
-Źródła sprawdzone 31 lipca 2026 bezpośrednio w publicznych formularzach:
+Źródła sprawdzone 31 lipca 2026 i ponownie 5 sierpnia 2026 bezpośrednio
+w publicznych formularzach:
 
 - Builder: <https://baserow.io/form/g6rJ-njiGpV5lPxvot6iRxsXTh8Wb-AnRjy7s2Zck1c>
 - Architect / Champion: <https://baserow.io/form/fwnBioduXc90QTli6lsCVL_YgRdTECPTCmwiVhu8d-E>
@@ -8,6 +9,15 @@
 Poniższa lista jest transkrypcją aktualnych pól. Gwiazdka oznacza pole
 wymagane przez formularz. Dane osobowe i zgoda promocyjna pozostają wyłącznie
 do decyzji użytkownika — repo nie powinno ich przechowywać.
+
+Weryfikacja z 5 sierpnia potwierdziła etykiety pól i skorygowała jedno
+przeoczenie transkrypcji: formularz Buildera ma **cztery** wymagane pola
+załącznika obrazu, nie jedno. Wymagane są strona główna po zalogowaniu,
+funkcjonalność nr 1, funkcjonalność nr 2 i przechodzący test. Ekran logowania
+oraz załączniki niestandardowe są opcjonalne. Formularz M4/M5 nie ma żadnego
+pola załącznika ani pola na URL repozytorium — wymagane są tylko email, imię
+i nazwisko, wybór odznaki i komentarz, więc repozytoria trzeba wskazać
+w treści komentarza.
 
 ## Builder — pola formularza
 
@@ -20,32 +30,51 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
       <https://github.com/dudziakm/ai-concept-compass-greenfield>;
 - [x] publiczny URL wdrożonej aplikacji —
       <https://ai-concept-compass.dudziak-michal.workers.dev>;
-- [ ] screenshot ekranu logowania — opcjonalny;
-- [ ] screenshot strony głównej / ekranu po zalogowaniu *;
-- [ ] screenshot głównej funkcjonalności nr 1 * — rekomendowany: ocena pojęcia
-      z deklaracją pewności;
-- [ ] screenshot głównej funkcjonalności nr 2 * — rekomendowany: rekomendacja
-      następnego tematu na dashboardzie;
-- [ ] screenshot zielonego testu lub zestawu testów *;
-- [ ] załączniki niestandardowe — opcjonalne;
+- [x] screenshot ekranu logowania — opcjonalny;
+      `screenshots/builder/public-signin-screen.png`;
+- [x] screenshot strony głównej / ekranu po zalogowaniu *;
+      `screenshots/builder/public-home-after-login.png`;
+- [x] screenshot głównej funkcjonalności nr 1 * — etykieta formularza podaje
+      przykład „formularz zapisu danych", więc
+      `screenshots/builder/public-concept-form.png` (modal „Dodaj własne
+      pojęcie" z wypełnionymi pięcioma polami);
+- [x] screenshot głównej funkcjonalności nr 2 * — etykieta podaje przykład
+      „prezentacja danych", więc
+      `screenshots/builder/public-calibration-review.png` (pewność 1-5,
+      odsłonięty wzorzec odpowiedzi, samoocena, postęp pięciu domen AWS);
+- [x] screenshot zielonego testu lub zestawu testów *;
+      `screenshots/builder/green-tests-ci.png` — podsumowanie Actions dla runu
+      `31016045921` na `main` (`quality`, `e2e`, `rls` zielone, adnotacje
+      `Evaluation completed: 6/6` i `Playwright Run Summary 4 passed (1.2m)`);
+- [ ] załączniki niestandardowe — opcjonalne i celowo pominięte: formularz sam
+      pisze, że organizatorzy mają dostęp do repozytorium, więc dołączanie
+      plików już obecnych w repo nic nie dodaje;
 - [x] komentarz * — propozycja do wklejenia:
       `Własny projekt AI Concept Compass zrealizowany plan-first w Astro 6,
       React 19 i Supabase. Publiczna aplikacja działa na Cloudflare Workers.
-      CI dla kanonicznego repozytorium obejmuje quality, hosted E2E i testy RLS;
-      publiczna suite E2E przeszła 4/4. Repo, wdrożenie i dowody są podane w
-      formularzu.`
+      CI dla kanonicznego repozytorium obejmuje quality, hosted E2E i testy RLS
+      jako trzy niezależne bramki merge; run 31016045921 na main jest zielony we
+      wszystkich trzech, a publiczna suite E2E przeszła 4/4 na hosted Supabase.
+      Repozytorium jest skonfigurowane pod Claude Code: .claude/settings.json
+      z hookiem PostToolUse, .mcp.json dla Supabase i Cloudflare, oraz reguła
+      gałęzi wymagająca tych trzech statusów. Repo, wdrożenie i dowody są podane
+      w formularzu.`
 
 ### Dowody pomocnicze do przygotowania przed wysłaniem
 
 - [x] URL repozytorium;
 - [x] URL pełnego zielonego runu CI dla kanonicznego repozytorium:
-      <https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30715121885>
-      (`quality`, `e2e`, `rls` zielone dla merge commitu `28bc365`);
+      <https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/31016045921>
+      (`quality` 2m4s, `e2e` 2m9s, `rls` 44s — wszystkie zielone dla squasha
+      `9706d9b` na `main`, 5 sierpnia 2026). Ten run zastępuje starszy
+      `30715121885` na `28bc365`, który poprzedzał 1089 wstawień;
 - [x] URL wdrożenia: <https://ai-concept-compass.dudziak-michal.workers.dev>
       (Cloudflare deployment `8c09f7d2-a731-497f-a8e3-4223ab652ff6`, version
       `8908bbab-5dfb-47e4-9edd-dc55b3fa5561`);
-- [x] wymagane screenshoty publiczne w `context/evidence/screenshots/builder/`:
-      sign-in, desktop dashboard, 360 px mobile dashboard i review/recommendation;
+- [x] wszystkie cztery wymagane screenshoty plus opcjonalny ekran logowania
+      w `context/evidence/screenshots/builder/` — mapowanie plik → pole opisuje
+      `screenshot-inventory-2026-08-05.md`. Adresy kont są zamalowane w każdym
+      zrzucie, który je pokazywał;
 - [x] świeży screenshot/wynik realnego E2E na hosted Supabase — 4/4 publiczne
       testy; szczegóły w `builder-public-verification-2026-08-01.md`;
 - [x] finalny tekst komentarza bez deklarowania niezweryfikowanych wyników;
@@ -89,7 +118,17 @@ do decyzji użytkownika — repo nie powinno ich przechowywać.
 - [x] sześć stałych evali: deterministyczny baseline 6/6; manualna macierz
       `eval-mBw-2026-08-04T16:36:44` miała rygorystyczny wynik 0/3 i jest
       opisana bez upiększania w `context/team/champion-evidence-checklist.md`;
-- [ ] screenshoty obu wyników w `context/evidence/screenshots/champion/`;
+- [x] screenshoty obu wyników w `context/evidence/screenshots/champion/`:
+      `pr-5-fail-sticky-comment-and-label.png` (PR #5 Closed, etykieta
+      `ai-cr:failed`, sticky comment `AI Code Review — FAIL` z sześcioma
+      ocenami, findingiem `high test-risk-coverage` i telemetrią) oraz
+      `pr-6-pass-retry-sticky-comment-and-label.png`;
+- [x] świeży dowód, że bramka nadal wykonuje realne wywołanie providera:
+      [PR #11](https://github.com/dudziakm/ai-concept-compass-greenfield/pull/11),
+      [run 31017097746](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/31017097746)
+      — `verdict=fail findings=3 dropped=0 cost_usd=0.0012 duration_ms=5575`,
+      exit `1`, etykieta `ai-cr:failed`. `dropped=0` potwierdza, że
+      grounding po hunkach nie odrzucił żadnego findingu jako spoza diffu;
 - [x] branch protection `main` wymagał `AI Code Review Gate`, `quality`, `e2e`
       i `rls` podczas dowodu: PR #5 raportował `BLOCKED`, PR #6 `CLEAN`.
       Po dowodzie AI gate usunięto z required zgodnie z runbookowym progiem
