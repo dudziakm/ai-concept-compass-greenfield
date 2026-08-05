@@ -83,7 +83,8 @@ Zapisy są walidowane przez Zod. Błędy mają wspólny format JSON i statusy
 Wymagany jest Node 22.14 (`.nvmrc`) oraz projekt Supabase.
 
 ```bash
-npm install
+npm ci
+npm ci --prefix packages/code-reviewer
 cp .env.example .env
 ```
 
@@ -104,11 +105,12 @@ czynnością użytkownika; sekret dostępu nie trafia do repozytorium.
 ## Testy i bramki
 
 ```bash
-npm run lint
-npm run typecheck
-npm run test:coverage
-npm run build
+npm run verify:fast # lint + typecheck + testy jednostkowe
+npm run verify:full # lokalny odpowiednik joba `quality` z CI
 ```
+
+`verify:full` nie uruchamia `test:e2e` ani `test:rls` — obie potrzebują
+hostowanych sekretów i są osobnymi bramkami merge.
 
 Lokalny pakiet ma 53 testy scoringu, schematów, migracji oraz tras API i 100%
 pokrycia instrukcji, funkcji, linii oraz gałęzi silnika scoringu. Statyczny test
@@ -144,19 +146,38 @@ CI wymaga czterech sekretów E2E (`SUPABASE_URL`, `SUPABASE_KEY`,
 `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`) oraz danych dwóch kont `RLS_USER_A_*` i
 `RLS_USER_B_*`. Quality, E2E i RLS są osobnymi bramkami merge.
 
-### Hook jakości po edycji (M3L3)
+### Hooki jakości po edycji
 
-Projektowy hook Codexa w [`.codex/hooks.json`](.codex/hooks.json) reaguje tylko
-po wywołaniu narzędzia `apply_patch`. Uruchamia
-[`scripts/post-edit-quality.sh`](scripts/post-edit-quality.sh), który odnajduje
-root repozytorium przez Git, a następnie wykonuje szybkie `npm run lint` i
-`npm run typecheck`. Handler ma limit 120 sekund. To lokalny feedback po edycji,
-nie zamiennik testów, CI, review ani sprawdzeń hosted.
+Domyślnym środowiskiem pracy jest **Claude Code**. Hook projektowy w
+[`.claude/settings.json`](.claude/settings.json) reaguje na edycje `Write` i
+`Edit`, uruchamiając [`scripts/post-edit-quality.sh`](scripts/post-edit-quality.sh)
+— ten sam skrypt, którego używa Codex. Skrypt odnajduje root repozytorium przez
+Git i wykonuje `npm run lint` oraz `npm run typecheck`. To lokalny feedback po
+edycji, nie zamiennik testów, CI, review ani sprawdzeń hosted.
 
-Codex nie uruchomi nowego hooka automatycznie: użytkownik musi ręcznie otworzyć
-`/hooks`, sprawdzić dokładną definicję projektu i ją zaufać (trust). Zmiana lub
-brak trustu oznacza, że hook pozostaje pominięty. Skrypt nie odczytuje ani nie
+Kompatybilny hook Codexa w [`.codex/hooks.json`](.codex/hooks.json) reaguje po
+wywołaniu narzędzia `apply_patch` i używa tego samego skryptu. Codex nie uruchomi
+nowej definicji automatycznie: właściciel musi ręcznie otworzyć `/hooks`,
+sprawdzić definicję i ją zaufać (trust). Żaden wariant nie odczytuje ani nie
 loguje plików `.env`.
+
+### Konfiguracja agenta i serwery MCP
+
+Repozytorium instaluje **własny opublikowany pakiet** `@dudziakm/ai-toolkit`, aby
+skonfigurować samo siebie:
+
+```bash
+npm run toolkit:install
+```
+
+Polecenie generuje [`.claude/skills/code-review/`](.claude/skills/code-review/)
+oraz blok reguł w [`CLAUDE.md`](CLAUDE.md). Oba są commitowane i nie należy ich
+edytować ręcznie — CI sprawdza, czy skill jest identyczny z kanonicznym
+[`skills/code-review/SKILL.md`](skills/code-review/SKILL.md).
+
+[`.mcp.json`](.mcp.json) deklaruje serwery MCP Supabase i Cloudflare. Wszystkie
+są zdalnymi endpointami HTTP z logowaniem OAuth przy pierwszym użyciu — w
+repozytorium nie ma żadnego tokenu, identyfikatora projektu ani konta.
 
 ## Wdrożenie na Cloudflare Workers
 
@@ -187,12 +208,14 @@ Dodaj publiczny URL do listy dozwolonych redirect URL w Supabase Auth.
 - [Specyfikacja UI](context/changes/ai-concept-compass-mvp/specs/ui.md)
 - [Plan deployu](context/deployment/deploy-plan.md)
 - [Audyt MVP](context/evidence/builder-mvp-check.md)
+- [Workflow Claude Code — weryfikacja](context/evidence/claude-code-first-workflow-2026-08-05.md)
+- [Status certyfikacji](context/evidence/certification-status-2026-08-05.md)
 - [Agent code review — runbook](context/team/reviewer-runbook.md)
 
 ## Jak AI wspierało proces
 
-Codex pomógł rozbić zakres na testowalne granice, przygotować migrację, API,
-interfejs i testy oraz wykonywał każdą bramkę jakości. Reguły biznesowe, zakres
+Agenci AI pomogli rozbić zakres na testowalne granice, przygotować migrację, API,
+interfejs i testy oraz wykonywali każdą bramkę jakości. Reguły biznesowe, zakres
 MVP, źródło treści i kryteria akceptacji pozostają jawne w repozytorium, zamiast
 być ukryte w promptach lub wyniku modelu.
 

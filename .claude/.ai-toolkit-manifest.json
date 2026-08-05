@@ -1,0 +1,8 @@
+{
+  "package": "@dudziakm/ai-toolkit",
+  "version": "0.1.0",
+  "files": [
+    ".claude/skills/code-review/SKILL.md",
+    "CLAUDE.md"
+  ]
+}

@@ -16,6 +16,7 @@ const passingResult: ReviewResult = {
     "security-safety": 8,
   },
   findings: [],
+  droppedFindings: [],
   usage: {
     provider: "openrouter",
     model: "test/model",

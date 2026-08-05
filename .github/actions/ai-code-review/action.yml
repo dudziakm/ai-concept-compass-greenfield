@@ -58,7 +58,9 @@ runs:
         # diff at this ceiling is rejected by the CLI scope preflight before a
         # model call; it is never silently reviewed as a partial diff.
         set +o pipefail
-        git diff --no-ext-diff --unified=80 "${BASE_SHA}...${HEAD_SHA}" \
+        # Five lines of context retain local review evidence while keeping a
+        # wide documentation/configuration PR inside the reviewer input cap.
+        git diff --no-ext-diff --unified=5 "${BASE_SHA}...${HEAD_SHA}" \
           | head -c 200001 > "${RUNNER_TEMP}/ai-review.diff"
         diff_exit="${PIPESTATUS[0]}"
         set -o pipefail

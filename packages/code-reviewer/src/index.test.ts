@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { runCli } from "./index.js";
-import { ReviewErrorSchema, ReviewResultSchema, type ReviewResult } from "./schemas.js";
+import { ReviewErrorSchema, ReviewResultSchema, type ReviewFinding, type ReviewResult } from "./schemas.js";
 
 const baseResult: ReviewResult = {
   verdict: "pass",
@@ -19,6 +19,7 @@ const baseResult: ReviewResult = {
     "security-safety": 8,
   },
   findings: [],
+  droppedFindings: [],
   usage: {
     provider: "openrouter",
     model: "test/model",
@@ -32,10 +33,15 @@ const baseResult: ReviewResult = {
 
 describe("CLI exit codes", () => {
   let directory: string;
+  let stderrChunks: string[];
 
   beforeEach(async () => {
     directory = await mkdtemp(join(tmpdir(), "ai-code-reviewer-"));
-    vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    stderrChunks = [];
+    vi.spyOn(process.stderr, "write").mockImplementation((chunk: unknown) => {
+      stderrChunks.push(String(chunk));
+      return true;
+    });
   });
 
   afterEach(async () => {
@@ -97,6 +103,25 @@ describe("CLI exit codes", () => {
 
     expect(exitCode).toBe(0);
     expect(review).toHaveBeenCalledOnce();
+  });
+
+  it("raportuje liczbę findingów wyciszonych poza diffem", async () => {
+    const { inputPath, outputPath } = await paths({ title: "ok", body: "", diff: "+safe" });
+    const dropped: ReviewFinding = {
+      severity: "high",
+      dimension: "correctness",
+      file: "src/absent.ts",
+      line: 42,
+      evidence: "Plik spoza diffu.",
+      recommendation: "Nie blokuj zmiany.",
+    };
+
+    const exitCode = await runCli(["--input", inputPath, "--output", outputPath], async () =>
+      Promise.resolve({ ...baseResult, droppedFindings: [dropped] }),
+    );
+
+    expect(exitCode).toBe(0);
+    expect(stderrChunks.join("")).toContain("dropped=1");
   });
 
   it("zwraca 2 dla błędu schematu bez uruchamiania reviewera", async () => {

@@ -1,6 +1,6 @@
 # AI Code Reviewer
 
-Lokalny i CI-owy reviewer dla ścieżki 10xChampion. Przyjmuje tytuł PR-a, opis i diff, wykonuje jedno wywołanie modelu przez AI SDK + OpenRouter, waliduje structured output w Zod i zwraca wynik możliwy do użycia jako merge gate.
+Lokalny i CI-owy reviewer dla ścieżki 10xChampion. Przyjmuje tytuł PR-a, opis i diff, wykonuje jedno wywołanie modelu przez AI SDK + OpenRouter, waliduje structured output w Zod i zwraca wynik możliwy do użycia jako merge gate. Dzisiaj check jest **doradczy** — wymaganymi bramkami merge są `quality`, `e2e` i `rls`.
 
 ## Kontrakt
 
@@ -56,7 +56,16 @@ nie zwraca częściowego wyniku `pass`.
 }
 ```
 
-Wymiary DoD: `correctness`, `idiomaticity`, `complexity`, `test-risk-coverage`, `documentation`, `security-safety`. Każdy prawidłowy wynik zawiera dokładnie jedną całkowitą ocenę `1..10` dla każdego wymiaru. Lokalna bramka kanonizuje wynik do `fail`, gdy dowolna ocena jest niższa niż `7` lub gdy istnieje finding `critical`, `high` albo `medium`; modelowy `fail` pozostaje `fail`. Finding `low` sam nie blokuje bramki. Błąd `ERROR` (exit `2`) nie ma ocen i nie jest findingiem kodu.
+Wymiary DoD: `correctness`, `idiomaticity`, `complexity`, `test-risk-coverage`, `documentation`, `security-safety`. Każdy prawidłowy wynik zawiera dokładnie jedną całkowitą ocenę `1..10` dla każdego wymiaru. **Oceny są telemetryczne i same nie blokują.** Lokalna bramka kanonizuje wynik do `fail` wtedy i tylko wtedy, gdy po ugruntowaniu w diffie pozostaje finding `critical`, `high` albo `medium`. Finding `low` sam nie blokuje bramki. Błąd `ERROR` (exit `2`) nie ma ocen i nie jest findingiem kodu.
+
+Ugruntowanie w diffie: finding liczy się tylko wtedy, gdy jego `file` występuje w
+diffie oraz `line` mieści się w zakresie któregoś hunka tego pliku (z tolerancją
+jednej linii), albo gdy `line` jest `null`. Zakresy hunków, a nie same linie
+dodane — inaczej finding o **usuniętym** kodzie nie miałby czego wskazać.
+Findingi nieugruntowane trafiają do `droppedFindings`, są renderowane w komentarzu
+jako nieblokujące i zliczane w logu; nie znikają po cichu. Gdy diff nie daje się
+sparsować (pusty, obcięty, bez nagłówków), bramka działa **fail-closed** —
+żaden finding nie jest odrzucany.
 
 Reviewer klasyfikuje diff jako `documentation-only` tylko wtedy, gdy wszystkie
 nagłówki `diff --git` wskazują pliki `.md`, `.mdx`, `.rst` lub `.txt`. Diff
@@ -162,7 +171,7 @@ Zerokosztowy `npm run eval:promptfoo` pozostaje jedynym evalem w CI.
 - pipeline: `.github/workflows/ai-code-review.yml`;
 - sticky marker: `<!-- AI-CODE-REVIEW -->`;
 - labels: `ai-cr:passed`, `ai-cr:failed`; retry przez `ai-cr:review`;
-- merge gate: natywny check `AI Code Review Gate`, nie label;
+- check: natywny `AI Code Review Gate`, nie label; obecnie doradczy, nie wymagany do merge;
 - fork PR: czerwony check bez checkoutu i bez sekretu.
 
 Konfigurację sekretu, branch protection i dowodowych PR-ów opisuje [`context/team/reviewer-runbook.md`](../../context/team/reviewer-runbook.md).

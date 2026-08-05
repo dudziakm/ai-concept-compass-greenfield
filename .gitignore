@@ -10,3 +10,8 @@ playwright-report/
 test-results/
 playwright/.auth/
 .DS_Store
+
+# Claude Code project configuration is committed. A global core.excludesFile may ignore
+# .claude/ wholesale, so re-include it here and keep only personal overrides out.
+!.claude/
+.claude/settings.local.json
