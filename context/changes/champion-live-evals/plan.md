@@ -66,7 +66,10 @@
 #### Manual
 
 - [ ] 1.M1 Rotate/configure `OPENROUTER_API_KEY`, check model availability and approve matrix/judge budget
-- [ ] 1.M2 Run the three-model matrix and record redacted results, costs and duration
+- [x] 1.M2 Run the three-model matrix and record redacted results, costs and
+      duration — eval id `eval-mBw-2026-08-04T16:36:44`, run 2026-08-04, strict
+      result 0/3 (GLM timeout, DeepSeek schema error, Mistral 1/3). Recorded in
+      `context/team/champion-evidence-checklist.md`.
 
 ### Phase 2: M5L4 shared review skill
 

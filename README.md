@@ -13,9 +13,16 @@ pewności — działa przewidywalnie, tanio i jest w pełni testowalna.
 > ma zielone `quality`, `e2e` i `rls`, a świeży, uwierzytelniony E2E przeciwko
 > publicznemu Workerowi przeszedł 4/4. Dokładne wersje Workera, URL-e i
 > screenshoty zapisuje [publiczny rekord weryfikacji](context/evidence/builder-public-verification-2026-08-01.md).
-> Świeża rejestracja z kliknięciem prawdziwego linku e-mail, decyzja o Leaked
-> Password Protection, zaufanie hookowi M3 i wysłanie formularza nadal wymagają
-> jawnego działania właściciela konta.
+> M3L3 (hooki i triggery) jest spełnione przez hook `PostToolUse` w Claude Code
+> ([`.claude/settings.json`](.claude/settings.json)), który uruchamia
+> [`scripts/post-edit-quality.sh`](scripts/post-edit-quality.sh) i kończy się
+> kodem 2 przy błędzie, więc output trafia do agenta — zaobserwowane na żywej
+> edycji agenta, zob.
+> [`context/evidence/m3-hook-observation-2026-08-05.md`](context/evidence/m3-hook-observation-2026-08-05.md).
+> `.codex/hooks.json` to opcjonalna ścieżka kompatybilności; zaufanie mu przez
+> `/hooks` nie jest wymagane przez kurs. Świeża rejestracja z kliknięciem
+> prawdziwego linku e-mail, decyzja o Leaked Password Protection i wysłanie
+> formularza nadal wymagają jawnego działania właściciela konta.
 
 ## Najważniejszy przepływ
 
@@ -112,10 +119,14 @@ npm run verify:full # lokalny odpowiednik joba `quality` z CI
 `verify:full` nie uruchamia `test:e2e` ani `test:rls` — obie potrzebują
 hostowanych sekretów i są osobnymi bramkami merge.
 
-Lokalny pakiet ma 53 testy scoringu, schematów, migracji oraz tras API i 100%
-pokrycia instrukcji, funkcji, linii oraz gałęzi silnika scoringu. Statyczny test
-migracji sprawdza RLS, cascade i idempotencję; osobny hosted harness wykonuje
-rzeczywistą macierz dwóch użytkowników. 1 sierpnia 2026 macierz przeszła 3/3.
+Lokalny pakiet ma 50 testów zielonych i 3 pominięte (scoring, schematy, migracje,
+trasy API), a job `rls` w CI dokłada 3 hostowane testy RLS. `vitest.config.ts`
+ogranicza `coverage.include` do dokładnie `src/lib/scoring.ts` i
+`src/lib/schemas.ts` (35 instrukcji) — to na nich pokrycie wynosi 100% instrukcji,
+gałęzi, funkcji i linii. Trasy API, serwisy, middleware i komponenty React mają
+0% przypisanego pokrycia. Statyczny test migracji sprawdza RLS, cascade i
+idempotencję; osobny hosted harness wykonuje rzeczywistą macierz dwóch
+użytkowników. 1 sierpnia 2026 macierz przeszła 3/3.
 
 E2E wymaga potwierdzonego konta testowego oraz zmiennych
 `E2E_USER_EMAIL`/`E2E_USER_PASSWORD`:

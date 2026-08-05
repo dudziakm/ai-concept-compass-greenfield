@@ -10,11 +10,17 @@ tools must read it directly.
   as the working directory so `CLAUDE.md`, `.claude/settings.json` and `.mcp.json`
   all load. The `PostToolUse` hook in `.claude/settings.json` is the default local
   feedback path.
-- The repository installs its own published `@dudziakm/ai-toolkit` to configure
-  itself: `npm run toolkit:install` writes `.claude/skills/` and the rules block in
-  `CLAUDE.md`. Both are committed. Do not hand-edit either — re-run the script.
-- Codex remains a supported compatible path through `.codex/hooks.json`. It
-  requires the owner to trust the hook definition manually in `/hooks`.
+- The repository installs the local workspace copy of `@dudziakm/ai-toolkit` to
+  configure itself: `npm run toolkit:install` runs
+  `node packages/ai-toolkit/install.js` against `PROJECT_ROOT`, not the published
+  registry package — there is no `.npmrc` and no dependency entry. The generated
+  `.claude/skills/` and the rules block in `CLAUDE.md` are both committed. Do not
+  hand-edit either — re-run the script. The published `@dudziakm/ai-toolkit@0.1.0`
+  package does exist and is public; the local path is deliberate so `npm ci`
+  needs no registry token and fork pull requests are unaffected.
+- Codex remains an optional compatible path through `.codex/hooks.json`, driving
+  the same script. Using it requires the owner to trust the hook definition
+  manually in `/hooks`; that trust is not a prerequisite for anything else.
 - `.mcp.json` declares the Supabase and Cloudflare MCP servers. They authenticate
   interactively over OAuth on first use; no credential is stored in the repository.
 
@@ -105,13 +111,19 @@ not silently rewrite product rules to match an implementation shortcut.
 - RLS is defense in depth and must remain enabled on all user-owned tables.
 - Treat logs, screenshots and CI artifacts as potentially public; redact email
   addresses, tokens and private project identifiers.
+- The `permissions.deny` list in `.claude/settings.json` constrains the file
+  tools only; it is advisory, not a sandbox. Bash can still read a denied path,
+  and the entries enumerate secret file names rather than globbing, so
+  `.env.example` stays readable.
 
 ## CI and workflow safety
 
 - `quality`, `e2e` and `rls` are the three deterministic merge gates and must stay
-  independently runnable. `.github/rulesets/main.json` records the intended branch
-  ruleset; GitHub does not apply it from the repository, so treat it as the
-  reference to reconcile against, not as enforcement.
+  independently runnable. The branch ruleset (id 20452413) is applied and active
+  on the repository: enforcement active, no bypass actors, strict required status
+  checks requiring exactly `quality`, `e2e` and `rls`, plus linear history and
+  deletion / non-fast-forward protection. `.github/rulesets/main.json` remains
+  the versioned reference for it.
 - The AI Code Review Gate is advisory. Do not promote it to a required check
   before a real fail/pass/retry lifecycle has been demonstrated with a configured
   provider key.

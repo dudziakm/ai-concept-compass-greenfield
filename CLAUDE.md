@@ -31,10 +31,12 @@ Git pre-commit hooks are separate from agent hooks: husky + lint-staged runs
 ## Agent hooks
 
 `.claude/settings.json` registers a `PostToolUse` hook on `Write|Edit` that runs
-`scripts/post-edit-quality.sh` (lint + typecheck). It is advisory: a failing gate
-returns the output as context rather than reverting the edit, so run
+`scripts/post-edit-quality.sh` (lint + typecheck). The script exits `2` when
+either check fails, which is the code that surfaces its stderr into your context;
+it reports rather than reverts, so the edit stands and you fix what it reports.
+Both checks always run, so a failing lint still shows what typecheck found. Run
 `npm run verify:fast` before handing work off. `.codex/hooks.json` keeps the same
-script on Codex's `apply_patch` matcher.
+script on Codex's `apply_patch` matcher as an optional compatibility path.
 
 ## MCP servers
 
@@ -97,9 +99,12 @@ request to `main`: `quality` (workflow:check → astro sync → lint → typeche
 coverage → reviewer typecheck/test/promptfoo → build), then `e2e` and `rls` in
 parallel. E2E and RLS need hosted Supabase credentials from repository secrets.
 
-`.github/workflows/ai-code-review.yml` is the M5 review gate and is **advisory**.
-Without a configured OpenRouter key it exits 2 — an infrastructure error, not a
-negative verdict on the code.
+`.github/workflows/ai-code-review.yml` is the M5 review gate and is **advisory** —
+it is not one of the required checks. The OpenRouter key is configured, so it does
+produce real verdicts: exit `1` means findings, exit `0` means none. Exit `2` is an
+infrastructure error and is deliberately distinct from a negative verdict; the
+common cause is `INPUT_TOO_LARGE`, because `title + body + diff` is capped at
+50 000 characters. Split a large pull request rather than raising the cap.
 
 <!-- BEGIN @dudziakm/ai-toolkit -->
 # Shared AI Toolkit Conventions

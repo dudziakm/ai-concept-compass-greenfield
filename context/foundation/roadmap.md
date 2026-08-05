@@ -3,7 +3,7 @@ project: "AI Concept Compass"
 version: 1
 status: active
 created: 2026-07-31
-updated: 2026-07-31
+updated: 2026-08-05
 prd_version: 1
 main_goal: speed
 top_blocker: external
@@ -30,21 +30,22 @@ support that learning outcome.
 
 ## At a glance
 
-| ID   | Change ID                         | Outcome (user can …)                                                            | Prerequisites         | PRD refs                                                     | Status  |
-| ---- | --------------------------------- | ------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------ | ------- |
-| F-01 | hosted-mvp-evidence               | (foundation) run the product against hosted services and retain public evidence | Human account access  | NFR-002, NFR-003, NFR-005; Open Question 3                   | blocked |
-| S-01 | private-learning-shell            | register, sign in and reach a private empty learning area                       | F-01 for hosted proof | US-01, FR-001, FR-002, FR-003, NFR-003                       | blocked |
-| S-02 | starter-pack-concept-crud         | load ten concepts and manage a private collection without duplicates            | S-01                  | US-02, US-03, US-06, FR-004, FR-005, FR-006, FR-012, NFR-004 | blocked |
-| S-03 | calibrated-concept-review         | declare confidence and persist a scored review                                  | S-02                  | US-04, FR-007, FR-008, FR-009, NFR-006                       | blocked |
-| S-04 | learning-recommendation-dashboard | see the next concept and five-domain progress                                   | S-03                  | US-05, FR-010, FR-011, NFR-001, NFR-002, NFR-005             | blocked |
+| ID   | Change ID                         | Outcome (user can …)                                                            | Prerequisites         | PRD refs                                                     | Status |
+| ---- | --------------------------------- | ------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------ | ------ |
+| F-01 | hosted-mvp-evidence               | (foundation) run the product against hosted services and retain public evidence | Human account access  | NFR-002, NFR-003, NFR-005; Open Question 3                   | done   |
+| S-01 | private-learning-shell            | register, sign in and reach a private empty learning area                       | F-01 for hosted proof | US-01, FR-001, FR-002, FR-003, NFR-003                       | done   |
+| S-02 | starter-pack-concept-crud         | load ten concepts and manage a private collection without duplicates            | S-01                  | US-02, US-03, US-06, FR-004, FR-005, FR-006, FR-012, NFR-004 | done   |
+| S-03 | calibrated-concept-review         | declare confidence and persist a scored review                                  | S-02                  | US-04, FR-007, FR-008, FR-009, NFR-006                       | done   |
+| S-04 | learning-recommendation-dashboard | see the next concept and five-domain progress                                   | S-03                  | US-05, FR-010, FR-011, NFR-001, NFR-002, NFR-005             | done   |
 
 ## Baseline
 
-Updated after local implementation on 2026-07-31.
+Updated after the green CI run on `main` (run id 31016045921, head SHA 9706d9b, 2026-08-05).
 
 - **Frontend/backend/data/auth:** implemented with Astro/React, API routes and Supabase contracts.
 - **Starter:** imported after planning in commit `3397461`.
-- **Deploy/observability:** Worker build passes; hosted accounts and public URL do not yet exist.
+- **Deploy/observability:** hosted Supabase accounts exist and the public URL is live at
+  https://ai-concept-compass.dudziak-michal.workers.dev.
 
 ## Foundations
 
@@ -56,10 +57,13 @@ Updated after local implementation on 2026-07-31.
 - **Unlocks:** hosted verification for S-01, S-02, S-03 and S-04
 - **Prerequisites:** Human Supabase and Cloudflare account access
 - **Parallel with:** —
-- **Blockers:** human authentication, hosted project creation and secret entry
-- **Unknowns:** final Worker URL and database region — Owner: user. Block: yes.
+- **Blockers (resolved):** human authentication, hosted project creation and secret entry
+- **Unknowns (resolved):** the Worker URL is
+  https://ai-concept-compass.dudziak-michal.workers.dev and the database region is
+  `eu-central-1`.
 - **Risk:** claiming completion from local code would hide the only environment boundary not yet exercised.
-- **Status:** blocked
+- **Evidence:** CI run 31016045921 — `quality`, `e2e` and `rls` all green; public URL live.
+- **Status:** done
 
 ## Slices
 
@@ -70,11 +74,12 @@ Updated after local implementation on 2026-07-31.
 - **PRD refs:** US-01, FR-001, FR-002, FR-003, NFR-003
 - **Prerequisites:** F-01 for hosted proof
 - **Parallel with:** —
-- **Blockers:** hosted environment for final proof
-- **Unknowns:**
-  - Does signup/login and route protection work in the hosted environment? — Owner: user. Block: yes.
+- **Blockers (resolved):** hosted environment for final proof
+- **Unknowns (resolved):**
+  - Does signup/login and route protection work in the hosted environment? — yes; `e2e/auth.setup.ts` and `e2e/seed.spec.ts` are green against hosted Supabase.
 - **Risk:** all later data is unsafe if identity and ownership are treated as UI-only checks.
-- **Status:** blocked
+- **Evidence:** CI run 31016045921.
+- **Status:** done
 
 ### S-02: Starter pack and concept CRUD
 
@@ -83,11 +88,12 @@ Updated after local implementation on 2026-07-31.
 - **PRD refs:** US-02, US-03, US-06, FR-004, FR-005, FR-006, FR-012, NFR-004
 - **Prerequisites:** S-01
 - **Parallel with:** —
-- **Blockers:** hosted environment for cross-account proof
-- **Unknowns:**
-  - Does the hosted two-user and retry/lifecycle matrix pass? — Owner: user. Block: yes.
+- **Blockers (resolved):** hosted environment for cross-account proof
+- **Unknowns (resolved):**
+  - Does the hosted two-user and retry/lifecycle matrix pass? — yes; the `rls` job runs 3 tests across two real accounts.
 - **Risk:** loading and ownership must be enforced at persistence time or retries and crafted requests corrupt the collection.
-- **Status:** blocked
+- **Evidence:** CI run 31016045921.
+- **Status:** done
 
 ### S-03: Calibrated concept review
 
@@ -96,11 +102,12 @@ Updated after local implementation on 2026-07-31.
 - **PRD refs:** US-04, FR-007, FR-008, FR-009, NFR-006
 - **Prerequisites:** S-02
 - **Parallel with:** —
-- **Blockers:** hosted environment for end-to-end proof
-- **Unknowns:**
-  - Does the hosted review persist the same result protected by unit tests? — Owner: user. Block: yes.
+- **Blockers (resolved):** hosted environment for end-to-end proof
+- **Unknowns (resolved):**
+  - Does the hosted review persist the same result protected by unit tests? — yes; `e2e/concept-review.spec.ts` asserts the scored outcome against the hosted database.
 - **Risk:** an implementation-derived test oracle could preserve an incorrect scoring formula, so examples trace to the PRD rule.
-- **Status:** blocked
+- **Evidence:** CI run 31016045921.
+- **Status:** done
 
 ### S-04: Learning recommendation dashboard
 
@@ -109,11 +116,12 @@ Updated after local implementation on 2026-07-31.
 - **PRD refs:** US-05, FR-010, FR-011, NFR-001, NFR-002, NFR-005
 - **Prerequisites:** S-03
 - **Parallel with:** —
-- **Blockers:** public environment, mobile smoke and hosted critical-path E2E
-- **Unknowns:**
-  - Does the public critical path pass E2E and mobile smoke without console errors? — Owner: user. Block: yes.
+- **Blockers (resolved):** public environment, mobile smoke and hosted critical-path E2E
+- **Unknowns (resolved):**
+  - Does the public critical path pass E2E and mobile smoke without console errors? — yes; 4 authenticated Playwright tests pass and the public screenshots record the mobile viewport.
 - **Risk:** aggregate UI can appear correct while ordering or cross-layer refresh is broken; the final check must cross UI, API and database.
-- **Status:** blocked
+- **Evidence:** CI run 31016045921.
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -144,4 +152,10 @@ short certification sprint. Later work should open one change ID per roadmap row
 
 ## Done
 
-<!-- Intentionally empty before implementation. /10x-archive owns entries. -->
+- **F-01: Hosted MVP evidence** — hosted Supabase accounts and the public Worker URL exist
+  (https://ai-concept-compass.dudziak-michal.workers.dev). Proven by CI run 31016045921
+  (head SHA 9706d9b, 2026-08-05): quality, e2e and rls all green.
+- **S-01: Private learning shell** — proven by CI run 31016045921.
+- **S-02: Starter pack and concept CRUD** — proven by CI run 31016045921.
+- **S-03: Calibrated concept review** — proven by CI run 31016045921.
+- **S-04: Learning recommendation dashboard** — proven by CI run 31016045921.
