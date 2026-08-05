@@ -51,6 +51,11 @@ src/lib/__probe.ts:1:7 - error ts(2322): Type 'string' is not assignable to type
 Both checks are represented, which the previous `set -e` sequence could not do — it
 stopped at the first failing command.
 
+`tests/post-edit-hook.test.ts` locks this in behaviourally. It runs the hook against
+an `npm` shim that fails on demand, so the five cases — both pass, lint only,
+typecheck only, both, and no git repository — execute in about 1.5 seconds without
+invoking the real gates. Restoring the previous `set -e` script fails all five.
+
 ## Verification 3 — the hook fires on a real agent edit
 
 Two probes ran in an independent Claude Code session started with this repository as

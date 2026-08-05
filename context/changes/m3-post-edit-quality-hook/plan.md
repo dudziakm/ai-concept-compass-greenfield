@@ -18,6 +18,10 @@
   reports the other's findings.
 - The static guard fails if `npm run typecheck` is deliberately removed from
   the script, then passes after the truthful script is restored.
+- `tests/post-edit-hook.test.ts` asserts the exit-code mapping against an `npm`
+  shim, so the contract is checked behaviourally and in milliseconds rather than
+  by rerunning the real gates. Reverting the script to its `set -e` form fails
+  all five cases.
 - The existing local baseline passes: workflow check, lint, typecheck, unit
   coverage and build.
 
@@ -59,6 +63,8 @@
 - [x] 1.5 Add the Claude Code `PostToolUse` surface — merged in #10, squash `9706d9b`
 - [x] 1.6 Map every failure path to exit `2` and report both checks — see
   `context/evidence/m3-hook-observation-2026-08-05.md` verifications 1 and 2
+- [x] 1.7 Cover the contract with `tests/post-edit-hook.test.ts` — 5 cases pass
+  against the truthful script and all 5 fail against the previous `set -e` form
 
 #### Manual
 
