@@ -2,12 +2,18 @@ import type { ReviewInput } from "./schemas.js";
 
 export type ReviewScope = "documentation-only" | "code-or-mixed";
 
-const DOCUMENTATION_PATH = /\.(?:md|mdx|rst|txt)$/i;
+/**
+ * Paths that cannot change executable behaviour: prose plus raster evidence assets.
+ *
+ * `.svg` is deliberately absent. An SVG can carry script and is served as a document,
+ * so it stays in the conservative scope.
+ */
+const NON_EXECUTABLE_PATH = /\.(?:md|mdx|rst|txt|png|jpe?g|gif|webp)$/i;
 
 export function classifyReviewScope(input: ReviewInput): ReviewScope {
   const changedPaths = [...input.diff.matchAll(/^diff --git a\/(.+) b\/(.+)$/gm)].map((match) => match[2] ?? "");
   if (changedPaths.length === 0) return "code-or-mixed";
-  return changedPaths.every((changedPath) => DOCUMENTATION_PATH.test(changedPath))
+  return changedPaths.every((changedPath) => NON_EXECUTABLE_PATH.test(changedPath))
     ? "documentation-only"
     : "code-or-mixed";
 }
@@ -24,9 +30,11 @@ Definition of Done obejmuje dokładnie sześć wymiarów:
 5. documentation — dokumentacja publicznych kontraktów i nieoczywistych decyzji;
 6. security-safety — walidacja wejścia, sekrety, uprawnienia i powierzchnia ataku.
 
-Najpierw ustal rzeczywisty zakres zmiany. Dla PR-a wyłącznie dokumentacyjnego nie
-wymagaj testów runtime, jeśli diff nie zmienia wykonywalnego kodu ani kontraktu;
-oceniaj proporcjonalnie jakość i weryfikowalność dokumentacji. Opis historycznego
+Najpierw ustal rzeczywisty zakres zmiany. Zakres documentation-only obejmuje
+prozę oraz nieuruchamialne artefakty dowodowe, w tym zrzuty ekranu. Dla takiego
+PR-a nie wymagaj testów runtime, jeśli diff nie zmienia wykonywalnego kodu ani
+kontraktu; oceniaj proporcjonalnie jakość i weryfikowalność dokumentacji.
+Dodanie samego obrazu nie jest ryzykiem wymagającym testu. Opis historycznego
 findingu lub odrzuconego fixture nie oznacza, że ryzyko wróciło do kodu. Jawne
 udokumentowanie, że istniejący pakiet jest publiczny, nie jest samo w sobie luką;
 zgłoś security finding tylko wtedy, gdy diff ujawnia dane wrażliwe, dodaje je do

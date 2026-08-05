@@ -68,9 +68,17 @@ sparsować (pusty, obcięty, bez nagłówków), bramka działa **fail-closed** �
 żaden finding nie jest odrzucany.
 
 Reviewer klasyfikuje diff jako `documentation-only` tylko wtedy, gdy wszystkie
-nagłówki `diff --git` wskazują pliki `.md`, `.mdx`, `.rst` lub `.txt`. Diff
-mieszany, kodowy albo bez rozpoznanych nagłówków pozostaje konserwatywnie
-`code-or-mixed`. Zaufana klasyfikacja trafia do promptu poza niezaufanym
+nagłówki `diff --git` wskazują pliki nieuruchamialne: prozę (`.md`, `.mdx`,
+`.rst`, `.txt`) albo rastrowe artefakty dowodowe (`.png`, `.jpg`, `.jpeg`,
+`.gif`, `.webp`). `.svg` jest celowo pominięty — może zawierać skrypt i jest
+serwowany jako dokument. Diff mieszany, kodowy albo bez rozpoznanych nagłówków
+pozostaje konserwatywnie `code-or-mixed`.
+
+Rozszerzenie o zrzuty ekranu wynika z zaobserwowanego false positive: PR #12
+zawierał dziesięć plików PNG oraz trzy pliki `.md` i dostał finding
+`HIGH · test-risk-coverage` żądający testów dla zrzutów ekranu. Próg stop dla
+false positives z `context/team/reviewer-runbook.md` nakazuje zawężać wymiar,
+a nie wyciszać bramkę. Zaufana klasyfikacja trafia do promptu poza niezaufanym
 payloadem PR-a. Dzięki temu zmiana dokumentacyjna nie wymaga testów runtime bez
 zmiany wykonywalnego kontraktu, ale każdy niejednoznaczny przypadek zachowuje
 pełne wymagania test-risk-coverage.
