@@ -36,6 +36,7 @@ const requiredFiles = [
   "context/evidence/builder-mvp-check.md",
   "context/evidence/certification-status-2026-08-05.md",
   "context/evidence/claude-code-first-workflow-2026-08-05.md",
+  "context/evidence/m3-hook-observation-2026-08-05.md",
   "context/evidence/mission-log-fields.md",
   "context/evidence/champion-m5-local-verification-2026-08-01.md",
   "context/evidence/security-audit.md",
@@ -349,8 +350,27 @@ if (skill !== claudeSkill) {
 
 const claudeSettingsPath = ".claude/settings.json";
 const claudeSettings = await load(claudeSettingsPath);
-for (const marker of ['"PostToolUse"', "scripts/post-edit-quality.sh"]) {
+for (const marker of ['"PostToolUse"', "scripts/post-edit-quality.sh", '"Write|Edit"', '"timeout"']) {
   requireText(claudeSettingsPath, claudeSettings, marker);
+}
+
+// The M3L3 exit-code contract. A failing gate only reaches the agent on exit 2; any other
+// non-zero status is logged by the tool and dropped, which silently voids the exercise.
+const hookScriptPath = "scripts/post-edit-quality.sh";
+const hookScript = await load(hookScriptPath);
+for (const marker of ["exit 2", "for check in lint typecheck", ">&2"]) {
+  requireText(hookScriptPath, hookScript, marker);
+}
+if (/^\s*npm run (lint|typecheck)\s*$/m.test(hookScript)) {
+  errors.push(`${hookScriptPath}: a bare npm run propagates its own exit status; route failures through exit 2`);
+}
+
+// Both documented secret files must stay ignored, and .claude/ must stay re-included
+// against a global core.excludesFile that would otherwise hide the agent configuration.
+const gitignorePath = ".gitignore";
+const gitignore = await load(gitignorePath);
+for (const marker of [".env", ".dev.vars", "!.claude/"]) {
+  requireText(gitignorePath, gitignore, marker);
 }
 
 const mcpConfigPath = ".mcp.json";

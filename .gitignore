@@ -5,6 +5,10 @@ dist/
 .env
 .env.*
 !.env.example
+# Cloudflare local-dev secrets. `.env.*` does not match this name, and the file is
+# documented in CLAUDE.md as a place to put SUPABASE_URL and SUPABASE_KEY.
+.dev.vars
+.dev.vars.*
 coverage/
 playwright-report/
 test-results/
