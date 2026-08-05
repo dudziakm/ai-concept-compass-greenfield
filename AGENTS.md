@@ -67,7 +67,12 @@ not silently rewrite product rules to match an implementation shortcut.
 
 ## Product invariants
 
-- A user may read and mutate only their own concepts and review attempts.
+- A user may read and mutate only their own concepts, and may read and create only
+  their own review attempts. Attempts are **append-only**: the migration declares
+  SELECT and INSERT policies for `review_attempts` and no UPDATE or DELETE, so an
+  attempt disappears only through the cascade when its concept is deleted. Whether
+  a learner should be able to correct a recorded attempt is an open product
+  decision, not a settled invariant — do not add the missing policies without one.
 - The browser uses only the public Supabase key. Never introduce a
   `service_role` key into application or CI runtime.
 - Starter-pack loading is idempotent per user and template.

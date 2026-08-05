@@ -49,6 +49,14 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     needs: quality
+    # The critical-flow spec creates and deletes rows for one shared hosted account,
+    # which is why playwright.config.ts pins workers: 1. That only serialises within a
+    # run; two pull requests running e2e at the same time still collide, and one
+    # observed failure was exactly that. Serialise across refs too. A queued run waits
+    # rather than being cancelled mid-cleanup.
+    concurrency:
+      group: hosted-e2e-account
+      cancel-in-progress: false
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
@@ -81,6 +89,11 @@ jobs:
   rls:
     runs-on: ubuntu-latest
     needs: quality
+    # Same reasoning as e2e, against the two dedicated RLS accounts. A separate group,
+    # so rls and e2e still run in parallel with each other within a run.
+    concurrency:
+      group: hosted-rls-accounts
+      cancel-in-progress: false
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
