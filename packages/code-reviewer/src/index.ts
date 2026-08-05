@@ -134,7 +134,7 @@ export async function runCli(
 
     if (options.outputFile) {
       process.stderr.write(
-        `AI review: verdict=${result.verdict} findings=${result.findings.length} cost_usd=${result.usage.totalCostUsd.toFixed(4)} duration_ms=${result.durationMs}\n`,
+        `AI review: verdict=${result.verdict} findings=${result.findings.length} dropped=${result.droppedFindings.length} cost_usd=${result.usage.totalCostUsd.toFixed(4)} duration_ms=${result.durationMs}\n`,
       );
     }
 

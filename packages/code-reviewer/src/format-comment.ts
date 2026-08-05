@@ -15,6 +15,31 @@ function formatLocation(file: string, line: number | null): string {
   return line === null ? `\`${file}\`` : `\`${file}:${line}\``;
 }
 
+/**
+ * Renders findings withheld for being unlocatable in the diff.
+ *
+ * Without this section a verdict can read PASS while the model's own summary describes a
+ * defect, with nothing explaining where the finding went.
+ */
+function formatDroppedFindings(result: ReviewResult): string {
+  if (result.droppedFindings.length === 0) return "";
+
+  const entries = result.droppedFindings
+    .map(
+      (finding) =>
+        `- **${finding.severity.toUpperCase()} · ${finding.dimension}** — ${formatLocation(finding.file, finding.line)}: ${redactCommentText(finding.evidence)}`,
+    )
+    .join("\n");
+
+  return `
+### Findings poza diffem (nieblokujące)
+
+Model wskazał kod, którego nie ma w recenzowanym diffie. Te uwagi nie wpływają na werdykt.
+
+${entries}
+`;
+}
+
 export function formatReviewComment(result: ReviewResult): string {
   const verdict = result.verdict === "pass" ? "✅ PASS" : "❌ FAIL";
   const findings =
@@ -42,7 +67,7 @@ ${REVIEW_DIMENSIONS.map((dimension) => `- \`${dimension}\`: ${result.scores[dime
 ### Findings
 
 ${findings}
-
+${formatDroppedFindings(result)}
 ### Telemetria
 
 - Model: \`${result.usage.model}\`

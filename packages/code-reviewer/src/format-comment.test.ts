@@ -24,6 +24,7 @@ const result: ReviewResult = {
       recommendation: "Zweryfikuj body przez Zod przed użyciem.",
     },
   ],
+  droppedFindings: [],
   usage: {
     provider: "openrouter",
     model: "test/model",
@@ -65,6 +66,33 @@ describe("formatReviewComment", () => {
     expect(comment).not.toContain("OPENROUTER_API_KEY=");
     expect(comment).toContain("[zredagowano surowy diff]");
     expect(comment).toContain("Dowód: [zredagowano sekret]");
+  });
+
+  it("pomija sekcję findingów poza diffem, gdy droppedFindings jest puste", () => {
+    const comment = formatReviewComment(result);
+
+    expect(comment).not.toContain("Findings poza diffem");
+  });
+
+  it("renderuje sekcję findingów poza diffem, gdy droppedFindings nie jest puste", () => {
+    const comment = formatReviewComment({
+      ...result,
+      droppedFindings: [
+        {
+          severity: "medium",
+          dimension: "correctness",
+          file: "src/lib/scoring.ts",
+          line: 42,
+          evidence: "Rzekomy problem poza diffem.",
+          recommendation: "Niepotrzebna zmiana.",
+        },
+      ],
+    });
+
+    expect(comment).toContain("### Findings poza diffem (nieblokujące)");
+    expect(comment).toContain("MEDIUM · correctness");
+    expect(comment).toContain("`src/lib/scoring.ts:42`");
+    expect(comment).toContain("Rzekomy problem poza diffem.");
   });
 
   it("zachowuje ERROR poza kontraktem findingów i ocen", () => {
