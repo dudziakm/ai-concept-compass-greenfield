@@ -179,6 +179,8 @@ npm run test:e2e
 
 - [x] 5.1 Local gates and full GitHub CI pass — `quality`, hosted `e2e` and
       `rls` are green for merge commit `28bc365` in run `30715121885`.
+      Current: green for head SHA `9706d9b` on `main` in run `31016045921`
+      (2026-08-05) — quality 2m4s, e2e 2m9s, rls 44s.
 - [x] 5.2 Hosted RLS and E2E gates pass locally against hosted Supabase
 
 #### Manual

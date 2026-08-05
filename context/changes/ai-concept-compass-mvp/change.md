@@ -1,9 +1,9 @@
 ---
 change_id: ai-concept-compass-mvp
 title: Deliver the AI Concept Compass MVP
-status: implementing
+status: implemented
 created: 2026-07-31
-updated: 2026-08-01
+updated: 2026-08-05
 archived_at: null
 ---
 

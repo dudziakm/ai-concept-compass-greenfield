@@ -229,5 +229,5 @@ zasobu zachowuje się jak brak zasobu.
 2. **Czy użytkownicy poprawnie rozumieją samoocenę i wzorzec odpowiedzi?** —
    Owner: product owner. Resolve przez 3–5 testów użyteczności. Block: no dla
    wdrożenia technicznego, yes dla rozbudowy mechanizmu.
-3. **Jaki jest publiczny URL produkcyjny?** — Owner: product owner. By:
-   2026-08-10. Block: yes dla końcowego dowodu wdrożenia.
+3. **Jaki jest publiczny URL produkcyjny?** — Rozwiązane: https://ai-concept-compass.dudziak-michal.workers.dev,
+   region Supabase eu-central-1.

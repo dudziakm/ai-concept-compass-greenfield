@@ -19,6 +19,7 @@ project and the public Cloudflare Worker.
 | Public responsive/keyboard/console | pass  | Desktop and 360 px screenshots, keyboard focus probe, zero unexpected console or uncaught page errors |
 | GitHub Actions quality            | pass   | [quality job in green merge CI](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30715121885/job/91409300678) |
 | Hosted CI E2E and RLS             | pass   | [run 30715121885](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/30715121885) has green `e2e` and `rls` jobs |
+| GitHub Actions quality (current)  | pass   | [run 31016045921](https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/31016045921) on `main`, head `9706d9b`, 2026-08-05: `quality` 2m4s, `e2e` 2m9s, `rls` 44s |
 
 ## Hosted/manual evidence
 
@@ -32,6 +33,30 @@ project and the public Cloudflare Worker.
 | Public mobile, keyboard and console smoke     | pass; screenshots and clean probes in builder public verification record     |
 | Final screenshots                             | pass; public sign-in, dashboard, mobile and review/recommendation captured   |
 | Mission Log submission                        | pending; requires personal fields and explicit final submission               |
+
+## Accepted risk: migration ledger drift (2026-08-05)
+
+The hosted Supabase migration ledger (`supabase_migrations.schema_migrations`)
+holds one row, version `20260801170540` ("add_foreign_key_indexes"). The
+repository declares two migration files instead:
+`supabase/migrations/20260731190000_ai_concept_compass.sql` and
+`supabase/migrations/20260801162000_add_foreign_key_indexes.sql`. Neither
+version matches the ledger row. The main migration
+(`20260731190000_ai_concept_compass.sql`) has zero `if not exists` guards
+across its 7 bare `create policy` and bare `create table`/`create index`
+statements, so running `supabase db push` against a clean clone would fail on
+"relation already exists".
+
+The hosted schema **content** does match the final state of the migration
+files — 10 templates, RLS enabled on all 3 tables, and the FK indexes are all
+present and correct on the live database. Only the ledger's bookkeeping is out
+of step with the files on disk.
+
+Repairing the ledger is a live mutation against the hosted project and is
+deliberately deferred to after the certification deadline rather than
+attempted five days out. This is recorded as an accepted, dated risk, not a
+silent gap: the drift does not affect the live schema or any passing gate, but
+a clean-clone deploy from these migration files would not currently succeed.
 
 ## Conclusion
 

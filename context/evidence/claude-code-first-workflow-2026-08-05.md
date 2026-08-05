@@ -24,21 +24,28 @@ tool. Cursor was never merged as a default and leaves no artifacts behind.
   source of truth. `.claude/skills/code-review/SKILL.md` is generated from it by
   `npm run toolkit:install` and CI rejects drift between the two.
 - **Compatibility:** `.codex/hooks.json` remains available for Codex on the same
-  `scripts/post-edit-quality.sh`. Its `/hooks` trust and one observed
-  `apply_patch` run are still owner-only M3 proof and remain outstanding.
-- **Dogfooding:** the repository configures itself by installing its own published
-  `@dudziakm/ai-toolkit` rather than declaring the package irrelevant to its own
-  setup. `npm run toolkit:install` runs the committed installer directly with
+  `scripts/post-edit-quality.sh`. M3L3 is already satisfied through the Claude
+  Code `PostToolUse` hook — evidence in
+  `context/evidence/m3-hook-observation-2026-08-05.md`. The Codex `/hooks` trust
+  and its own observed `apply_patch` run remain an optional compatibility item,
+  not an outstanding obligation.
+- **Dogfooding:** the repository configures itself by installing the local
+  workspace copy of `@dudziakm/ai-toolkit` rather than declaring the package
+  irrelevant to its own setup. It is the same source that is published to the
+  registry, but the install path is local: there is no `.npmrc` and no dependency
+  entry. `npm run toolkit:install` runs the committed installer directly with
   `PROJECT_ROOT`, so no GitHub Packages token, `.npmrc` or `postinstall` is
   introduced into `npm ci` — fork pull requests are unaffected.
 
 ## Quality behavior
 
 The Claude Code `PostToolUse` hook matches the `Write` and `Edit` tools and runs
-the shared lint and typecheck script. It reports rather than reverts: a failing
-gate returns output as context and the explicit gates remain
-`npm run verify:fast` and `npm run verify:full`. GitHub requires `quality`, `e2e`
-and `rls`; the AI Code Review Gate stays advisory.
+the shared lint and typecheck script. The script now exits 2, the code that
+actually surfaces its output to the agent — an earlier exit-1 version did not.
+It reports rather than reverts: a failing gate surfaces its output and the edit
+stands, and the explicit gates remain `npm run verify:fast` and
+`npm run verify:full`. GitHub requires `quality`, `e2e` and `rls`; the AI Code
+Review Gate stays advisory.
 
 ## Reviewer changes carried over from PR #9
 

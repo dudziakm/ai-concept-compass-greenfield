@@ -28,11 +28,11 @@ rekomendacji. `ConceptService.createReview()` utrwala obliczony wynik, a
 
 ## 3. Tests addressing a defined risk — ✅
 
-`context/testing/test-plan.md` nazywa ryzyko błędnego scoringu/rekomendacji.
+`context/foundation/test-plan.md` nazywa ryzyko błędnego scoringu/rekomendacji.
 `src/lib/scoring.test.ts` obejmuje wszystkie wyniki, dwie kolejne poprawne
-odpowiedzi, overconfidence, przeterminowanie, clamp i ranking. 53 testy
-przechodzą lokalnie, hosted RLS przechodzi 3/3 na dwóch zwykłych kontach, a
-scoring ma 100% branch coverage.
+odpowiedzi, overconfidence, przeterminowanie, clamp i ranking. Lokalnie 50
+testów przechodzi, a 3 są celowo pominięte; job `rls` uruchamia dodatkowo 3
+hostowane testy RLS, a scoring ma 100% branch coverage.
 
 Ryzyko cross-boundary jest związane z `e2e/concept-review.spec.ts`; scenariusz
 przechodzi przeciwko hosted Supabase i publicznemu
@@ -53,7 +53,7 @@ osobne polityki SELECT/INSERT/UPDATE/DELETE oparte na `auth.uid()`.
 
 README wyjaśnia produkt, scoring, API, bezpieczeństwo, uruchomienie, testy i
 wdrożenie. `context/foundation/` zawiera meaningful shape notes, PRD i decyzję
-stacku, a `context/testing/test-plan.md` mapuje ryzyka na warstwy testów.
+stacku, a `context/foundation/test-plan.md` mapuje ryzyka na warstwy testów.
 
 ## Priorytetowe prace poza samym audytem technicznym
 
@@ -62,6 +62,8 @@ stacku, a `context/testing/test-plan.md` mapuje ryzyka na warstwy testów.
 2. Decyzja właściciela z 2026-08-04: świadomie pozostawić Supabase Leaked
    Password Protection wyłączone dla projektu kursowego. To zaakceptowane
    odstępstwo nie jest rekomendacją dla produkcji z realnymi użytkownikami.
-3. Ręcznie zaufać hookowi M3 i potwierdzić jego wywołanie po kolejnym
-   `apply_patch`, a następnie wysłać Builder Mission Log z już przygotowanymi
-   screenshotami i URL-ami.
+3. M3L3 jest spełnione przez hook `PostToolUse` Claude Code; dowód w
+   `context/evidence/m3-hook-observation-2026-08-05.md`. Ręczne zaufanie hookowi
+   Codeksa w `/hooks` pozostaje opcjonalną ścieżką kompatybilności, nie
+   warunkiem. Wysłać Builder Mission Log z już przygotowanymi screenshotami i
+   URL-ami.
