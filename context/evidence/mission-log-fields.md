@@ -44,8 +44,8 @@ w treści komentarza.
       odsłonięty wzorzec odpowiedzi, samoocena, postęp pięciu domen AWS);
 - [x] screenshot zielonego testu lub zestawu testów *;
       `screenshots/builder/green-tests-ci.png` — podsumowanie Actions dla runu
-      `31016045921` na `main` (`quality`, `e2e`, `rls` zielone, adnotacje
-      `Evaluation completed: 6/6` i `Playwright Run Summary 4 passed (1.2m)`);
+      `31021070538` na `main` (`quality`, `e2e`, `rls` zielone, adnotacje
+      `Evaluation completed: 6/6` i `Playwright Run Summary 4 passed (1.4m)`);
 - [ ] załączniki niestandardowe — opcjonalne i celowo pominięte: formularz sam
       pisze, że organizatorzy mają dostęp do repozytorium, więc dołączanie
       plików już obecnych w repo nic nie dodaje;
@@ -53,7 +53,7 @@ w treści komentarza.
       `Własny projekt AI Concept Compass zrealizowany plan-first w Astro 6,
       React 19 i Supabase. Publiczna aplikacja działa na Cloudflare Workers.
       CI dla kanonicznego repozytorium obejmuje quality, hosted E2E i testy RLS
-      jako trzy niezależne bramki merge; run 31016045921 na main jest zielony we
+      jako trzy niezależne bramki merge; run 31021070538 na main jest zielony we
       wszystkich trzech, a publiczna suite E2E przeszła 4/4 na hosted Supabase.
       Repozytorium jest skonfigurowane pod Claude Code: .claude/settings.json
       z hookiem PostToolUse, .mcp.json dla Supabase i Cloudflare, oraz reguła
@@ -64,10 +64,10 @@ w treści komentarza.
 
 - [x] URL repozytorium;
 - [x] URL pełnego zielonego runu CI dla kanonicznego repozytorium:
-      <https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/31016045921>
-      (`quality` 2m4s, `e2e` 2m9s, `rls` 44s — wszystkie zielone dla squasha
-      `9706d9b` na `main`, 5 sierpnia 2026). Ten run zastępuje starszy
-      `30715121885` na `28bc365`, który poprzedzał 1089 wstawień;
+      <https://github.com/dudziakm/ai-concept-compass-greenfield/actions/runs/31021070538>
+      (`quality` 1m48s, `e2e` 2m27s, `rls` 45s — wszystkie zielone dla squasha
+      `85a1b04` na `main`, 5 sierpnia 2026). Ten run zastępuje starszy
+      `30715121885` na `28bc365`, który poprzedzał sześć scalonych PR-ów;
 - [x] URL wdrożenia: <https://ai-concept-compass.dudziak-michal.workers.dev>
       (Cloudflare deployment `8c09f7d2-a731-497f-a8e3-4223ab652ff6`, version
       `8908bbab-5dfb-47e4-9edd-dc55b3fa5561`);
