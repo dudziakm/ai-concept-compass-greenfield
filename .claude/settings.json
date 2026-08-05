@@ -13,7 +13,18 @@
     "deny": [
       "Read(./.env)",
       "Read(./.env.local)",
+      "Read(./.env.development)",
+      "Read(./.env.production)",
+      "Read(./.env.test)",
       "Read(./.dev.vars)",
+      "Read(./.dev.vars.local)",
+      "Read(./.dev.vars.production)",
+      "Bash(cat .env:*)",
+      "Bash(cat .dev.vars:*)",
+      "Bash(head .env:*)",
+      "Bash(head .dev.vars:*)",
+      "Bash(tail .env:*)",
+      "Bash(tail .dev.vars:*)",
       "Bash(npx supabase db reset:*)"
     ]
   },
