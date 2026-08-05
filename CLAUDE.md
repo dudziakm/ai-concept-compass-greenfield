@@ -1,30 +1,67 @@
-# Rules for AI
+# AI Concept Compass
 
-This file provides guidance to AI Agent when working with code in this repository.
+Claude Code is the default development environment for this repository. Open the
+repository — or the target worktree — as your working directory so this file,
+`.claude/settings.json` and `.mcp.json` all load.
+
+The delivery and safety contract lives in `AGENTS.md` and is imported below, so it
+is in context without a second file read. `AGENTS.md` governs; this file adds the
+architecture reference and the command list.
+
+@AGENTS.md
+@e2e/AGENTS.md
 
 ## Commands
 
-- `npm run dev` — start dev server (Cloudflare workerd runtime)
+- `npm run dev` — dev server on the Cloudflare workerd runtime
 - `npm run build` — production build (SSR via `@astrojs/cloudflare`)
-- `npm run preview` — preview production build
-- `npm run lint` — ESLint with type-checked rules
+- `npm run preview` — preview the production build
+- `npm run verify:fast` — lint, typecheck, unit tests; the gate for ordinary edits
+- `npm run verify:full` — the local equivalent of CI's `quality` job; run before a PR
 - `npm run lint:fix` — auto-fix lint issues
 - `npm run format` — Prettier (includes prettier-plugin-astro + prettier-plugin-tailwindcss)
+- `npm run toolkit:install` — regenerate `.claude/skills/` and the rules block below
 
-Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`.
+`verify:full` does not run `test:e2e` or `test:rls`. Both need hosted Supabase
+credentials and a confirmed account, and both are separate CI merge gates.
+
+Git pre-commit hooks are separate from agent hooks: husky + lint-staged runs
+`eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`.
+
+## Agent hooks
+
+`.claude/settings.json` registers a `PostToolUse` hook on `Write|Edit` that runs
+`scripts/post-edit-quality.sh` (lint + typecheck). It is advisory: a failing gate
+returns the output as context rather than reverting the edit, so run
+`npm run verify:fast` before handing work off. `.codex/hooks.json` keeps the same
+script on Codex's `apply_patch` matcher.
+
+## MCP servers
+
+`.mcp.json` declares `supabase`, `cloudflare-bindings`, `cloudflare-observability`
+and `cloudflare-docs`. All four are remote HTTP endpoints that authenticate
+interactively over OAuth on first tool call — no token, project reference or
+account id is stored in the repository. Resolve the Supabase project id through
+MCP; never hard-code it into source.
 
 ## Architecture
 
-**Astro 6 SSR app** with React 19 islands, Tailwind 4, Supabase auth, and shadcn/ui components. Deployed to Cloudflare Workers.
+**Astro 6 SSR app** with React 19 islands, Tailwind 4, Supabase auth and shadcn/ui,
+deployed to Cloudflare Workers.
 
 ### Rendering mode
 
-Full server-side rendering (`output: "server"` in astro.config.mjs). All pages are server-rendered by default. API routes must export `const prerender = false`.
+Full server-side rendering (`output: "server"` in `astro.config.mjs`). All pages are
+server-rendered by default. API routes must export `const prerender = false`.
 
 ### Auth flow
 
-- `src/lib/supabase.ts` — creates a Supabase SSR client using `@supabase/ssr` with cookie-based sessions. Uses `astro:env/server` for `SUPABASE_URL` and `SUPABASE_KEY` (server-only secrets declared in astro.config.mjs `env.schema`).
-- `src/middleware.ts` — runs on every request, resolves the current user, attaches to `context.locals.user`. Redirects unauthenticated users away from routes listed in `PROTECTED_ROUTES`.
+- `src/lib/supabase.ts` — Supabase SSR client via `@supabase/ssr` with cookie-based
+  sessions. Reads `SUPABASE_URL` and `SUPABASE_KEY` from `astro:env/server`
+  (server-only secrets declared in `astro.config.mjs` `env.schema`).
+- `src/middleware.ts` — runs on every request, resolves the current user into
+  `context.locals.user`, and redirects unauthenticated traffic away from
+  `PROTECTED_ROUTES`.
 - API endpoints: `src/pages/api/auth/{signin,signup,signout}.ts`
 - Auth pages: `src/pages/auth/{signin,signup,confirm-email}.astro`
 - Protected page example: `src/pages/dashboard.astro`
@@ -32,23 +69,55 @@ Full server-side rendering (`output: "server"` in astro.config.mjs). All pages a
 ### Key conventions
 
 - **Path alias**: `@/*` maps to `./src/*` (tsconfig paths).
-- **Astro components** for static content/layout; **React components** only when interactivity is needed.
-- **Tailwind class merging**: use the `cn()` helper from `@/lib/utils` (clsx + tailwind-merge) for conditional/merged class names. Do not concatenate class strings manually.
-- **shadcn/ui**: components live in `src/components/ui/`, "new-york" style variant. Install new ones with `npx shadcn@latest add [name]`.
-- **API routes**: use uppercase `GET`, `POST` exports; validate input with zod.
-- **Supabase migrations**: `supabase/migrations/` using naming format `YYYYMMDDHHmmss_short_description.sql`. Always enable RLS on new tables with granular per-operation, per-role policies.
-- **React**: no Next.js directives ("use client" etc.). Extract hooks to `src/components/hooks/`.
-- **Services/helpers** go in `src/lib/` (or `src/lib/services/` for extracted business logic).
+- **Astro components** for static content and layout; **React components** only where
+  interactivity is required.
+- **Tailwind class merging**: use `cn()` from `@/lib/utils` (clsx + tailwind-merge).
+  Do not concatenate class strings manually.
+- **shadcn/ui**: components live in `src/components/ui/`, "new-york" variant. Add new
+  ones with `npx shadcn@latest add [name]`.
+- **API routes**: uppercase `GET` / `POST` exports; validate input with zod.
+- **Supabase migrations**: `supabase/migrations/`, named `YYYYMMDDHHmmss_description.sql`.
+  Always enable RLS on new tables with granular per-operation, per-role policies.
+- **React**: no Next.js directives. Extract hooks to `src/components/hooks/`.
+- **Services and helpers** go in `src/lib/` (or `src/lib/services/` for business logic).
 - **Shared types** (entities, DTOs) go in `src/types.ts`.
 
 ### Environment
 
-- Node.js v22.14.0 (see `.nvmrc`)
-- Env vars: `SUPABASE_URL`, `SUPABASE_KEY` (copy `.env.example` to `.env` for Node, or `.dev.vars` for Cloudflare local dev)
+- Node.js 22.14.0 (`.nvmrc`)
+- `SUPABASE_URL`, `SUPABASE_KEY` — copy `.env.example` to `.env` for Node, or to
+  `.dev.vars` for Cloudflare local dev
 - Local Supabase: `npx supabase start` (requires Docker)
-- Cloudflare local dev: secrets go in `.dev.vars` (gitignored)
-- Deploy: `npx wrangler deploy` (requires Cloudflare account + `wrangler` auth)
+- Deploy: `npx wrangler deploy` — only when explicitly in scope
 
 ## CI
 
-GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint + build on every push and PR to master. Requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets for the build step.
+`.github/workflows/ci.yml` runs three separate merge gates on every push and pull
+request to `main`: `quality` (workflow:check → astro sync → lint → typecheck →
+coverage → reviewer typecheck/test/promptfoo → build), then `e2e` and `rls` in
+parallel. E2E and RLS need hosted Supabase credentials from repository secrets.
+
+`.github/workflows/ai-code-review.yml` is the M5 review gate and is **advisory**.
+Without a configured OpenRouter key it exits 2 — an infrastructure error, not a
+negative verdict on the code.
+
+<!-- BEGIN @dudziakm/ai-toolkit -->
+# Shared AI Toolkit Conventions
+
+Apply these conventions when creating or reviewing application code:
+
+- Use descriptive camelCase names, verb-first functions, boolean prefixes
+  (`is`, `has`, `should`, `can`), matching primary file exports and
+  UPPER_SNAKE_CASE constants.
+- Handle every asynchronous failure, keep error messages actionable without
+  sensitive data, avoid empty catches, and release opened resources in `finally`.
+- Do not use `any` without an explicit justification; narrow untrusted data from
+  `unknown`, prefer interfaces for object shapes and discriminated unions for
+  states.
+- Keep functions single-purpose, use an options object above three parameters,
+  prefer early returns and keep query functions pure.
+- Read secrets from environment/configuration only, validate boundary input, use
+  parameterized SQL and never return stacks or internal paths in API errors.
+- Name tests after behaviour, isolate setup/teardown, assert concrete outcomes
+  and cover empty, null, boundary and error paths in proportion to risk.
+<!-- END @dudziakm/ai-toolkit -->

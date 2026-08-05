@@ -1,5 +1,23 @@
 # AI Concept Compass — contributor instructions
 
+This file is the tool-neutral delivery contract. Every agent and every human
+follows it. `CLAUDE.md` imports it, so Claude Code loads it automatically; other
+tools must read it directly.
+
+## Development environment
+
+- **Claude Code is the default.** Open this repository — or the target worktree —
+  as the working directory so `CLAUDE.md`, `.claude/settings.json` and `.mcp.json`
+  all load. The `PostToolUse` hook in `.claude/settings.json` is the default local
+  feedback path.
+- The repository installs its own published `@dudziakm/ai-toolkit` to configure
+  itself: `npm run toolkit:install` writes `.claude/skills/` and the rules block in
+  `CLAUDE.md`. Both are committed. Do not hand-edit either — re-run the script.
+- Codex remains a supported compatible path through `.codex/hooks.json`. It
+  requires the owner to trust the hook definition manually in `/hooks`.
+- `.mcp.json` declares the Supabase and Cloudflare MCP servers. They authenticate
+  interactively over OAuth on first use; no credential is stored in the repository.
+
 ## Read first
 
 - Product intent and business rules: `context/foundation/prd.md`.
@@ -17,9 +35,12 @@ not silently rewrite product rules to match an implementation shortcut.
 - Use Node 22.14 from `.nvmrc` and npm. Do not replace the lockfile or package
   manager.
 - Install with `npm ci` when reproducing CI and `npm install` only when
-  intentionally changing dependencies.
-- Local quality gate:
-  `npm run lint && npm run typecheck && npm run test:coverage && npm run build`.
+  intentionally changing dependencies. The reviewer package installs separately:
+  `npm ci --prefix packages/code-reviewer`.
+- Local quality gates: `npm run verify:fast` for ordinary edits and
+  `npm run verify:full` before opening a pull request. Neither implies
+  `npm run test:e2e` or `npm run test:rls`; run those deliberately when their
+  hosted credentials are available.
 - Real browser flow: `npm run test:e2e`; it requires the four variables listed
   in `.env.example` plus a confirmed test account.
 - Never run `supabase db reset`, production migrations, `wrangler deploy`, or
@@ -84,6 +105,20 @@ not silently rewrite product rules to match an implementation shortcut.
 - RLS is defense in depth and must remain enabled on all user-owned tables.
 - Treat logs, screenshots and CI artifacts as potentially public; redact email
   addresses, tokens and private project identifiers.
+
+## CI and workflow safety
+
+- `quality`, `e2e` and `rls` are the three deterministic merge gates and must stay
+  independently runnable. `.github/rulesets/main.json` records the intended branch
+  ruleset; GitHub does not apply it from the repository, so treat it as the
+  reference to reconcile against, not as enforcement.
+- The AI Code Review Gate is advisory. Do not promote it to a required check
+  before a real fail/pass/retry lifecycle has been demonstrated with a configured
+  provider key.
+- Pin action versions and document every new permission or secret in the pull
+  request that introduces it.
+- Do not weaken branch protection, RLS checks, artifact redaction or secret
+  handling to make a pipeline pass.
 
 ## Change workflow
 

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(npx wrangler deploy:*)",
+      "Bash(npx wrangler secret:*)",
+      "Bash(npx supabase db push:*)",
+      "Bash(npm run test:e2e:*)",
+      "Bash(npm --prefix packages/code-reviewer run eval:matrix:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.dev.vars)",
+      "Bash(npx supabase db reset:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/scripts/post-edit-quality.sh\"",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
