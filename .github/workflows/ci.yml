@@ -28,6 +28,11 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm ci --ignore-scripts --prefix packages/code-reviewer
+      # promptfoo needs better-sqlite3, a native addon whose binary is produced by its
+      # install script. Rebuild exactly that one package rather than re-enabling
+      # lifecycle scripts for the whole tree. Linux needs this; macOS resolves a
+      # prebuilt, which is why a local run alone does not prove this step is unnecessary.
+      - run: npm rebuild better-sqlite3 --prefix packages/code-reviewer
       - run: npm run workflow:check
       - run: npm run astro -- sync
       - run: npm run lint
