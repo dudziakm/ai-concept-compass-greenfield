@@ -10,14 +10,20 @@ Poniższa lista jest transkrypcją aktualnych pól. Gwiazdka oznacza pole
 wymagane przez formularz. Dane osobowe i zgoda promocyjna pozostają wyłącznie
 do decyzji użytkownika — repo nie powinno ich przechowywać.
 
-Weryfikacja z 5 sierpnia potwierdziła etykiety pól i skorygowała jedno
-przeoczenie transkrypcji: formularz Buildera ma **cztery** wymagane pola
-załącznika obrazu, nie jedno. Wymagane są strona główna po zalogowaniu,
-funkcjonalność nr 1, funkcjonalność nr 2 i przechodzący test. Ekran logowania
-oraz załączniki niestandardowe są opcjonalne. Formularz M4/M5 nie ma żadnego
-pola załącznika ani pola na URL repozytorium — wymagane są tylko email, imię
-i nazwisko, wybór odznaki i komentarz, więc repozytoria trzeba wskazać
-w treści komentarza.
+Weryfikacja z 5 sierpnia potwierdziła etykiety pól i skorygowała dwa
+przeoczenia transkrypcji.
+
+Pierwsze: formularz Buildera ma **cztery** wymagane pola załącznika obrazu, nie
+jedno. Wymagane są strona główna po zalogowaniu, funkcjonalność nr 1,
+funkcjonalność nr 2 i przechodzący test. Ekran logowania oraz załączniki
+niestandardowe są opcjonalne.
+
+Drugie: formularz M4/M5 **ma** pola załączników — są ukryte do momentu wyboru
+odznaki i renderują się warunkowo, więc pierwsza transkrypcja ich nie zobaczyła.
+Po wybraniu `Obie odznaki` pojawia się pole na raport architektoniczny M4 oraz
+wybór jednego z dwóch projektów Championa, a ten wybór odsłania własne pole
+załączników. Pola na URL repozytorium nadal nie ma, więc oba adresy trzeba
+wskazać w treści komentarza.
 
 ## Builder — pola formularza
 
@@ -87,8 +93,21 @@ w treści komentarza.
 - [x] wybór odznaki * — formularz udostępnia `10xArchitect (M4)`,
       `10xChampion (M5)` albo `Obie odznaki`; docelowo `Obie odznaki`, jeśli oba
       tory przejdą końcową weryfikację;
-- [ ] komentarz * — zawrzeć linki do repo, commitów/PR-ów oraz kluczowych
-      artefaktów M4.
+- [x] raport architektoniczny (M4) — pole plikowe, ujawnia się po wyborze
+      odznaki; two-pager syntetyzujący cztery artefakty M4 leży
+      w repozytorium legacy jako `context/evidence/architectural-report-m4.md`
+      wraz z wyrenderowanym PDF-em obok;
+- [x] wybór projektu Championa — `Pipeline CI/CD do review kodu (M5L2-3)` albo
+      `Rejestr artefaktów zespołowych (M5L4)`. Zrealizowane są oba, ale wybór
+      pada na Pipeline: ma pełny cykl fail → pass → retry z etykietami,
+      sticky commentem i telemetrią, czyli dowód zgodny jeden do jednego
+      z trzema wymaganymi zrzutami. Rejestr trafia do komentarza jako dodatek;
+- [x] załączniki dla projektu Pipeline — trzy zrzuty: widok pipeline'u z jobem,
+      logi kroku `Review untrusted PR input`, komentarz agenta na PR. Dwa
+      pierwsze wymagają zalogowanego GitHuba (logi Actions nie są publiczne);
+- [ ] komentarz * — formularz prosi o kulisy pracy: kluczowe decyzje, co się
+      najbardziej podobało, największe wyzwanie oraz wrażenia z modułów 4 i 5.
+      Zawrzeć też linki do obu repozytoriów, bo formularz nie ma pola na URL.
 
 ### Dowody Architecta do przygotowania przed wysłaniem
 
@@ -133,17 +152,49 @@ w treści komentarza.
       i `rls` podczas dowodu: PR #5 raportował `BLOCKED`, PR #6 `CLEAN`.
       Po dowodzie AI gate usunięto z required zgodnie z runbookowym progiem
       stop dla false positives; deterministyczne trzy statusy pozostają wymagane;
-- [x] finalny komentarz do wariantu `Obie odznaki`:
-      `Architect: repo map, analiza blast radius i trzy artefakty DDD doprowadziły
-      do małego refaktoru ReviewScheduler w PR #25; characterization, unit,
-      security, build i E2E są zielone. Champion: wdrożony reviewer ma
-      schematyczny kontrakt sześciu ocen, limity kosztu/czasu, ZDR, ochronę
-      forków i wymagany check. PR #5 został odrzucony z findingiem high
-      test-risk-coverage i zablokowany przez protection; PR #6 przeszedł oraz
-      przeszedł retry. Po dowodzie AI gate wycofano z required, ponieważ
-      przekroczył próg false positives; quality/E2E/RLS pozostają wymagane.
-      Offline evale: 6/6. Manualna macierz trzech modeli:
-      0/3 dla rygorystycznego wykrycia wszystkich trzech blokerów — wynik
-      raportuję jawnie. Toolkit 0.1.0 przeszedł niezależny
-      install/reinstall/uninstall, ale paczka jest publiczna, nie private.`;
-- [ ] wpisać dane osobowe, wybrać `Obie odznaki`, dołączyć screenshoty i wysłać formularz.
+- [x] finalny komentarz do wariantu `Obie odznaki` — pole prosi o kulisy pracy,
+      nie o listę artefaktów, więc treść jest narracyjna, a twarde dowody
+      zostają w repozytoriach i w załączonym raporcie. Propozycja:
+
+      ```
+      Repozytoria: https://github.com/dudziakm/10xCardsAstro (M4)
+      i https://github.com/dudziakm/ai-concept-compass-greenfield (M5).
+
+      M4. Kluczową decyzją było nie naprawiać od razu żadnego z trzech
+      znalezionych problemów. Ranking wskazywał przywrócenie RLS, przeniesienie
+      selekcji due do zapytania i naliczanie postępu po ocenie — wszystkie
+      dotykały danych albo migracji. Zamiast tego wydzieliłem czysty
+      ReviewScheduler z testami characterization: mały, odwracalny seam.
+      Najciekawsza była destylacja domeny, bo pokazała, że „przedstawienie
+      karty" w ogóle nie istnieje w kodzie — nie jest źle zrobione, jest
+      nieobecne, i z tej jednej luki wynikały trzy rozjazdy MODEL vs KOD.
+      Największym wyzwaniem było to, że legacy napisał w większości agent, więc
+      dokument planistyczny i kod potrafią powtarzać to samo założenie zamiast
+      niezależnie się potwierdzać. Stąd w raporcie osobna sekcja granic
+      pewności — rozdzielam, co odtworzyłem na master, od tego, co pozostaje
+      planem.
+
+      M5. Zbudowałem pipeline CI/CD do review kodu. Reviewer zwraca schemat
+      sześciu ocen z limitami kosztu i czasu, a każdy finding jest uziemiany
+      w zakresach hunków diffu — finding spoza diffu wypada, bo bramka, która
+      halucynuje, jest gorsza niż jej brak. Rozdzieliłem też exit 1 (są
+      uwagi) od exit 2 (awaria infrastruktury), żeby cicha awaria nie
+      wyglądała jak zielone review. Przeprowadziłem kontrolowany cykl:
+      PR #5 odrzucony findingiem high test-risk-coverage i zablokowany przez
+      branch protection, PR #6 przechodzi i przechodzi ręczny retry przez
+      etykietę. Największym wyzwaniem było uznanie, kiedy przestać ufać
+      własnej bramce: po dowodzie wycofałem AI gate z listy required, bo
+      przekroczył próg false positives z runbooka — quality, E2E i RLS
+      pozostały wymagane. Manualna macierz trzech modeli dała 0/3 przy
+      rygorystycznym wymogu wykrycia wszystkich blokerów i raportuję ten wynik
+      jawnie, bo offline evale 6/6 same w sobie tego nie pokazują. Przy okazji
+      powstał też drugi projekt modułu — rejestr artefaktów zespołowych
+      (@dudziakm/ai-toolkit 0.1.0 na GitHub Packages, z idempotentnym
+      installerem i testem instalacji) — ale jako dowód zgłaszam pipeline.
+
+      Moduły 4 i 5 zmieniły mi kolejność pracy: najpierw mapa i ranking, potem
+      najmniejsza odwracalna zmiana, a agent dostaje bramkę zamiast zaufania.
+      ```
+
+- [ ] wpisać dane osobowe, wybrać `Obie odznaki`, wgrać raport M4 i trzy zrzuty
+      Pipeline'u, wkleić komentarz i wysłać formularz.

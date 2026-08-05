@@ -21,15 +21,34 @@ Nie są przypisane do żadnego pola.
 
 ## Formularz 10xArchitect / 10xChampion
 
-Formularz nie ma **żadnego** pola załącznika ani pola na URL repozytorium.
-Wymagane są tylko email, imię i nazwisko, wybór odznaki i komentarz. Zrzuty
-Championa nie idą więc do formularza — służą jako dowód w repozytorium, do
-którego komentarz kieruje.
+Odczytany ponownie 5 sierpnia 2026 po wyborze `Obie odznaki`. Wcześniejsza
+notatka w tym pliku mówiła, że formularz nie ma żadnego pola załącznika — to
+było **błędne**. Dwa pola plikowe są ukryte do momentu wyboru odznaki i pojawiają
+się dopiero warunkowo:
+
+| Pole formularza                                    | Ujawnia się po                        | Czego oczekuje                                                                                     |
+|----------------------------------------------------|---------------------------------------|-----------------------------------------------------------------------------------------------------|
+| Raport architektoniczny (M4)                        | wyborze `10xArchitect` / `Obie odznaki` | jeden zsyntetyzowany two-pager złożony z czterech artefaktów M4                                       |
+| Który projekt Champion (M5) zrealizowałeś?          | wyborze `10xChampion` / `Obie odznaki`  | wybór jednego z dwóch: `Pipeline CI/CD do review kodu (M5L2-3)` albo `Rejestr artefaktów zespołowych (M5L4)` |
+| Załączniki dla projektu Pipeline (M5)               | wyborze wariantu Pipeline               | trzy zrzuty: widok pipeline'u z jobem, logi kroku code review, komentarz agenta na PR                   |
+| Załączniki dla projektu Rejestr artefaktów AI (M5)  | wyborze wariantu Rejestr                | zrzut rejestru, definicja paczki (`package.json` lub manifest), lista wydanych wersji                  |
+
+Nadal nie ma pola na URL repozytorium, więc oba adresy muszą znaleźć się
+w treści komentarza.
+
+Raport M4 jest wersjonowany w repozytorium legacy jako
+`context/evidence/architectural-report-m4.md` wraz z wyrenderowanym PDF-em.
 
 | Plik                                                              | Co dowodzi                                                                                                                    |
 |-------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| `screenshots/champion/pr-5-fail-sticky-comment-and-label.png`     | PR #5 `Closed` bez merge, etykieta `ai-cr:failed`, sticky comment `AI Code Review — ❌ FAIL`, finding `HIGH · test-risk-coverage`, telemetria $0.0002 / 2819 ms |
+| `screenshots/champion/pr-5-fail-sticky-comment-and-label.png`     | PR #5 `Closed` bez merge, etykieta `ai-cr:failed`, sticky comment `AI Code Review — ❌ FAIL`, finding `HIGH · test-risk-coverage`, telemetria $0.0002 / 2819 ms. Pokrywa pole „komentarz code review od agenta" |
 | `screenshots/champion/pr-6-pass-retry-sticky-comment-and-label.png` | PR #6 `Merged`, `6 checks passed`, sticky comment `PASS` oznaczony `edited` (aktualizacja bez duplikatu), pełny cykl etykiet z ręcznym retry przez `ai-cr:review` |
+
+Zrzut logów kroku `Review untrusted PR input` nie jest wersjonowany: GitHub
+udostępnia logi Actions wyłącznie zalogowanemu właścicielowi repozytorium
+(anonimowy widok pokazuje „Sign in to view logs"), więc ten jeden zrzut robi
+właściciel ręcznie przed wysłaniem formularza. Widok samego joba i jego kroków
+jest publiczny i nie wymaga logowania.
 
 ## Redakcja danych
 
