@@ -1,0 +1,17 @@
+---
+description: Browser-test conventions for authenticated critical flows
+globs: e2e/**/*.ts
+alwaysApply: false
+---
+
+# Playwright E2E tests
+
+- Read `e2e/AGENTS.md` before editing tests or page objects.
+- Use role, label, or text locators before `data-testid`; never use CSS,
+  XPath, or DOM-structure selectors.
+- Do not use `page.waitForTimeout()`. Wait for observable state, navigation, or
+  a relevant response.
+- Keep tests independent: unique data, local setup/action/assertion, and cleanup
+  so retries and parallel workers do not collide.
+- A secret-gated or skipped E2E run is not passing evidence. Report it as
+  pending rather than weakening the assertion.

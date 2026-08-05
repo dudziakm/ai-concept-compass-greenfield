@@ -83,7 +83,8 @@ Zapisy są walidowane przez Zod. Błędy mają wspólny format JSON i statusy
 Wymagany jest Node 22.14 (`.nvmrc`) oraz projekt Supabase.
 
 ```bash
-npm install
+npm ci
+npm ci --prefix packages/code-reviewer
 cp .env.example .env
 ```
 
@@ -101,13 +102,25 @@ Migracja `supabase/migrations/20260731190000_ai_concept_compass.sql` tworzy
 tabele, polityki RLS, indeksy i pakiet 10 szablonów. Logowanie do Supabase jest
 czynnością użytkownika; sekret dostępu nie trafia do repozytorium.
 
+## Rozwój w Cursor
+
+Cursor jest podstawowym środowiskiem pracy. Otwórz bezpośrednio katalog tego
+repozytorium (albo docelowy worktree), aby załadować wersjonowane:
+
+- reguły w [`.cursor/rules/`](.cursor/rules/);
+- skill przeglądu kodu w [`.cursor/skills/code-review/`](.cursor/skills/code-review/);
+- fail-open hook jakości w [`.cursor/hooks.json`](.cursor/hooks.json).
+
+Hook Cursor uruchamia lint i typecheck po edycji dokonanej przez agenta. Nie
+blokuje zapisu: nieudana bramka zwraca kontekst z instrukcją naprawy, a pełną
+weryfikację uruchamiasz jawnie. Codex pozostaje kompatybilnym, opcjonalnym
+wariantem; jego hook jest opisany niżej.
+
 ## Testy i bramki
 
 ```bash
-npm run lint
-npm run typecheck
-npm run test:coverage
-npm run build
+npm run verify:fast # lint + typecheck + szybkie testy
+npm run verify:full # bramki CI poza E2E/RLS wymagającymi hostowanych sekretów
 ```
 
 Lokalny pakiet ma 53 testy scoringu, schematów, migracji oraz tras API i 100%
@@ -144,19 +157,19 @@ CI wymaga czterech sekretów E2E (`SUPABASE_URL`, `SUPABASE_KEY`,
 `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`) oraz danych dwóch kont `RLS_USER_A_*` i
 `RLS_USER_B_*`. Quality, E2E i RLS są osobnymi bramkami merge.
 
-### Hook jakości po edycji (M3L3)
+### Hooki jakości po edycji
 
-Projektowy hook Codexa w [`.codex/hooks.json`](.codex/hooks.json) reaguje tylko
-po wywołaniu narzędzia `apply_patch`. Uruchamia
-[`scripts/post-edit-quality.sh`](scripts/post-edit-quality.sh), który odnajduje
-root repozytorium przez Git, a następnie wykonuje szybkie `npm run lint` i
-`npm run typecheck`. Handler ma limit 120 sekund. To lokalny feedback po edycji,
-nie zamiennik testów, CI, review ani sprawdzeń hosted.
+Projektowy hook Cursor w [`.cursor/hooks.json`](.cursor/hooks.json) reaguje na
+edycje agenta `Write` lub `TabWrite`. Uruchamia fail-open wrapper
+[`post-edit-quality.sh`](.cursor/hooks/post-edit-quality.sh), który korzysta z
+[`scripts/post-edit-quality.sh`](scripts/post-edit-quality.sh) i wykonuje
+`npm run lint` oraz `npm run typecheck`. Limit wynosi 120 sekund. To lokalny
+feedback po edycji, nie zamiennik testów, CI, review ani sprawdzeń hosted.
 
-Codex nie uruchomi nowego hooka automatycznie: użytkownik musi ręcznie otworzyć
-`/hooks`, sprawdzić dokładną definicję projektu i ją zaufać (trust). Zmiana lub
-brak trustu oznacza, że hook pozostaje pominięty. Skrypt nie odczytuje ani nie
-loguje plików `.env`.
+Opcjonalny hook Codexa w [`.codex/hooks.json`](.codex/hooks.json) zachowuje
+dotychczasowy matcher `apply_patch` i używa tego samego skryptu jakości. Codex
+wymaga ręcznego trustu definicji przez właściciela w `/hooks`. Żaden wariant nie
+odczytuje ani nie loguje plików `.env`.
 
 ## Wdrożenie na Cloudflare Workers
 

@@ -2,6 +2,9 @@
 
 ## Read first
 
+- Cursor is the default development entry point. Open this repository (or its
+  target worktree) directly, so project rules, skills and hooks load without
+  unrelated workspace context. Codex remains an optional compatible path.
 - Product intent and business rules: `context/foundation/prd.md`.
 - Architecture and runtime decisions: `context/foundation/tech-stack.md` and
   `context/foundation/infrastructure.md`.
@@ -18,8 +21,12 @@ not silently rewrite product rules to match an implementation shortcut.
   manager.
 - Install with `npm ci` when reproducing CI and `npm install` only when
   intentionally changing dependencies.
-- Local quality gate:
-  `npm run lint && npm run typecheck && npm run test:coverage && npm run build`.
+- Install the isolated reviewer dependencies with
+  `npm ci --prefix packages/code-reviewer` before `npm run verify:full`.
+- Local quality gates: `npm run verify:fast` for normal edits and
+  `npm run verify:full` before a PR. Run `npm run test:e2e` and
+  `npm run test:rls` deliberately when their hosted credentials are available;
+  neither is implied by `verify:full`.
 - Real browser flow: `npm run test:e2e`; it requires the four variables listed
   in `.env.example` plus a confirmed test account.
 - Never run `supabase db reset`, production migrations, `wrangler deploy`, or

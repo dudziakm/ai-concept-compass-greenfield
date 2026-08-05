@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/post-edit-quality.sh",
+        "matcher": "Write|TabWrite",
+        "timeout": 120,
+        "failClosed": false
+      }
+    ]
+  }
+}

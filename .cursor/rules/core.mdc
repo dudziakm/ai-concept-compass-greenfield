@@ -1,0 +1,21 @@
+---
+description: Project-wide delivery contract for AI Concept Compass
+alwaysApply: true
+---
+
+# Core project contract
+
+- Read `AGENTS.md` before changing code. For non-trivial work, follow the
+  active contract in `context/changes/` and do not silently override the PRD.
+- Use Node and npm as documented in `.nvmrc` and `AGENTS.md`; keep the existing
+  lockfile and package manager.
+- Keep code and API identifiers English; keep shipped product UI and product
+  documentation Polish.
+- Preserve product invariants: authenticated users access only their own data,
+  browser code uses no `service_role` key, and validation occurs at write
+  boundaries.
+- Run the proportional gate before handoff. Use `npm run verify:fast` for
+  ordinary changes and `npm run verify:full` before a PR when its prerequisites
+  are available.
+- Never print, commit, or persist credentials. Treat screenshots, logs, and CI
+  artifacts as potentially public.

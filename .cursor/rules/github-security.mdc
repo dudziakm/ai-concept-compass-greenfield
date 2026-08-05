@@ -1,0 +1,17 @@
+---
+description: Safe CI and GitHub workflow changes
+globs: .github/**/*.{yml,yaml}
+alwaysApply: false
+---
+
+# GitHub workflow safety
+
+- Use least-privilege workflow permissions and never expose secrets to fork
+  pull requests.
+- Keep deterministic checks (`quality`, `e2e`, `rls`) independently runnable;
+  do not make the advisory AI reviewer a required merge gate without a proven
+  lifecycle.
+- Do not weaken branch protections, RLS checks, artifact redaction, or secret
+  handling to make CI pass.
+- Pin action versions and document any new external permission or secret in the
+  related pull request.

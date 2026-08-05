@@ -1,0 +1,19 @@
+---
+description: Astro, React and Supabase implementation boundaries
+globs: src/**/*.{astro,ts,tsx}
+alwaysApply: false
+---
+
+# Astro and Supabase boundaries
+
+- Keep API routes thin; place reusable persistence in `src/lib/services/` and
+  deterministic decisions in pure functions under `src/lib/`.
+- Validate request bodies with the shared Zod contracts before persistence and
+  preserve the documented 400/401/404/409/500 JSON behavior.
+- Use the public Supabase key only in browser code. Never add a `service_role`
+  key to application runtime, client code, or CI.
+- RLS is mandatory for user-owned data. A schema or policy change needs a
+  migration contract assertion and hosted RLS verification before release.
+- Keep the existing Polish UI language and accessible semantic HTML. Do not
+  add LLM calls, payments, teams, imports, notifications, gamification, or
+  advanced SRS without expanding the approved MVP contract.

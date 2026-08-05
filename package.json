@@ -16,7 +16,9 @@
     "workflow:check": "node scripts/verify-workflow-artifacts.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "verify:fast": "npm run lint && npm run typecheck && npm run test:run",
+    "verify:full": "npm run workflow:check && npm run lint && npm run typecheck && npm run test:coverage && npm --prefix packages/code-reviewer run typecheck && npm --prefix packages/code-reviewer test && npm --prefix packages/code-reviewer run eval:promptfoo && npm run build"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",
