@@ -102,14 +102,55 @@ export type ReviewUsage = z.infer<typeof ReviewUsageSchema>;
 export type ReviewResult = z.infer<typeof ReviewResultSchema>;
 export type ReviewError = z.infer<typeof ReviewErrorSchema>;
 
-export function canonicalizeDecision(decision: ReviewDecision): ReviewDecision {
-  const hasBlockingFinding = decision.findings.some((finding) =>
+interface ChangedDiffLine {
+  file: string;
+  line: number;
+}
+
+function changedLines(diff: string): ChangedDiffLine[] {
+  const locations: ChangedDiffLine[] = [];
+  let currentFile: string | undefined;
+  let currentNewLine: number | undefined;
+
+  for (const line of diff.split("\n")) {
+    const file = line.match(/^diff --git a\/.+ b\/(.+)$/);
+    if (file) {
+      currentFile = file[1];
+      currentNewLine = undefined;
+      continue;
+    }
+
+    const hunk = line.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/);
+    if (hunk && currentFile) {
+      currentNewLine = Number(hunk[1]);
+      continue;
+    }
+
+    if (!currentFile || currentNewLine === undefined) continue;
+    if (line.startsWith("+") && !line.startsWith("+++")) {
+      locations.push({ file: currentFile, line: currentNewLine });
+      currentNewLine += 1;
+    } else if (line.startsWith(" ")) {
+      currentNewLine += 1;
+    }
+  }
+
+  return locations;
+}
+
+function isGroundedInDiff(finding: ReviewFinding, locations: ChangedDiffLine[]): boolean {
+  return finding.line !== null && locations.some((location) => location.file === finding.file && finding.line === location.line);
+}
+
+export function canonicalizeDecision(decision: ReviewDecision, diff: string): ReviewDecision {
+  const findings = decision.findings.filter((finding) => isGroundedInDiff(finding, changedLines(diff)));
+  const hasBlockingFinding = findings.some((finding) =>
     ["critical", "high", "medium"].includes(finding.severity),
   );
-  const hasScoreBelowPassThreshold = Object.values(decision.scores).some((score) => score < MINIMUM_PASS_SCORE);
 
   return {
     ...decision,
-    verdict: decision.verdict === "fail" || hasBlockingFinding || hasScoreBelowPassThreshold ? "fail" : "pass",
+    findings,
+    verdict: hasBlockingFinding ? "fail" : "pass",
   };
 }

@@ -3,8 +3,16 @@
 ## Read first
 
 - Cursor is the default development entry point. Open this repository (or its
-  target worktree) directly, so project rules, skills and hooks load without
-  unrelated workspace context. Codex remains an optional compatible path.
+  target worktree) directly, then read this file, the relevant
+  `.cursor/rules/*.mdc`, and `.cursor/skills/code-review/SKILL.md`. The Cursor
+  post-edit hook in `.cursor/hooks.json` is the default local feedback path.
+- `skills/code-review/SKILL.md` is the canonical source required by Champion
+  evidence and CI; `.cursor/skills/code-review/SKILL.md` is its Cursor copy and
+  must stay byte-for-byte identical. Codex remains an optional compatible path
+  through `.codex/hooks.json`; its manual trust requirement does not apply to
+  Cursor.
+- `@dudziakm/ai-toolkit` is a separate, published distribution for Claude Code
+  consumers. It is not the setup path for this Cursor-first repository.
 - Product intent and business rules: `context/foundation/prd.md`.
 - Architecture and runtime decisions: `context/foundation/tech-stack.md` and
   `context/foundation/infrastructure.md`.

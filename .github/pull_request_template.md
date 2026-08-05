@@ -2,6 +2,7 @@
 
 - Change contract: `context/changes/<change-id>/`
 - User-visible or operational outcome:
+- Decision rationale and trade-offs:
 
 ## Risk and security
 

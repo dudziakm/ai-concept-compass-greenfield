@@ -116,6 +116,13 @@ blokuje zapisu: nieudana bramka zwraca kontekst z instrukcją naprawy, a pełną
 weryfikację uruchamiasz jawnie. Codex pozostaje kompatybilnym, opcjonalnym
 wariantem; jego hook jest opisany niżej.
 
+Kanoniczny skill wymagany przez CI i dowody Champion znajduje się w
+[`skills/code-review/SKILL.md`](skills/code-review/SKILL.md); jego kopia Cursor
+jest sprawdzana pod kątem identycznej treści. Opublikowany
+[`@dudziakm/ai-toolkit`](packages/ai-toolkit/README.md) pozostaje osobnym
+kanałem dla konsumentów Claude Code — nie jest wymagany do pracy w Cursor ani
+instalowany w tym repozytorium.
+
 ## Testy i bramki
 
 ```bash
@@ -200,12 +207,14 @@ Dodaj publiczny URL do listy dozwolonych redirect URL w Supabase Auth.
 - [Specyfikacja UI](context/changes/ai-concept-compass-mvp/specs/ui.md)
 - [Plan deployu](context/deployment/deploy-plan.md)
 - [Audyt MVP](context/evidence/builder-mvp-check.md)
+- [Cursor-first workflow verification](context/evidence/cursor-first-workflow-2026-08-05.md)
+- [Current certification status](context/evidence/certification-status-2026-08-05.md)
 - [Agent code review — runbook](context/team/reviewer-runbook.md)
 
-## Jak AI wspierało proces
+## Jak agenci AI wspierali proces
 
-Codex pomógł rozbić zakres na testowalne granice, przygotować migrację, API,
-interfejs i testy oraz wykonywał każdą bramkę jakości. Reguły biznesowe, zakres
+Agenci AI pomogli rozbić zakres na testowalne granice, przygotować migrację,
+API, interfejs i testy oraz wykonywać bramki jakości. Reguły biznesowe, zakres
 MVP, źródło treści i kryteria akceptacji pozostają jawne w repozytorium, zamiast
 być ukryte w promptach lub wyniku modelu.
 

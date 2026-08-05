@@ -6,6 +6,14 @@ const execFileAsync = promisify(execFile);
 
 const requiredFiles = [
   "AGENTS.md",
+  "CLAUDE.md",
+  ".cursor/hooks.json",
+  ".cursor/hooks/post-edit-quality.sh",
+  ".cursor/rules/core.mdc",
+  ".cursor/rules/astro-supabase.mdc",
+  ".cursor/rules/playwright.mdc",
+  ".cursor/rules/github-security.mdc",
+  ".cursor/skills/code-review/SKILL.md",
   "context/archive/README.md",
   "context/changes/README.md",
   "context/foundation/README.md",
@@ -28,6 +36,8 @@ const requiredFiles = [
   "context/changes/ai-concept-compass-mvp/verification.md",
   "context/deployment/deploy-plan.md",
   "context/evidence/builder-mvp-check.md",
+  "context/evidence/certification-status-2026-08-05.md",
+  "context/evidence/cursor-first-workflow-2026-08-05.md",
   "context/evidence/mission-log-fields.md",
   "context/evidence/champion-m5-local-verification-2026-08-01.md",
   "context/evidence/security-audit.md",
@@ -328,6 +338,11 @@ for (const marker of [
   "NEEDS DISCUSSION",
 ]) {
   requireText(skillPath, skill, marker);
+}
+const cursorSkillPath = ".cursor/skills/code-review/SKILL.md";
+const cursorSkill = await load(cursorSkillPath);
+if (skill !== cursorSkill) {
+  errors.push(`${cursorSkillPath}: must match canonical ${skillPath}`);
 }
 
 const toolkitPackagePath = "packages/ai-toolkit/package.json";

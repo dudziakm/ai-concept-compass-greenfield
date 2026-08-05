@@ -1,17 +1,27 @@
-# Rules for AI
+# AI Concept Compass — architecture reference
 
-This file provides guidance to AI Agent when working with code in this repository.
+Cursor is the default development environment for this repository. Open the
+repository or its target worktree directly in Cursor, then follow `AGENTS.md`,
+the scoped rules in `.cursor/rules/`, and the project skill in
+`.cursor/skills/`. Codex remains an optional compatible path through
+`.codex/hooks.json`.
+
+This file is an architecture reference for AI agents and human contributors; it
+does not override the delivery and safety contract in `AGENTS.md`.
 
 ## Commands
 
 - `npm run dev` — start dev server (Cloudflare workerd runtime)
 - `npm run build` — production build (SSR via `@astrojs/cloudflare`)
 - `npm run preview` — preview production build
-- `npm run lint` — ESLint with type-checked rules
+- `npm run verify:fast` — lint, typecheck and focused tests
+- `npm run verify:full` — local CI-equivalent gates excluding hosted E2E/RLS
 - `npm run lint:fix` — auto-fix lint issues
 - `npm run format` — Prettier (includes prettier-plugin-astro + prettier-plugin-tailwindcss)
 
-Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`.
+Git pre-commit hooks (separate from agent hooks): husky + lint-staged runs
+`eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on
+`*.{json,css,md}`.
 
 ## Architecture
 
@@ -51,4 +61,7 @@ Full server-side rendering (`output: "server"` in astro.config.mjs). All pages a
 
 ## CI
 
-GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint + build on every push and PR to master. Requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets for the build step.
+GitHub Actions workflow (`.github/workflows/ci.yml`) runs `quality`, `e2e` and
+`rls` on every push and pull request to `main`. E2E and RLS require the hosted
+Supabase credentials configured as repository secrets. The AI Code Review Gate
+is advisory until its lifecycle demonstrates stable, evidence-grounded results.

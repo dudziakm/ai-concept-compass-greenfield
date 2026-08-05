@@ -182,7 +182,7 @@ export async function reviewPullRequest(rawInput: unknown, options: ReviewerOpti
       cause: parsedDecision.error,
     });
   }
-  const decision = canonicalizeDecision(parsedDecision.data);
+  const decision = canonicalizeDecision(parsedDecision.data, input.diff);
 
   const result = ReviewResultSchema.safeParse({
     ...decision,

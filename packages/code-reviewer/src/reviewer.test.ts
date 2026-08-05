@@ -10,6 +10,16 @@ const input = {
   diff: "+export const answer = 42;",
 };
 
+const changedInput = {
+  ...input,
+  diff: `diff --git a/src/api.ts b/src/api.ts
+--- a/src/api.ts
++++ b/src/api.ts
+@@ -8,2 +8,3 @@
+ export const existing = true;
++export const reviewed = true;`,
+};
+
 const passingScores: ReviewScores = {
   correctness: 8,
   idiomaticity: 8,
@@ -83,6 +93,33 @@ describe("reviewPullRequest", () => {
     await expect(reviewPullRequest(input, { generateDecision })).rejects.toMatchObject({
       code: "SCHEMA_ERROR",
       message: "Model nie zwrócił wyniku zgodnego ze schematem review.",
+    });
+  });
+
+  it("nie pozwala findingowi poza diffem zablokować PR", async () => {
+    const generateDecision = vi.fn<GenerateDecision>().mockResolvedValue(
+      response({
+        decision: {
+          verdict: "fail",
+          summary: "Wymyślony problem.",
+          scores: { ...passingScores, correctness: 1 },
+          findings: [
+            {
+              severity: "high",
+              dimension: "correctness",
+              file: "src/lib/scoring.ts",
+              line: 42,
+              evidence: "Ten plik nie należy do diffu.",
+              recommendation: "Nie wykonuj zmiany poza zakresem.",
+            },
+          ],
+        },
+      }),
+    );
+
+    await expect(reviewPullRequest(changedInput, { generateDecision })).resolves.toMatchObject({
+      verdict: "pass",
+      findings: [],
     });
   });
 });

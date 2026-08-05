@@ -3,6 +3,10 @@
 GitHub Packages distribution of the team `code-review` skill and shared
 engineering conventions.
 
+This package targets Claude Code consumers: its installer manages `.claude/`
+and `CLAUDE.md`. It is not the development setup for this Cursor-first
+repository, which uses the versioned configuration under `.cursor/`.
+
 Version `0.1.0` is publicly reachable. GitHub does not allow a public package to
 be switched back to private, so consumers must not treat the current package as
 a private distribution channel. A future private distribution requires a new

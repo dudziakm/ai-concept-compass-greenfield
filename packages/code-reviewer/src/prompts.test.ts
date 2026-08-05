@@ -11,6 +11,9 @@ describe("review scope contract", () => {
     expect(SYSTEM_PROMPT).toContain("historycznego");
     expect(SYSTEM_PROMPT).toContain("pakiet jest publiczny");
     expect(SYSTEM_PROMPT).toContain("realnie osłabia kontrolę dostępu");
+    expect(SYSTEM_PROMPT).toContain("fail-open");
+    expect(SYSTEM_PROMPT).toContain("sekretowe E2E/RLS");
+    expect(SYSTEM_PROMPT).toContain("Oceny są telemetryczne");
   });
 
   it.each([

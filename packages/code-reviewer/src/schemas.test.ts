@@ -20,6 +20,13 @@ const passingScores: ReviewScores = {
   "security-safety": 8,
 };
 
+const changedLineDiff = `diff --git a/src/api.ts b/src/api.ts
+--- a/src/api.ts
++++ b/src/api.ts
+@@ -8,2 +8,3 @@
+ export const existing = true;
++export const reviewed = true;`;
+
 describe("ReviewInputSchema", () => {
   it("akceptuje prawidłowe wejście", () => {
     expect(ReviewInputSchema.parse({ title: "fix: edge case", body: "", diff: "+return value;" })).toEqual({
@@ -110,62 +117,117 @@ describe("Definition of Done", () => {
     }
   });
 
-  it("zmienia pass na fail, gdy którykolwiek score jest poniżej progu", () => {
+  it("nie pozwala, aby nieuzasadniony niski score blokował merge", () => {
     expect(
-      canonicalizeDecision({
-        verdict: "pass",
-        summary: "Ocena correctness jest za niska.",
-        scores: { ...passingScores, correctness: MINIMUM_PASS_SCORE - 1 },
-        findings: [],
-      }).verdict,
-    ).toBe("fail");
+      canonicalizeDecision(
+        {
+          verdict: "pass",
+          summary: "Ocena correctness jest za niska.",
+          scores: { ...passingScores, correctness: MINIMUM_PASS_SCORE - 1 },
+          findings: [],
+        },
+        changedLineDiff,
+      ).verdict,
+    ).toBe("pass");
   });
 
   it("pozostawia pass dla ocen dokładnie na progu i tylko low findingu", () => {
     expect(
-      canonicalizeDecision({
-        verdict: "pass",
-        summary: "Nieblokująca sugestia.",
-        scores: {
-          correctness: MINIMUM_PASS_SCORE,
-          idiomaticity: MINIMUM_PASS_SCORE,
-          complexity: MINIMUM_PASS_SCORE,
-          "test-risk-coverage": MINIMUM_PASS_SCORE,
-          documentation: MINIMUM_PASS_SCORE,
-          "security-safety": MINIMUM_PASS_SCORE,
-        },
-        findings: [
-          {
-            severity: "low",
-            dimension: "idiomaticity",
-            file: "src/lib/example.ts",
-            line: 5,
-            evidence: "Nazwa może być krótsza.",
-            recommendation: "Rozważ zwięźlejszą nazwę.",
+      canonicalizeDecision(
+        {
+          verdict: "pass",
+          summary: "Nieblokująca sugestia.",
+          scores: {
+            correctness: MINIMUM_PASS_SCORE,
+            idiomaticity: MINIMUM_PASS_SCORE,
+            complexity: MINIMUM_PASS_SCORE,
+            "test-risk-coverage": MINIMUM_PASS_SCORE,
+            documentation: MINIMUM_PASS_SCORE,
+            "security-safety": MINIMUM_PASS_SCORE,
           },
-        ],
-      }).verdict,
+          findings: [
+            {
+              severity: "low",
+              dimension: "idiomaticity",
+              file: "src/lib/example.ts",
+              line: 5,
+              evidence: "Nazwa może być krótsza.",
+              recommendation: "Rozważ zwięźlejszą nazwę.",
+            },
+          ],
+        },
+        changedLineDiff,
+      ).verdict,
     ).toBe("pass");
   });
 
   it("zmienia pass na fail przy medium findingu", () => {
     expect(
-      canonicalizeDecision({
-        verdict: "pass",
-        summary: "Model przeoczył blokujący finding.",
+      canonicalizeDecision(
+        {
+          verdict: "pass",
+          summary: "Model przeoczył blokujący finding.",
+          scores: passingScores,
+          findings: [
+            {
+              severity: "medium",
+              dimension: "documentation",
+              file: "src/api.ts",
+              line: 9,
+              evidence: "Brak kontraktu.",
+              recommendation: "Dodaj kontrakt.",
+            },
+          ],
+        },
+        changedLineDiff,
+      ).verdict,
+    ).toBe("fail");
+  });
+
+  it("odrzuca blokujący finding poza diffem", () => {
+    const decision = canonicalizeDecision(
+      {
+        verdict: "fail",
+        summary: "Nieistniejący problem.",
+        scores: { ...passingScores, correctness: 1 },
+        findings: [
+          {
+            severity: "high",
+            dimension: "correctness",
+            file: "src/lib/scoring.ts",
+            line: 42,
+            evidence: "Rzekomy problem poza diffem.",
+            recommendation: "Niepotrzebna zmiana.",
+          },
+        ],
+      },
+      changedLineDiff,
+    );
+
+    expect(decision).toMatchObject({ verdict: "pass", findings: [] });
+  });
+
+  it("odrzuca finding bez linii dodanej lub zmienionej w diffie", () => {
+    const decision = canonicalizeDecision(
+      {
+        verdict: "fail",
+        summary: "Problem w kontekście.",
         scores: passingScores,
         findings: [
           {
             severity: "medium",
-            dimension: "documentation",
+            dimension: "correctness",
             file: "src/api.ts",
-            line: 10,
-            evidence: "Brak kontraktu.",
-            recommendation: "Dodaj kontrakt.",
+            line: 8,
+            evidence: "Ta linia jest tylko kontekstem diffu.",
+            recommendation: "Nie blokuj zmiany na podstawie niezmienionej linii.",
           },
         ],
-      }).verdict,
-    ).toBe("fail");
+      },
+      changedLineDiff,
+    );
+
+    expect(decision).toMatchObject({ verdict: "pass", findings: [] });
   });
 
   it("schema wyniku pilnuje kosztu 0.20 USD", () => {

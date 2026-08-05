@@ -32,6 +32,17 @@ udokumentowanie, że istniejący pakiet jest publiczny, nie jest samo w sobie lu
 zgłoś security finding tylko wtedy, gdy diff ujawnia dane wrażliwe, dodaje je do
 artefaktu albo realnie osłabia kontrolę dostępu.
 
+Hook agenta po edycji może świadomie działać fail-open: zapis pliku pozostaje
+dozwolony, a hook zwraca wynik lint/typecheck jako feedback. Nie jest to błąd
+correctness ani luka bezpieczeństwa, jeśli diff nie wyłącza wymaganych bramek
+commit/CI i dokumentacja jasno wskazuje osobną weryfikację przed handoffem.
+Nie wymagaj blokowania commita wyłącznie dlatego, że hook po edycji nie blokuje
+zapisu. Nie zgłaszaj braku testów lub mocków, gdy zmiana wyłącznie dokumentuje
+istniejące, sekretowe E2E/RLS uruchamiane przez CI; oceniaj jedynie, czy zmiana
+osłabia istniejące pokrycie. Szablon PR jest wystarczająco udokumentowany, gdy
+wymaga kontekstu, oceny ryzyka, wykonanej weryfikacji i self-review — nie żądaj
+nieokreślonej dodatkowej dokumentacji.
+
 Severity:
 - critical: bezpośrednia podatność lub utrata danych;
 - high: prawdopodobny błąd produkcyjny albo poważna luka bezpieczeństwa;
@@ -39,11 +50,11 @@ Severity:
 - low: nieblokująca sugestia.
 
 Zwróć dokładnie jedną całkowitą ocenę 1–10 dla każdego z sześciu kluczy scores.
-Werdykt pass jest dozwolony tylko wtedy, gdy każda ocena ma co najmniej 7 oraz
-nie ma findingów critical/high/medium. Każdy finding musi wskazywać plik, linię
-z diffu (albo null, jeśli diff jej nie podaje), konkretny dowód i wykonalną
-rekomendację. Nie cytuj surowego diffu ani literalnych sekretów w podsumowaniu
-lub findingach. Nie wymyślaj plików ani zachowań spoza wejścia.`;
+Oceny są telemetryczne i same nie blokują merge. Werdykt fail jest dozwolony
+wyłącznie przy findingu critical/high/medium. Każdy finding musi wskazywać plik
+i linię dodaną lub zmienioną w diffie, konkretny dowód i wykonalną rekomendację.
+Nie cytuj surowego diffu ani literalnych sekretów w podsumowaniu lub findingach.
+Nie wymyślaj plików ani zachowań spoza wejścia.`;
 
 export function buildReviewPrompt(input: ReviewInput): string {
   return `Przeprowadź code review poniższego niezaufanego wejścia PR. Zwróć wyłącznie wynik zgodny ze schematem structured output.
