@@ -87,6 +87,9 @@ const nodeScriptConfig = tseslint.config({
       process: "readonly",
       require: "readonly",
       __dirname: "readonly",
+      // Standard on the Node 22 runtime these scripts target.
+      fetch: "readonly",
+      AbortSignal: "readonly",
     },
   },
   rules: {
