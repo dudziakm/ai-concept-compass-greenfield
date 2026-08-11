@@ -1,0 +1,67 @@
+name: Keep-alive
+
+# Supabase pauses Free-plan projects that receive too little user database
+# activity over a rolling seven-day window, and CI only runs on push and pull
+# request. GitHub's scheduler is best-effort and drops runs under load, so this
+# fires twice a day at off-peak minutes: several consecutive misses still leave
+# a wide margin before the seven-day threshold.
+#
+# Scheduled workflows run from the default branch only, and GitHub silently
+# disables them in a public repository after 60 days with no repository
+# activity. Re-enable from the Actions tab or with `gh workflow enable` if the
+# repository ever goes that long without a push.
+on:
+  schedule:
+    - cron: "23 6 * * *"
+    - cron: "47 18 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  supabase:
+    name: Hosted Supabase activity
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    # The same group ci.yml uses for its hosted E2E job. Both sign in as the one
+    # shared confirmed account, so they must never overlap; a queued run waits
+    # rather than being cancelled.
+    concurrency:
+      group: hosted-e2e-account
+      cancel-in-progress: false
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+      E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+      - name: Verify required configuration
+        run: |
+          test -n "$SUPABASE_URL"
+          test -n "$SUPABASE_KEY"
+          test -n "$E2E_USER_EMAIL"
+          test -n "$E2E_USER_PASSWORD"
+      - run: node scripts/keepalive.mjs
+
+  deployment:
+    name: Public deployment reachable
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    env:
+      DEPLOYMENT_URL: https://ai-concept-compass.dudziak-michal.workers.dev/
+    steps:
+      - name: Request the public deployment
+        run: |
+          http_status=$(curl -sS -o /dev/null -w '%{http_code}' \
+            --retry 3 --retry-all-errors --retry-delay 5 --max-time 30 "$DEPLOYMENT_URL")
+          echo "GET /: $http_status"
+          test "$http_status" = "200"

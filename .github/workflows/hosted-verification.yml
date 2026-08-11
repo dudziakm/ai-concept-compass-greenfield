@@ -1,0 +1,80 @@
+name: Hosted verification
+
+# Keep-alive proves the project is awake. This proves it still works: the same
+# critical journey and the same RLS invariant CI runs on every push, but aimed
+# at the deployed Worker rather than a local dev server, on a schedule instead
+# of a code change. It is what catches a deployment or hosted-data regression
+# before someone opening the public URL does.
+on:
+  schedule:
+    - cron: "31 7 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  public-e2e:
+    name: Critical journey against the deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    concurrency:
+      group: hosted-e2e-account
+      cancel-in-progress: false
+    env:
+      E2E_BASE_URL: https://ai-concept-compass.dudziak-michal.workers.dev
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+      E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Verify required E2E configuration
+        run: |
+          test -n "$SUPABASE_URL"
+          test -n "$SUPABASE_KEY"
+          test -n "$E2E_USER_EMAIL"
+          test -n "$E2E_USER_PASSWORD"
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  rls:
+    name: RLS invariant against hosted Supabase
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    concurrency:
+      group: hosted-rls-accounts
+      cancel-in-progress: false
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      RLS_USER_A_EMAIL: ${{ secrets.RLS_USER_A_EMAIL }}
+      RLS_USER_A_PASSWORD: ${{ secrets.RLS_USER_A_PASSWORD }}
+      RLS_USER_B_EMAIL: ${{ secrets.RLS_USER_B_EMAIL }}
+      RLS_USER_B_PASSWORD: ${{ secrets.RLS_USER_B_PASSWORD }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run test:rls
