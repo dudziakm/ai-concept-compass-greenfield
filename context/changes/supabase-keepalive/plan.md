@@ -55,11 +55,33 @@
 - [x] 1.1 Add `scripts/keepalive.mjs`
 - [x] 1.2 Add `.github/workflows/keepalive.yml`
 - [x] 1.3 Add `.github/workflows/hosted-verification.yml`
-- [ ] 1.4 Local gate green on the change branch
-- [ ] 1.5 CI green on the pull request
+- [x] 1.4 Local gate green on the change branch
+- [x] 1.5 CI green on the pull request
 
 #### Manual
 
-- [ ] 1.6 Keep-alive dispatched on `main` and green, log free of secrets
-- [ ] 1.7 Hosted verification dispatched on `main` and green
+- [x] 1.6 Keep-alive dispatched on `main` and green, log free of secrets
+- [x] 1.7 Hosted verification dispatched on `main` and green
 - [ ] 1.8 Project confirmed unpaused after the first full week of schedules
+
+## Verification
+
+Recorded 11 August 2026, against `aee8bf5` on `main`.
+
+| Check                         | Evidence                                                                            |
+| ----------------------------- | ----------------------------------------------------------------------------------- |
+| Local script, happy path      | Sign-in 200, three reads 200, sign-out 204 against the hosted project               |
+| Local script, missing env     | Exit 1 naming all four absent variables, no request attempted                       |
+| Local gate                    | `lint`, `typecheck`, `workflow:check` clean; `actionlint` and `zizmor` no findings  |
+| Pull request #18              | CI run `31492571983` — `quality`, `e2e` and `rls` all pass; AI gate advisory pass   |
+| Keep-alive on `main`          | Run `31492943691` green; log shows status codes only, deployment probe `GET /: 200` |
+| Hosted verification on `main` | Run `31493004574` green; 4 Playwright specs against the deployed Worker, RLS pass   |
+
+Row 1.8 stays open deliberately: it can only be answered by the project still
+being unpaused after a full seven-day window of scheduled runs, so the earliest
+honest date is 18 August 2026.
+
+Pre-existing and out of scope: the pinned `actions/checkout` and
+`actions/setup-node` releases target Node 20, so every workflow in the
+repository carries a deprecation annotation. Bumping those pins is a separate
+change that touches `ci.yml` and the release pipeline too.

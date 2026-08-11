@@ -1,7 +1,7 @@
 ---
 change_id: supabase-keepalive
 title: Keep the hosted Supabase project awake and prove the deployment still works
-status: implementing
+status: implemented
 created: 2026-08-11
 updated: 2026-08-11
 archived_at: null
