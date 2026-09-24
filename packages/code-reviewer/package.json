@@ -26,13 +26,17 @@
     "@types/node": "^22.19.15",
     "promptfoo": "0.120.14",
     "typescript": "7.0.2",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   },
   "overrides": {
     "posthog-node": "5.20.0",
     "protobufjs": "8.7.1",
-    "hono": "4.12.34",
-    "sharp": "0.35.2",
-    "nanoid": "3.3.18"
+    "hono": "4.13.5",
+    "sharp": "0.35.4",
+    "nanoid": "3.3.18",
+    "@xmldom/xmldom": "0.8.15",
+    "fast-uri": "3.1.6",
+    "uuid": "11.1.1",
+    "csv-parse": "7.0.2"
   }
 }
