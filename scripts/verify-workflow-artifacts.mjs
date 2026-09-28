@@ -291,7 +291,7 @@ for (const marker of [
 
 const reviewerPackagePath = "packages/code-reviewer/package.json";
 const reviewerPackage = await load(reviewerPackagePath);
-for (const marker of ['"node": ">=22.14.0"', '"promptfoo": "0.120.14"', '"build:eval"']) {
+for (const marker of ['"node": ">=22.14.0"', '"promptfoo": "0.120.19"', '"build:eval"']) {
   requireText(reviewerPackagePath, reviewerPackage, marker);
 }
 
