@@ -76,7 +76,7 @@
     "esbuild": "0.28.1",
     "js-yaml": "4.3.2",
     "svgo": "4.1.0",
-    "fast-uri": "3.1.6",
+    "fast-uri": "3.1.7",
     "devalue": "5.9.2"
   },
   "lint-staged": {
