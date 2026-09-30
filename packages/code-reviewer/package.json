@@ -17,7 +17,7 @@
     "eval:matrix": "npm run build:eval && node scripts/preflight-live-eval.mjs && PROMPTFOO_LIVE=1 PROMPTFOO_DISABLE_TELEMETRY=1 promptfoo eval --no-cache --config promptfoo.live.yaml"
   },
   "dependencies": {
-    "@openrouter/ai-sdk-provider": "3.0.0",
+    "@openrouter/ai-sdk-provider": "3.1.0",
     "ai": "7.0.112",
     "tsx": "4.23.15",
     "zod": "4.4.3"
