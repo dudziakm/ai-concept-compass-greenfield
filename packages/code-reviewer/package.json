@@ -20,7 +20,7 @@
     "@openrouter/ai-sdk-provider": "3.0.0",
     "ai": "7.0.112",
     "tsx": "4.23.15",
-    "zod": "4.4.3"
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@types/node": "^22.19.15",
