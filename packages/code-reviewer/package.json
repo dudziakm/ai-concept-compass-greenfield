@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@openrouter/ai-sdk-provider": "3.1.0",
-    "ai": "7.0.123",
+    "ai": "7.0.127",
     "tsx": "4.23.15",
     "zod": "4.6.5"
   },
