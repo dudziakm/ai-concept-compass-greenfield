@@ -76,7 +76,7 @@
     "esbuild": "0.28.1",
     "js-yaml": "4.3.2",
     "svgo": "4.1.0",
-    "fast-uri": "3.1.8",
+    "fast-uri": "3.1.9",
     "devalue": "5.9.3",
     "brace-expansion@1": "1.1.21",
     "brace-expansion@2": "2.1.7",
