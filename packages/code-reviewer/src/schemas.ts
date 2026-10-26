@@ -45,9 +45,20 @@ export const ReviewDecisionSchema = z.object({
   findings: z.array(ReviewFindingSchema).max(20),
 });
 
+/**
+ * Room for the description inside the input budget.
+ *
+ * Renovate pastes whole security bulletins into a pull request body: affected
+ * versions, attack mechanism, vectors, references. Those routinely exceed this
+ * figure. Rejecting the input made the gate report an infrastructure error on a
+ * pull request it could still judge, so the body is trimmed to fit instead. It is
+ * context, not evidence - the diff is what the review rules on.
+ */
+export const MAX_BODY_CHARS = 10_000;
+
 const RawReviewInputSchema = z.object({
   title: z.string().trim().min(1).max(300),
-  body: z.string().max(10_000).default(""),
+  body: z.string().max(MAX_BODY_CHARS).default(""),
   diff: z.string().min(1).max(MAX_INPUT_CHARS),
 });
 
