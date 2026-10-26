@@ -5,7 +5,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { ReviewInfrastructureError, toReviewError } from "./errors.js";
 import { formatErrorComment, formatReviewComment } from "./format-comment.js";
 import { reviewPullRequest } from "./reviewer.js";
-import { MAX_INPUT_CHARS, ReviewInputSchema, type ReviewInput, type ReviewResult } from "./schemas.js";
+import { MAX_BODY_CHARS, MAX_INPUT_CHARS, ReviewInputSchema, type ReviewInput, type ReviewResult } from "./schemas.js";
 
 interface CliOptions {
   diffFile: string | undefined;
@@ -78,6 +78,21 @@ async function readInput(options: CliOptions): Promise<unknown> {
   }
 }
 
+function trimOversizedDescription(rawInput: unknown): void {
+  if (typeof rawInput !== "object" || rawInput === null || Array.isArray(rawInput)) return;
+
+  const input = rawInput as Record<string, unknown>;
+  const { body } = input;
+  if (typeof body !== "string" || body.length <= MAX_BODY_CHARS) return;
+
+  // A Renovate security bulletin is longer than the field allows. Dropping the
+  // whole review over the description would block the fix the pull request
+  // exists to apply, so keep the opening - the affected versions and the patched
+  // release - and note the trim.
+  const marker = `\n\n[opis skrócony do ${MAX_BODY_CHARS} znaków]`;
+  input.body = `${body.slice(0, MAX_BODY_CHARS - marker.length)}${marker}`;
+}
+
 function rejectOversizedReviewInput(rawInput: unknown): void {
   if (typeof rawInput !== "object" || rawInput === null || Array.isArray(rawInput)) return;
 
@@ -123,6 +138,7 @@ export async function runCli(
   try {
     options = parseOptions(args);
     const rawInput = await readInput(options);
+    trimOversizedDescription(rawInput);
     rejectOversizedReviewInput(rawInput);
     const input = ReviewInputSchema.parse(rawInput);
     const result = await review(input);
