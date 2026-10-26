@@ -135,6 +135,29 @@ describe("CLI exit codes", () => {
     expect(output.error.code).toBe("INVALID_INPUT");
   });
 
+  it("skraca zbyt długi opis zamiast odrzucać review", async () => {
+    // A Renovate security bulletin routinely runs past 10 000 characters. The
+    // gate must still judge the diff, so the body is trimmed, not rejected.
+    const { inputPath, outputPath } = await paths({
+      title: "chore(deps): update dependency fast-uri to v3.1.9 [security]",
+      body: "b".repeat(25_000),
+      diff: 'diff --git a/package.json b/package.json\n+"fast-uri": "3.1.9"',
+    });
+    const review = vi.fn(async () => Promise.resolve(baseResult));
+
+    const exitCode = await runCli(["--input", inputPath, "--output", outputPath], review);
+
+    expect(exitCode).toBe(0);
+    expect(review).toHaveBeenCalledTimes(1);
+
+    const parsed = ReviewResultSchema.parse(JSON.parse(await readFile(outputPath, "utf8")) as unknown);
+    expect(parsed.verdict).toBe("pass");
+
+    const input = (review.mock.calls[0] as unknown[])[0] as { body: string };
+    expect(input.body.length).toBeLessThanOrEqual(10_000);
+    expect(input.body).toContain("opis skrócony do 10000 znaków");
+  });
+
   it("zwraca INPUT_TOO_LARGE dla 50 001 znaków i nie uruchamia reviewera", async () => {
     const { inputPath, outputPath } = await paths({
       title: "t",
