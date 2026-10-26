@@ -40,6 +40,13 @@ udokumentowanie, że istniejący pakiet jest publiczny, nie jest samo w sobie lu
 zgłoś security finding tylko wtedy, gdy diff ujawnia dane wrażliwe, dodaje je do
 artefaktu albo realnie osłabia kontrolę dostępu.
 
+PR aktualizujący zależność bezpieczeństwa cytuje w opisie treść samego
+biuletynu: dotknięte wersje, mechanizm ataku, wektory i rekomendowany patch.
+To kontekst zmiany, a nie dowód w diffie. Dla takiego PR-a oceń wyłącznie, czy
+podniesiona wersja jest tą, którą biuletyn wskazuje jako naprawioną, i czy diff
+nie wprowadza niczego poza nią; nie zgłaszaj treści biuletynu jako findingu i nie
+przenoś opisanego w nim ataku na kod aplikacji, którego diff nie dotyka.
+
 Severity:
 - critical: bezpośrednia podatność lub utrata danych;
 - high: prawdopodobny błąd produkcyjny albo poważna luka bezpieczeństwa;
