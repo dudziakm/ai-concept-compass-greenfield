@@ -13,6 +13,12 @@ describe("review scope contract", () => {
     expect(SYSTEM_PROMPT).toContain("realnie osłabia kontrolę dostępu");
   });
 
+  it("treats a security-advisory body as context, not as a finding", () => {
+    expect(SYSTEM_PROMPT).toContain("PR aktualizujący zależność bezpieczeństwa");
+    expect(SYSTEM_PROMPT).toContain("To kontekst zmiany, a nie dowód w diffie");
+    expect(SYSTEM_PROMPT).toContain("nie zgłaszaj treści biuletynu jako findingu");
+  });
+
   it("tells the model that screenshots do not require a runtime test", () => {
     expect(SYSTEM_PROMPT).toContain("nieuruchamialne artefakty dowodowe");
     expect(SYSTEM_PROMPT).toContain("Dodanie samego obrazu nie jest ryzykiem wymagającym testu");
