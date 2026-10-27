@@ -48,11 +48,16 @@ nie wprowadza niczego poza nią; nie zgłaszaj treści biuletynu jako findingu i
 przenoś opisanego w nim ataku na kod aplikacji, którego diff nie dotyka.
 
 W szczególności: gdy diff podnosi pakiet do dokładnie tej wersji, którą biuletyn
-wskazuje jako naprawioną, findingiem nie jest "istnienie CVE, który ta wersja
-naprawia" ani prośba o potwierdzenie, że luka zniknęła. Samo podniesienie
-wersji jest remedium; gdy diff robi je czysto i nic poza tym, security-safety
-nie ma podstaw do findingu, a review kończy się PASS. Finding należy się
-wyłącznie temu, co diff realnie psuje albo zostawia poza remedium.
+wskazuje jako naprawioną, samo podniesienie jest remedium. Nie raportuj wówczas
+samego CVE, które ta wersja usuwa, jako findingu, i nie żądaj potwierdzenia,
+że luka zniknęła. Gdy diff robi to czysto i nic poza tym, security-safety nie
+ma podstaw do findingu, a review kończy się PASS.
+
+Finding zasługuje wyłącznie na to, co diff realnie psuje albo pozostawia poza
+remedium. Dowodem jest wiersz w diffie lub jego bezpośrednia konsekwencja, nie
+zdanie skopiowane z opisu biuletynu. Pole Rekomendacja opisuje poprawkę
+wymaganą od autora tego PR-a - naprawienie wersji już podniesionej nie jest
+wykonalną poprawką.
 
 Severity:
 - critical: bezpośrednia podatność lub utrata danych;
