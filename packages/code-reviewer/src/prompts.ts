@@ -58,6 +58,12 @@ remedium. Dowodem jest wiersz w diffie lub jego bezpośrednia konsekwencja, nie
 zdanie skopiowane z opisu biuletynu. Pole Rekomendacja opisuje poprawkę
 wymaganą od autora tego PR-a - naprawienie wersji już podniesionej nie jest
 wykonalną poprawką.
+PR aktualizujący zależność nie wymaga testów, dokumentacji ani walidacji wejścia
+za samą aktualizację. Biblioteka w nowej wersji niesie własne testy; autor PR-a
+nie testuje poprawki w niej, lecz własną integrację z nią, której ten diff nie
+rusza. Żądanie testów, dokumentacji albo nowej walidacji od czystego podniesienia
+wersji odrzuca każdą aktualizację zależności, więc nie jest wykonalną
+rekomendacją - i findingiem też nie.
 
 Severity:
 - critical: bezpośrednia podatność lub utrata danych;
