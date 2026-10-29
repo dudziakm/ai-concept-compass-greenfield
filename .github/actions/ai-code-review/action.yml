@@ -60,13 +60,40 @@ runs:
         set +o pipefail
         # Five lines of context retain local review evidence while keeping a
         # wide documentation/configuration PR inside the reviewer input cap.
+        #
+        # Lockfiles are excluded, not truncated. They are generated artefacts -
+        # nobody reviews 1 700 dependency entries for risk, and the verify gate
+        # installs from the same file - but a dependency PR carries a whole
+        # regenerated lockfile in its diff, which on its own exceeded the
+        # reviewer input cap and turned every such PR into INPUT_TOO_LARGE.
+        # Excluding them before the size ceiling also keeps that ceiling honest:
+        # what it cuts is reviewable code, not a hash list.
         git diff --no-ext-diff --unified=5 "${BASE_SHA}...${HEAD_SHA}" \
+          -- . \
+          ':(exclude)package-lock.json' \
+          ':(exclude)*/package-lock.json' \
+          ':(exclude)npm-shrinkwrap.json' \
+          ':(exclude)*/npm-shrinkwrap.json' \
+          ':(exclude)yarn.lock' \
+          ':(exclude)*/yarn.lock' \
+          ':(exclude)pnpm-lock.yaml' \
+          ':(exclude)*/pnpm-lock.yaml' \
           | head -c 200001 > "${RUNNER_TEMP}/ai-review.diff"
         diff_exit="${PIPESTATUS[0]}"
         set -o pipefail
         if [[ "${diff_exit}" -ne 0 && "${diff_exit}" -ne 141 ]]; then
           echo "git diff failed with exit ${diff_exit}"
           exit 2
+        fi
+        if [[ ! -s "${RUNNER_TEMP}/ai-review.diff" ]]; then
+          # Only lockfiles changed. The reviewer rejects an empty diff, but this
+          # is not an infrastructure error, so give the gate something to report
+          # instead of failing the run with an operator-facing error.
+          printf '%s\n' \
+            'This pull request changes dependency lockfiles only.' \
+            'Lockfiles are generated artefacts and are excluded from review.' \
+            'The dependency verification gate installs from them.' \
+            > "${RUNNER_TEMP}/ai-review.diff"
         fi
 
     - id: review
