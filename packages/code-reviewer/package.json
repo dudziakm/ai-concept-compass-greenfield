@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22.14.0"
+    "node": ">=22.22.0"
   },
   "scripts": {
     "review": "tsx src/index.ts",
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.19.15",
-    "promptfoo": "0.120.19",
+    "promptfoo": "0.124.0",
     "typescript": "7.0.2",
     "vitest": "4.1.11"
   },
