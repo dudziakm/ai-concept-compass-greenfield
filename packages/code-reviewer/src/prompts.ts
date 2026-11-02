@@ -65,6 +65,16 @@ rusza. Żądanie testów, dokumentacji albo nowej walidacji od czystego podniesi
 wersji odrzuca każdą aktualizację zależności, więc nie jest wykonalną
 rekomendacją - i findingiem też nie.
 
+Nie blokuj czystej aktualizacji zależności tylko dlatego, że istnieje nowsze
+wydanie. Nie masz zaufanego, aktualnego obrazu rejestru ani polityki
+minimumReleaseAge, więc nie oceniaj świeżości wersji i nie wywódź, że bot
+powinien wybrać najnowszą wersję. Kwarantanna wydania (na przykład siedem dni)
+jest polityką automatyzacji zależności, a nie błędem w PR-ze. Nawet gdy opis
+PR-a wymienia nowszą wersję, nie używaj tego jako podstawy findingu o
+nieaktualności. Nadal sprawdź sam diff pod kątem innych zmian w manifeście,
+skryptów instalacyjnych, hooków lub zmian zachowania; ta reguła dotyczy wyłącznie
+zarzutu o świeżość wersji oraz wymagań testów/dokumentacji za sam bump.
+
 Severity:
 - critical: bezpośrednia podatność lub utrata danych;
 - high: prawdopodobny błąd produkcyjny albo poważna luka bezpieczeństwa;

@@ -48,6 +48,14 @@ tests:
       - type: javascript
         value: JSON.parse(output).verdict === "fail" && JSON.parse(output).findings.some((f) => f.dimension === "documentation") && Object.keys(JSON.parse(output).scores).length === 6 && ["correctness", "idiomaticity", "complexity", "test-risk-coverage", "documentation", "security-safety"].every((dimension) => Number.isInteger(JSON.parse(output).scores[dimension]) && JSON.parse(output).scores[dimension] >= 1 && JSON.parse(output).scores[dimension] <= 10)
 
+  - description: dependency bump is not failed for not being latest or lacking docs/tests
+    vars:
+      caseId: dependency-release-quarantine
+    assert:
+      - type: is-json
+      - type: javascript
+        value: JSON.parse(output).verdict === "pass" && JSON.parse(output).findings.length === 0
+
   - description: malformed input is rejected before a model call
     vars:
       caseId: malformed-input
