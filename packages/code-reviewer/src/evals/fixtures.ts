@@ -79,7 +79,8 @@ new file mode 100644
   },
   {
     id: "dependency-release-quarantine",
-    description: "Czysty bump ai do wersji z siedmiodniowej kwarantanny nie wymaga najnowszego wydania ani dokumentacji/testów",
+    description:
+      "Czysty bump ai do wersji z siedmiodniowej kwarantanny nie wymaga najnowszego wydania ani dokumentacji/testów",
     input: {
       title: "chore(deps): update ai from 7.0.148 to 7.0.153",
       body: "Renovate proponuje aktualizację. Wersja 7.0.159 jest nowsza, ale pozostaje w siedmiodniowej kwarantannie.",

@@ -291,15 +291,15 @@ for (const marker of [
 
 const reviewerPackagePath = "packages/code-reviewer/package.json";
 const reviewerPackage = await load(reviewerPackagePath);
-for (const marker of ['"node": ">=22.14.0"', '"promptfoo": "0.120.19"', '"build:eval"']) {
+for (const marker of ['"node": ">=22.22.0"', '"promptfoo": "0.124.0"', '"build:eval"']) {
   requireText(reviewerPackagePath, reviewerPackage, marker);
 }
 
 const promptfooPath = "packages/code-reviewer/promptfooconfig.yaml";
 const promptfoo = await load(promptfooPath);
 const evalCases = [...promptfoo.matchAll(/^ {2}- description:/gm)].length;
-if (evalCases !== 6) {
-  errors.push(`${promptfooPath}: expected exactly 6 fixed eval cases, found ${evalCases}`);
+if (evalCases !== 7) {
+  errors.push(`${promptfooPath}: expected exactly 7 fixed eval cases, found ${evalCases}`);
 }
 
 const livePromptfooPath = "packages/code-reviewer/promptfoo.live.yaml";
