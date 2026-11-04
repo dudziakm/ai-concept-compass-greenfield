@@ -19,5 +19,8 @@ describe("stały offline eval baseline", () => {
     if (evalCase.expectedDimension) {
       expect(decision.findings.some((finding) => finding.dimension === evalCase.expectedDimension)).toBe(true);
     }
+    for (const dimension of evalCase.forbiddenDimensions ?? []) {
+      expect(decision.findings.some((finding) => finding.dimension === dimension)).toBe(false);
+    }
   });
 });

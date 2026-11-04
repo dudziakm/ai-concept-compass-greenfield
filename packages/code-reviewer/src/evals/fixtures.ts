@@ -6,6 +6,7 @@ export interface EvalCase {
   input: unknown;
   expectedVerdict?: "pass" | "fail";
   expectedDimension?: ReviewDimension;
+  forbiddenDimensions?: ReviewDimension[];
   expectedErrorCode?: "INVALID_INPUT";
 }
 
@@ -75,6 +76,26 @@ new file mode 100644
     } satisfies ReviewInput,
     expectedVerdict: "fail",
     expectedDimension: "security-safety",
+  },
+  {
+    id: "dependency-release-quarantine",
+    description:
+      "Czysty bump ai do wersji z siedmiodniowej kwarantanny nie wymaga najnowszego wydania ani dokumentacji/testów",
+    input: {
+      title: "chore(deps): update ai from 7.0.148 to 7.0.153",
+      body: "Renovate proponuje aktualizację. Wersja 7.0.159 jest nowsza, ale pozostaje w siedmiodniowej kwarantannie.",
+      diff: `diff --git a/packages/code-reviewer/package.json b/packages/code-reviewer/package.json
+index 1111111..2222222 100644
+--- a/packages/code-reviewer/package.json
++++ b/packages/code-reviewer/package.json
+@@ -10,7 +10,7 @@
+   "dependencies": {
+-    "ai": "7.0.148"
++    "ai": "7.0.153"
+   }`,
+    } satisfies ReviewInput,
+    expectedVerdict: "pass",
+    forbiddenDimensions: ["documentation", "test-risk-coverage"],
   },
   {
     id: "excessive-complexity",

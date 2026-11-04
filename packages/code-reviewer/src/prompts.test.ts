@@ -19,6 +19,13 @@ describe("review scope contract", () => {
     expect(SYSTEM_PROMPT).toContain("nie zgłaszaj treści biuletynu jako findingu");
   });
 
+  it("does not require latest-version selection from a dependency-only update", () => {
+    expect(SYSTEM_PROMPT).toContain("nie oceniaj świeżości wersji");
+    expect(SYSTEM_PROMPT).toContain("Kwarantanna wydania");
+    expect(SYSTEM_PROMPT).toContain("minimumReleaseAge");
+    expect(SYSTEM_PROMPT).toContain("wymagań testów/dokumentacji za sam bump");
+  });
+
   it("tells the model that screenshots do not require a runtime test", () => {
     expect(SYSTEM_PROMPT).toContain("nieuruchamialne artefakty dowodowe");
     expect(SYSTEM_PROMPT).toContain("Dodanie samego obrazu nie jest ryzykiem wymagającym testu");
