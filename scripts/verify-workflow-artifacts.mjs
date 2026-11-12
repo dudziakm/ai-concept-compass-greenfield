@@ -291,8 +291,13 @@ for (const marker of [
 
 const reviewerPackagePath = "packages/code-reviewer/package.json";
 const reviewerPackage = await load(reviewerPackagePath);
-for (const marker of ['"node": ">=22.22.0"', '"promptfoo": "0.125.1"', '"build:eval"']) {
+for (const marker of ['"node": ">=22.22.0"', '"build:eval"']) {
   requireText(reviewerPackagePath, reviewerPackage, marker);
+}
+// The promptfoo version is owned by Renovate, so assert that the dependency exists with a semver
+// value instead of a literal version: a dependency bump must never require an edit in this file.
+if (!/"promptfoo"\s*:\s*"\d+\.\d+\.\d+"/.test(reviewerPackage)) {
+  errors.push(`${reviewerPackagePath}: missing "promptfoo" dependency with a semver version`);
 }
 
 const promptfooPath = "packages/code-reviewer/promptfooconfig.yaml";
